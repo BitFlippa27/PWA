@@ -25,7 +25,7 @@ router.post("/", inputChecks, async(req,res) => {
         let user = await User.findOne({ email });
 
         if(user) {
-            res.status(400).json({ errors: [{msg: "Email bereits vergeben"}]});
+            return res.status(400).json({ errors: [{msg: "Email bereits vergeben"}]});
         }
 
         user = new User({
