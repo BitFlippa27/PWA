@@ -1,21 +1,54 @@
 const express = require("express");
 const router = express.Router();
-const { check, validationResult } = require("express-validator/check");
+const { check, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const inputChecks = [
+    check("name", "Name wird benötigt ").not().isEmpty(),
+    check("email", "Bitte geben Sie eine gültige Email ein.").isEmail(),
+    check("password", "Bitte geben Sie ein Passwort mit 7 oder mehr Zeichen ein.").isLength({ min: 7})
+];
+const User = require("../../models/User");
 
 //@route GET api/users
 //@desc User registrieren
 //@access öffentlich
-router.post("/", [
-    check("name", "Name wird benötigt ").not().isEmpty(),
-    check("email", "Bitte geben Sie eine gültige Email ein.").isEmail(),
-    check("password", "Bitte geben Sie ein Passwort mit 7 oder mehr Zeichen ein.").isLength({ min: 7})
-], (req,res) => {
+router.post("/", inputChecks, async(req,res) => {
     console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array()})
     }
-    res.send("User route");
+
+    const { name, email, password } = req.body;
+
+    try {
+        let user = await User.findOne({ email });
+
+        if(user) {
+            res.status(400).json({ errors: [{msg: "Email bereits vergeben"}]});
+        }
+
+        user = new User({
+            name,
+            email,
+            password
+        });
+
+        const salt = await bcrypt.genSalt(13);
+
+        user.password = await bcrypt.hash(password, salt);
+
+        await user.save();
+
+        res.send("Nutzer registriert");
+    }
+    catch(err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+    
+
+    
 });
 
 
