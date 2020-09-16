@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from "react-router-dom";
 
 
 
+
 const Homepage = () => (
+  <Fragment>
+      <ion-button>
+        Registrieren
+      </ion-button>
+    </Fragment>
+
+  );
+  /*
 <section className="homepage">
       <div className="dark-overlay">
         <div className="homepage-inner">
@@ -15,8 +24,9 @@ const Homepage = () => (
         </div>
       </div>
     </section>
+  */
 
-  );
+  
 
 
 export default Homepage;

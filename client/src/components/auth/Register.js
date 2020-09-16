@@ -49,6 +49,13 @@ const Register = () => {
 
   return (
     <Fragment>
+      <ion-button>
+        Registrieren
+      </ion-button>
+    </Fragment>
+
+    /*
+    <Fragment>
      <section className="container">
       <h1 className="large text-primary">Registrierung</h1>
       <p className="lead"><i className="fas fa-user"></i> Erstellen Sie ihr Konto</p>
@@ -102,6 +109,7 @@ const Register = () => {
       </p>
     </section>
   </Fragment>
+  */
   );
 }
 

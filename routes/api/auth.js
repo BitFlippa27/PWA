@@ -9,7 +9,6 @@ const inputChecks = [
     check("email", "Bitte geben Sie eine gültige Email ein.").isEmail(),
     check("password", "Das Passwort wird benötigt").exists()
 ];
-
 const User = require("../../models/User");
 
 //@route GET api/users
