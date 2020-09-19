@@ -6,14 +6,7 @@ import { Link } from "react-router-dom";
 
 const Homepage = () => (
   <Fragment>
-      <ion-button>
-        Registrieren
-      </ion-button>
-    </Fragment>
-
-  );
-  /*
-<section className="homepage">
+    <section className="homepage">
       <div className="dark-overlay">
         <div className="homepage-inner">
           <h1 className="x-large">Company</h1>
@@ -24,7 +17,12 @@ const Homepage = () => (
         </div>
       </div>
     </section>
-  */
+    </Fragment>
+
+  );
+  
+
+  
 
   
 

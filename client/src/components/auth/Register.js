@@ -1,13 +1,19 @@
 import React, { Fragment, useState } from 'react'
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import axios from "axios";
+//import axios from "axios";
+import { setAlert } from "../../actions/alert";
+import PropTypes from 'prop-types';
 
 
 
-const Register = () => {
+
+const Register = ({ setAlert }) => {
   const [formData, setFormData] = useState({
     name:"",
-    email:""
+    email:"",
+    password: "",
+    password2: ""
   }); 
 
   const {name, email, password, password2} = formData;
@@ -20,9 +26,13 @@ const Register = () => {
   const onSubmit = async e => {
     e.preventDefault();
     if(password !== password2){
-      alert("Passwörter stimmen nicht überein");
+      setAlert("Passwörter stimmen nicht überein", "danger");
     }
     else{
+      console.log("SUCCESS");
+    }
+     
+     /*
       const newUser = {
         name,
         email,
@@ -43,18 +53,12 @@ const Register = () => {
       }catch(err){
         console.error(err.response.data);
       }
+      */
     }
-  }
+  
   
 
   return (
-    <Fragment>
-      <ion-button>
-        Registrieren
-      </ion-button>
-    </Fragment>
-
-    /*
     <Fragment>
      <section className="container">
       <h1 className="large text-primary">Registrierung</h1>
@@ -102,15 +106,18 @@ const Register = () => {
             required
           />
         </div>
-        <input type="submit" className="btn btn-primary" value="Registrieren" />
+        <input type="submit" className="btn btn-primary" value="Register" />
       </form>
       <p className="my-1">
         Bereits registriert ?  <Link to="/login">Anmelden</Link>
       </p>
     </section>
   </Fragment>
-  */
+  
   );
 }
 
-export default Register;
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired
+}
+export default connect(null, { setAlert })(Register);

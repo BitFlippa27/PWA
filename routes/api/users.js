@@ -11,7 +11,7 @@ const inputChecks = [
 ];
 const User = require("../../models/User");
 
-//@route GET api/users
+//@route POST api/users
 //@desc User registrieren
 //@access öffentlich
 router.post("/", inputChecks, async(req,res) => {
