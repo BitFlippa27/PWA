@@ -42,8 +42,8 @@ img {
   margin: auto;
   overflow: hidden;
   padding: 0 2rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 6rem;
+  margin-bottom: 3rem;
 }
 
 /* Text Styles*/
@@ -139,6 +139,7 @@ img {
   margin-right: 0.5rem;
   transition: opacity 0.2s ease-in;
   outline: none;
+  border-radius: 10px;
 }
 
 .badge {
@@ -260,6 +261,7 @@ img {
   padding: 0.4rem;
   font-size: 1.2rem;
   border: 1px solid #ccc;
+  border-radius: 10px;
 }
 
 .form input[type='submit'],

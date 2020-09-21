@@ -6,7 +6,6 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Navbar from "./components/Navbar";
 import Alert from "./components/Alert";
-
 //Redux
 import { Provider } from "react-redux";  //connects React to Redux
 import store from "./store";
