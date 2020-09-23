@@ -16,7 +16,7 @@ const User = require("../../models/User");
 //@access privat
 router.get("/", auth, async(req,res) => {   //Parameter auth, macht diese Route privat
     try {
-        const user = await User.findById(req.user.id).select("-password");
+        const user = await User.findById(req.user.id).select("-password");  //req.user.id included in token
         res.json(user);
     } catch (err) {
         console.log(err.message);
