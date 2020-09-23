@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { logout } from '../actions/auth';
+//import { logout } from '../actions/auth';
 
 const Navbar = () => {
   const authLinks = (
@@ -17,7 +17,7 @@ const Navbar = () => {
         </Link>
       </li>
       <li>
-        <a onClick={logout} href="#!">
+        <a onClick={null} href="#!">
           <i className="fas fa-sign-out-alt" />{' '}
           <span className="hide-sm">Ausloggen</span>
         </a>
