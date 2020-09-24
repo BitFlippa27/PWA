@@ -2,9 +2,9 @@ import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-//import { logout } from '../actions/auth';
+import { logout } from '../actions/auth';
 
-const Navbar = () => {
+const Navbar = ({ auth: { isAuthenticated }, logout }) => {
   const authLinks = (
     <ul>
       <li>
@@ -17,9 +17,9 @@ const Navbar = () => {
         </Link>
       </li>
       <li>
-        <a onClick={null} href="#!">
+        <a onClick={logout} href="#!">
           <i className="fas fa-sign-out-alt" />{' '}
-          <span className="hide-sm">Ausloggen</span>
+          <span className="hide-sm">Ausloggen</span>  {/* responsive, just show icon on mobile devices */}
         </a>
       </li>
     </ul>
@@ -43,9 +43,18 @@ const Navbar = () => {
           <i className="fas fa-code" /> Company
         </Link>
       </h1>
-      <Fragment></Fragment>
+      <Fragment>{isAuthenticated ? authLinks : guestLinks}</Fragment>
     </nav>
   );
 };
 
-export default Navbar;
+Navbar.propTypes = {
+  logout: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
+}
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, { logout })(Navbar);

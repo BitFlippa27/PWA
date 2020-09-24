@@ -16,7 +16,7 @@
 }
 
 body {
-  font-family: 'Raleway', sans-serif;
+  font-family: "Ubuntu";
   font-size: 1rem;
   line-height: 1.6;
   background-color: #fff;
@@ -30,6 +30,8 @@ a {
 
 ul {
   list-style: none;
+  margin-top: 1rem;
+  margin-bottom: 0.1rem;
 }
 
 img {
@@ -327,7 +329,9 @@ button {
 .navbar a {
   color: #fff;
   padding: 0.45rem;
-  margin: 0 0.25rem;
+  margin:  0.25rem;
+  font-weight: bold;
+  
 }
 
 .navbar a:hover {
@@ -533,6 +537,7 @@ button {
 
   .navbar h1 {
     margin-bottom: 1rem;
+  
   }
 
   .navbar .welcome {
