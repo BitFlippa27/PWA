@@ -1,10 +1,18 @@
 import React, { Fragment } from 'react';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import PropTypes from 'prop-types';
 
 
 
 
-const Homepage = () => (
+const Homepage = ({ isAuthenticated }) => {
+  if(isAuthenticated) {
+    console.log("Redirect");
+    return <Redirect to="/dashboard" />;
+  }
+
+  return ( 
   <Fragment>
     <section className="homepage">
       <div className="dark-overlay">
@@ -18,13 +26,15 @@ const Homepage = () => (
       </div>
     </section>
     </Fragment>
-
   );
-  
+}
 
-  
+Homepage.propTypes = {
+  isAuthenticated: PropTypes.bool
+};
 
-  
+ const mapStateToProps = state => ({
+   isAuthenticated: state.auth.isAuthenticated
+ }); 
 
-
-export default Homepage;
+export default connect(mapStateToProps)(Homepage);

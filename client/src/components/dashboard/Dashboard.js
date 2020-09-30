@@ -1,29 +1,27 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types';
-import { useEffect } from "react";
 import { connect } from 'react-redux';
-import { loadUser } from "../../actions/auth";
+import Loader from '../Loader';
 
 
-const Dashboard = ({ auth: { user }}) => {
-    useEffect(() => {
-        loadUser();
-    }, []);
-    
-    return <div> Welcome {user  && user.name}</div>;
+const Dashboard = ({ auth: { user, loading }}) => {
+    //return <div> Welcome {user  && user.name}</div>;
+    //dont render UI until user is loaded so loader git in between
+    return loading && user === null ? <Loader /> : <Fragment>  
+        <h1 className="large text-primary"> Dashboard </h1>
+        <p className="lead">
+            <i className="fas fa-user"></i> Willkommen {user && user.name}
+        </p>
+    </Fragment >;
 }
 
 Dashboard.propTypes = {
-    loadUser: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired
 }
 
-const mapStateToProps =  state => {
-    const auth = { auth: state.auth }
-    console.log(state)
-    return auth;
-};
-    
+const mapStateToProps =  state => ({
+     auth: state.auth 
+});
 
 
-export default connect(mapStateToProps, { loadUser })(Dashboard);
+export default connect(mapStateToProps)(Dashboard);
