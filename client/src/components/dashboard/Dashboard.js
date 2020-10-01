@@ -1,10 +1,12 @@
-import React, { Fragment } from 'react'
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Loader from '../Loader';
 
 
+
 const Dashboard = ({ auth: { user, loading }}) => {
+    
     //return <div> Welcome {user  && user.name}</div>;
     //dont render UI until user is loaded so loader git in between
     return loading && user === null ? <Loader /> : <Fragment>  
@@ -20,7 +22,8 @@ Dashboard.propTypes = {
 }
 
 const mapStateToProps =  state => ({
-     auth: state.auth 
+     auth: state.auth
+     
 });
 
 

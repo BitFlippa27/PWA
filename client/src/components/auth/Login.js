@@ -22,7 +22,10 @@ const Login = ({ login, isAuthenticated }) => {
 
   const onSubmit = async e => {
     e.preventDefault();
-    login(email, password);
+    var date = new Date();
+    var time = date.toLocaleTimeString("de-DE"); 
+    console.log(time)     
+    login(email, password, time);
   }
   
   if(isAuthenticated) {

@@ -8,6 +8,8 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAIL,
     LOGOUT
+     
+
     } from "./types";
 import setToken from "../utils/setToken";
 
@@ -32,7 +34,7 @@ export const loadUser = () =>  async dispatch => {
         });
 
     }
-}
+};
 
 //Register User
 export const register = ({ name, email, password}) => async dispatch => {
@@ -64,9 +66,11 @@ export const register = ({ name, email, password}) => async dispatch => {
             type: REGISTER_FAIL
         });
     }
-}
+};
 //Login User
 export const login = ( email, password ) => async dispatch => {
+    
+
     const config = {
         headers: {
             "Content-Type": "application/json"
@@ -77,13 +81,20 @@ export const login = ( email, password ) => async dispatch => {
 
     try {
         const res = await axios.post("/api/auth", body, config);
+        
+        const date = new Date();
+        const time = date.toLocaleTimeString("de-DE"); 
+        console.log(time)
 
         dispatch({
             type: LOGIN_SUCCESS,
-            payload: res.data
+            payload: res.data,
+            checkInTime: time
         });
 
         dispatch(loadUser());
+    
+        console.log(time)
 
     }  catch (err) {
        console.log(err)
@@ -96,8 +107,14 @@ export const login = ( email, password ) => async dispatch => {
             type: LOGIN_FAIL
         });
     }
-}
+};
 //Logout
 export const logout = () => dispatch => {
-    dispatch({ type: LOGOUT}); 
-}
+    const date = new Date();
+    const time = date.toLocaleTimeString("de-DE"); 
+    console.log(time)     
+
+    dispatch({ type: LOGOUT, checkOutTime: time }); 
+
+    
+};
