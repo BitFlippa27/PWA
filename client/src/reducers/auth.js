@@ -12,14 +12,11 @@ const initialState = {
     token: localStorage.getItem("token"),
     isAuthenticated: null,
     loading: true,
-    checkIn: null,
-    checkOut: null,
-    totalTime: null,
     user: null
 }
 
 export default function(state = initialState, action) {
-    const { type, payload, checkInTime, checkOutTime } = action;
+    const { type, payload } = action;
 
     switch(type) {
         case USER_LOADED:
@@ -35,12 +32,8 @@ export default function(state = initialState, action) {
                 ...state,
                 ...payload,
                 isAuthenticated: true,
-                loading: false,
-                checkIn: checkInTime
+                loading: false
             }
-        case REGISTER_FAIL:
-        case AUTH_ERROR:
-        case LOGIN_FAIL:
         case LOGOUT:
             localStorage.removeItem("token");
             return {
@@ -48,13 +41,38 @@ export default function(state = initialState, action) {
                 token: null,
                 isAuthenticated: false,
                 loading: false,
-                checkOut: checkOutTime
             }
-       
-        
-
-
+        case AUTH_ERROR:
+            localStorage.removeItem("token");
+            return {
+                ...state,
+                token: null,
+                isAuthenticated: false,
+                loading: false
+            }
+        case LOGIN_FAIL:
+            localStorage.removeItem("token");
+            return {
+                ...state,
+                token: null,
+                isAuthenticated: false,
+                loading: false
+            }
+        case REGISTER_FAIL: 
+            localStorage.removeItem("token");
+            return {
+                ...state,
+                token: null,
+                isAuthenticated: false,
+                loading: false
+            }
         default:
             return state;
     }
+    
+
+
+
+
+
 }

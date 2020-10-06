@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import './App.css';
 import Homepage from "./components/Homepage";
@@ -16,13 +16,14 @@ import store from "./store";
 
 
 if(localStorage.token) {
+  
   setToken(localStorage.token);   //every time app gets loaded
+  store.dispatch(loadUser());
 }
 
 const App = () => {
-  useEffect(() => {
-    store.dispatch(loadUser());
-  },[]);    //[] makes it run just once, so effect doesnt depend on any props or state
+  console.log("geladen")
+    //[] makes it run just once, so effect doesnt depend on any props or state
   return(
     
    <Provider store={store}>

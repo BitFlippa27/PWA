@@ -3,10 +3,11 @@ import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from 'prop-types';
 import { login } from "../../actions/auth";
+import { checkIn } from '../../actions/attendance';
 
 
 
-const Login = ({ login, isAuthenticated }) => {
+const Login = ({ login, isAuthenticated, checkIn }) => {
   const [formData, setFormData] = useState({
     email:"",
     password: ""
@@ -21,16 +22,17 @@ const Login = ({ login, isAuthenticated }) => {
     
 
   const onSubmit = async e => {
-    e.preventDefault();
-    var date = new Date();
-    var time = date.toLocaleTimeString("de-DE"); 
-    console.log(time)     
-    login(email, password, time);
+    e.preventDefault();    
+    login(email, password);
+    checkIn();
+    
   }
   
   if(isAuthenticated) {
     return <Redirect to="/dashboard" />;  
   }
+
+    
 
   return (
     <Fragment>
@@ -72,7 +74,8 @@ const Login = ({ login, isAuthenticated }) => {
 
 Login.propTypes = {
   login: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool
+  isAuthenticated: PropTypes.bool,
+  checkIn: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -80,4 +83,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps, { login }) (Login);
+export default connect(mapStateToProps, { login, checkIn }) (Login);
