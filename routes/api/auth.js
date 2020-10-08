@@ -25,7 +25,7 @@ router.get("/", auth, async(req,res) => {   //Parameter auth, macht diese Route 
 });  
 
 //@route POST api/auth
-//@desc Authentifizierung
+//@desc Authentifizieren und Token erhalten
 //@access öffentlich
 router.post("/", inputChecks, async(req,res) => {
     const errors = validationResult(req);

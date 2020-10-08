@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const MainSchema = new Schema({
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: "users" 
-    },
     num: {
         type: Number
     },
@@ -82,6 +78,9 @@ const MainSchema = new Schema({
         type: Number
     },
     price: {
+        type: Number
+    },
+    horsepowerBinned: {
         type: Number
     },
     diesel: {

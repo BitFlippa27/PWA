@@ -89,6 +89,8 @@ export const login = ( email, password ) => async dispatch => {
 
         dispatch(loadUser());
 
+        dispatch(loadData());
+
     
     
 
@@ -104,6 +106,11 @@ export const login = ( email, password ) => async dispatch => {
         });
     }
 };
+
+//Load entire Data from MongoDB
+export const loadData = () => dispatch => {
+
+}
 //Logout
 export const logout = () => dispatch => {
     dispatch({ type: CHECK_OUT});
