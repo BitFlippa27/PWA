@@ -36,8 +36,9 @@ router.post("/", auth, inputCheck, async (req, res) => {
 router.get("/",auth, async (req, res) => {
     try{
         const currentData =  await Customers.find({});
-        console.log(currentData);
-        
+        //console.log(currentData);
+        res.json(currentData);
+
     }catch(err) {
         console.error(err.message);
         res.status(500).send("Server Error");

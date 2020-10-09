@@ -18,6 +18,7 @@
     "express": "^4.17.1",
     "express-validator": "^6.5.0",
     "jsonwebtoken": "^8.5.1",
+    "localforage": "^1.9.0",
     "mongoose": "^5.9.21",
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
