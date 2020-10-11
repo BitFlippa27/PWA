@@ -1,5 +1,6 @@
 import axios from "axios";
 import { setAlert } from "./alert";
+import { loadData } from "./data";
 import { 
     REGISTER_SUCCESS,
     REGISTER_FAIL, 
@@ -27,6 +28,7 @@ export const loadUser = () =>  async dispatch => {
             type: USER_LOADED,
             payload: res.data  //User
         });
+
         
     }catch(err) {
         dispatch({ 
@@ -54,7 +56,6 @@ export const register = ({ name, email, password}) => async dispatch => {
             payload: res.data
         });
 
-        dispatch(loadUser());
 
     }  catch (err) {
        const errors = err.response.data.errors;  //array of errors
@@ -88,7 +89,7 @@ export const login = ( email, password ) => async dispatch => {
         });
 
         dispatch(loadUser());
-
+        
         dispatch(loadData());
 
     
@@ -107,22 +108,7 @@ export const login = ( email, password ) => async dispatch => {
     }
 };
 
-//Load entire Data from MongoDB
-export const loadData = () => async dispatch => {
-    try {
-        const res = await axios.get("api/customers");
 
-        //console.log("DATAAAAA",res.data);
-        dispatch({
-            type: DATA_LOADED,
-            payload: res.data
-        });
-        
-    } catch(err) {
-        //dispatch({ type: DATALOAD_FAILED });
-        console.error(err);
-    }
-}
 //Logout
 export const logout = () => dispatch => {
     dispatch({ type: CHECK_OUT});

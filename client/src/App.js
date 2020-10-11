@@ -9,16 +9,19 @@ import Alert from "./components/Alert";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import { loadUser } from "./actions/auth";  
+import { loadData } from './actions/data';
 import setToken from "./utils/setToken";
 //Redux
 import { Provider } from "react-redux";  //connects React to Redux
 import store from "./store";
 
 
+
 if(localStorage.token) {
   
   setToken(localStorage.token);   //every time app gets loaded
   store.dispatch(loadUser());
+  store.dispatch(loadData());
 }
 
 const App = () => {
