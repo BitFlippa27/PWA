@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { login } from "../../actions/auth";
 import { checkIn } from '../../actions/attendance';
 //import { loadData } from '../../actions/data';
-import { PromiseProvider } from 'mongoose';
+
 
 
 const Login = ({ login, isAuthenticated, checkIn }) => {

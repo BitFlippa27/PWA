@@ -17,6 +17,8 @@ export const loadData = () => async dispatch => {
         const res = await axios.get("api/customers");
 
         console.log("DATAAAAA",res.data);
+        
+
         dispatch({
             type: DATA_LOADED,
             payload: res.data

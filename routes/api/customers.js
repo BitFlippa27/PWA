@@ -8,6 +8,8 @@ const inputCheck = [
     check("name", "Bitte Marke eingeben.").not().isEmpty()
 ];
 
+
+
 //@route POST api/customers
 //@access private
 router.post("/", auth, inputCheck, async (req, res) => {
@@ -31,18 +33,40 @@ router.post("/", auth, inputCheck, async (req, res) => {
     }
    
 });
+//get all data
 //@route GET api/customers
 //@access private
 router.get("/",auth, async (req, res) => {
     try{
+        
         const currentData =  await Customers.find({});
-        //console.log(currentData);
         res.json(currentData);
-
+    
     }catch(err) {
         console.error(err.message);
         res.status(500).send("Server Error");
     }
     
 });
+/*
+//@route GET api/customers
+//@access public
+//delete key
+
+router.patch("/", async (req, res) => {
+    try {
+        Customers.update({}, {$unset: {accounts:1}}, {multi:true});
+        res.json("gelöscht!!!");
+    }
+    catch(err) {
+        console.error(err);
+    }
+});
+*/
+
 module.exports = router;
+    
+        
+            
+            
+            

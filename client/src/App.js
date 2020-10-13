@@ -26,7 +26,7 @@ if(localStorage.token) {
 
 const App = () => {
   console.log("geladen")
-    //[] makes it run just once, so effect doesnt depend on any props or state
+
   return(
     
    <Provider store={store}>

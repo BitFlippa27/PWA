@@ -10,15 +10,20 @@ import {
     CONCURRENCY
     } from "../actions/types";
 
-const initialState = [];
+const initialState = {
+    allItems: [],
+    item: null,
+    loading: true
+};
 
 export default function(state = initialState, action) {
     const { type, payload } = action;
 
     switch(type) {
         case DATA_LOADED:
-            return [...state, payload];
+            return {...state, allItems:payload, loading: false};
         default:
             return state;
     }
+
 }

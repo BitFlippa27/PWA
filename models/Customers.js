@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const CustomersSchema = new Schema({
-    username: {
+    city: {
         type: String
     },
-    name: {
+    zip: {
         type: String
     },
     address: {
@@ -16,14 +16,11 @@ const CustomersSchema = new Schema({
     },
     email: {
         type: String
-    },
-    active: {
-        type: Boolean
-    },
-    accounts: {
-        type: Array
     }
-
+    
+    
+       
+    
     
 });
 
