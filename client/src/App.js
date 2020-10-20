@@ -14,6 +14,7 @@ import setToken from "./utils/setToken";
 //Redux
 import { Provider } from "react-redux";  //connects React to Redux
 import store from "./store";
+import { IonApp } from '@ionic/react';
 
 
 
@@ -29,22 +30,24 @@ const App = () => {
 
   return(
     
-   <Provider store={store}>
-      <Router>
-        <Fragment>
-          <Route exact path="/" component={Homepage} />
-          <Navbar />
-          <section className="container">
-            <Alert />
-            <Switch>
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/login" component={Login} />
-              <PrivateRoute exact path="/dashboard" component={Dashboard} />
-            </Switch>
-          </section>
-        </Fragment>
-      </Router>
-    </Provider>
+    
+    <Provider store={store}>
+        <Router>
+          <Fragment>
+            <Route exact path="/" component={Homepage} />
+            <Navbar />
+            <section className="container">
+              <Alert />
+              <Switch>
+                <Route exact path="/register" component={Register} />
+                <Route exact path="/login" component={Login} />
+                <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              </Switch>
+            </section>
+          </Fragment>
+        </Router>
+      </Provider>
+   
   );
 }
 

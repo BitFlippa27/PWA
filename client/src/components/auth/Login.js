@@ -68,6 +68,7 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
         Noch keinen Account ? <Link to="/register">Registrieren</Link>
       </p>
     </section>
+   
   </Fragment>
   
   );

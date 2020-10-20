@@ -48,21 +48,21 @@ router.get("/",auth, async (req, res) => {
     }
     
 });
-/*
+
 //@route GET api/customers
 //@access public
 //delete key
 
 router.patch("/", async (req, res) => {
     try {
-        Customers.update({}, {$unset: {accounts:1}}, {multi:true});
+        Customers.update({}, {$unset: {birthdate:""}}, {multi:true});
         res.json("gelöscht!!!");
     }
     catch(err) {
         console.error(err);
     }
 });
-*/
+
 
 module.exports = router;
     

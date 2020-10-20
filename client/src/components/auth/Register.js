@@ -41,6 +41,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
   return (
     <Fragment>
      <section className="container">
+     
       <h1 className="large text-primary">Registrierung</h1>
       <p className="lead"><i className="fas fa-user"></i> Erstellen Sie ihr Konto</p>
       <form className="form" onSubmit={e => onSubmit(e)}>

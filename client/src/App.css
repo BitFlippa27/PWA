@@ -22,6 +22,11 @@ body {
   background-color: #fff;
   color: #333;
 }
+.table-bordered tbody {
+  height: 600px;
+  overflow-y: auto;
+  width: 100%;
+}
 
 a {
   color: var(--primary-color);
@@ -47,6 +52,7 @@ img {
   margin-top: 6rem;
   margin-bottom: 3rem;
 }
+
 
 /* Text Styles*/
 .x-large {
@@ -261,7 +267,7 @@ img {
 .form select,
 .form textarea {
   display: block;
-  width: 100%;
+  width: 70%;
   padding: 0.4rem;
   font-size: 1.2rem;
   border: 1px solid #ccc;

@@ -2,13 +2,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const CustomersSchema = new Schema({
-    city: {
+    username: {
         type: String
     },
-    zip: {
-        type: String
-    },
-    address: {
+    name: {
         type: String
     },
     birthdate: {
@@ -17,11 +14,10 @@ const CustomersSchema = new Schema({
     email: {
         type: String
     }
-    
+});
+
+module.exports = Main = mongoose.model("customers", CustomersSchema);
     
        
     
     
-});
-
-module.exports = Main = mongoose.model("customers", CustomersSchema);
