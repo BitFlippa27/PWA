@@ -1,18 +1,12 @@
 import {
     DATA_LOADED,
-    DATALOAD_FAILED,
-    DATA_INSERTED,
-    DATA_CHANGED,
-    DATA_REMOVED,
-    INSERTED_OFFLINE,
-    CHANGED_OFFLINE,
-    REMOVED_OFFLINE,
-    CONCURRENCY
+    DATA_INSERTED
+
     } from "../actions/types";
 
 const initialState = {
-    allItems: [],
-    item: null,
+    allData: [],
+    dataEntry: null,
     loading: true
 };
 
@@ -21,7 +15,9 @@ export default function(state = initialState, action) {
 
     switch(type) {
         case DATA_LOADED:
-            return {...state, allItems:payload, loading: false};
+            return {...state, allData:payload, loading: false};
+        case DATA_INSERTED:
+            return {...state, allData:[...state.allData, payload],dataEntry: payload, loading: false};
         default:
             return state;
     }

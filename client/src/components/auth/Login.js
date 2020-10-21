@@ -30,7 +30,7 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
   }
   
   if(isAuthenticated) {
-    return <Redirect to="/dashboard" />;  
+    return <Redirect to="/data" />;  
   }
 
     

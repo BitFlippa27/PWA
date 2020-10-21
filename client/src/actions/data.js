@@ -1,15 +1,13 @@
 import {
     DATA_LOADED,
-    DATALOAD_FAILED,
     DATA_INSERTED,
-    DATA_CHANGED,
-    DATA_REMOVED,
-    INSERTED_OFFLINE,
-    CHANGED_OFFLINE,
-    REMOVED_OFFLINE,
-    CONCURRENCY
+    DATA_INSERTED_FAILED
+ 
+  
+
     } from "./types";
 import axios from "axios";
+import { setAlert } from "./alert"; 
 
 //Load entire Data from MongoDB
 export const loadData = () => async dispatch => {
@@ -30,3 +28,26 @@ export const loadData = () => async dispatch => {
         console.error(err);
     }
 };
+
+export const insertData = formData => async dispatch => {
+    const config = {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+    try {
+        const res = await axios.post("/api/customers", formData, config);
+
+        dispatch({
+            type: DATA_INSERTED,
+            payload: res.data
+        });
+
+        dispatch(setAlert("Datensatz hinzugefügt", "success"));
+    }catch(err) {
+        dispatch({
+            type: DATA_INSERTED_FAILED,
+            payload: {msg:err.response.statusText, status: err.response.status}
+        });
+    }
+}

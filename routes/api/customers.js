@@ -15,17 +15,22 @@ const inputCheck = [
 router.post("/", auth, inputCheck, async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
+        res.text()
         return  res.status(400).json({ errors: errors.array() });
     }
 
     try {
         //const user = await User.findById(req.user.id).select("-password");
         const newDataSet = new Customers({
-            name: req.body.name
+            username: req.body.username,
+            name: req.body.name,
+            email: req.body.email
         });
+
         
-        const post = await newDataSet.save();
-        res.json(post);
+        const dataSet = await newDataSet.save();
+       
+        res.json(dataSet);
 
     } catch (err) {
         console.error(err.message);

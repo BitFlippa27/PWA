@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 const Homepage = ({ isAuthenticated }) => {
   if(isAuthenticated) {
     console.log("Redirect");
-    return <Redirect to="/dashboard" />;
+    return <Redirect to="/data" />;
   }
 
   return ( 

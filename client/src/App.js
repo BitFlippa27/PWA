@@ -6,7 +6,7 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Navbar from "./components/Navbar";
 import Alert from "./components/Alert";
-import Dashboard from "./components/dashboard/Dashboard";
+import Data from "./components/data/Data";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import { loadUser } from "./actions/auth";  
 import { loadData } from './actions/data';
@@ -14,7 +14,7 @@ import setToken from "./utils/setToken";
 //Redux
 import { Provider } from "react-redux";  //connects React to Redux
 import store from "./store";
-import { IonApp } from '@ionic/react';
+
 
 
 
@@ -41,7 +41,7 @@ const App = () => {
               <Switch>
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
-                <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                <PrivateRoute exact path="/data" component={Data} />
               </Switch>
             </section>
           </Fragment>
