@@ -38,7 +38,9 @@ ul {
   margin-top: 1rem;
   margin-bottom: 0.1rem;
 }
-
+.formcells {
+  
+}
 img {
   width: 100%;
 }
@@ -219,6 +221,9 @@ img {
 }
 
 .btn:hover {
+  opacity: 0.8;
+}
+.actions:hover{
   opacity: 0.8;
 }
 

@@ -31,18 +31,28 @@ const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
                         <th key={rows.username} scope="col">Username</th>
                         <th key={rows.name} scope="col">Name</th>
                         <th key={rows.email} scope="col">Email</th>
+                        <th key={rows.email} scope="col">Aktion</th>
                     
                     </tr>
                 </thead>
                 <tbody>
-                   {rows.slice(0,5).map(row => 
-                       <DataItem key={row._id} data={row}/>
+                   {rows.slice(rows.length-5, rows.length).map((row, index) => 
+                       <DataItem key={index} index={index} data={row}/>
                    )}
-                     <DataForm /> 
+                    
+                        <DataForm /> 
+                      
+                     
                 </tbody>
+               
+                
                
                    
             </table>
+            
+         
+                    
+               
             
         </div>
        

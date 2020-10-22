@@ -15,7 +15,7 @@ const inputCheck = [
 router.post("/", auth, inputCheck, async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-        res.text()
+        
         return  res.status(400).json({ errors: errors.array() });
     }
 
@@ -29,7 +29,7 @@ router.post("/", auth, inputCheck, async (req, res) => {
 
         
         const dataSet = await newDataSet.save();
-       
+        console.log(dataSet)
         res.json(dataSet);
 
     } catch (err) {

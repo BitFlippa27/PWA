@@ -3,14 +3,23 @@ import Proptypes from "prop-types";
 import { connect } from "react-redux";
 
 
-const DataItem = ({data: {_id, username, name, email}}) =>
+const DataItem = ({data: {_id, username, name, email}, index}) =>
     <Fragment>
-        <tr key={_id}> 
+        <tr key={index}> 
                 <th  scope="col">{name}</th>
                 <th  scope="col">{username}</th>
                 <th  scope="col">{email}</th>
+                <th  scope="col">
+                 
+                        <button className="actions"><i className="fas fa-pencil-alt" />{' '}</button>
+                        <button className="actions"><i className="fas fa-trash-alt" />{' '}</button>
+                        
+                
+                </th>
             </tr>
     </Fragment>
+                    
+                   
 
                             
    

@@ -13,76 +13,80 @@ const DataForm = ({insertData}) => {
 
     const onChange = e => 
         setFormData({...formData, [e.target.name]: e.target.value});
+        
     
     const onSubmit = async e => {
         e.preventDefault();
-        insertData(username, name, email);
+        if(!formData) return;
+        insertData(formData);
+        setFormData({username:"", name:"", email:""});
+
     }
 
     return (
         <Fragment>
-            
-                <tr>
-                
+                <tr className="formcells">
                     <th>
-                    
-                    <form onSubmit={e => onSubmit(e)}>
-                        <input onSubmit={e => onSubmit(e)}
-                            className="form-control" 
-                            type="text" 
-                            name="username"
-                            placeholder="Username" 
-                            value={username}
-                            onChange={e => onChange(e)}
-                            >   
-                        </input>
+                        <form className="form "onSubmit={e => onSubmit(e)}>
+                           
+                                <input 
+                                    className="form-control" 
+                                    type="text" 
+                                    name="username"
+                                    placeholder="Username" 
+                                    value={username}
+                                    onChange={e => onChange(e)}
+                                >   
+                                </input>
+                          
+                            </form>
+                    </th>
+                    <th>
+                        <form className="form "onSubmit={e => onSubmit(e)}>
+                           
+                                <input 
+                                    className="form-control" 
+                                    type="text" 
+                                    name="name"
+                                    placeholder="Name" 
+                                    value={name}
+                                    onChange={e => onChange(e)}
+                                >   
+                                </input>
+                           
                         </form>
+                    </th>
+                    <th>
+                            <form className="form "onSubmit={e => onSubmit(e)}>
+                                
+                                    <input 
+                                        className="form-control" 
+                                        type="text" 
+                                        name="email"
+                                        placeholder="Email" 
+                                        value={email}
+                                        onChange={e => onChange(e)}
+                                    >   
+                                    </input>
+                               
+                            </form>
+                        </th>
+
+                        <th>
+                        <form className="form "onSubmit={e => onSubmit(e)}>
+                            <input type="submit" className="btn btn-primary" value="Submit" />
+                        </form>
+                            
+                        </th>
+                
+                </tr>
+               
+                    
+                
           
                     
-                    </th>
-                    <th>
-                    
-                    <form onSubmit={e => onSubmit(e)}>
-                        <input onSubmit={e => onSubmit(e)}
-                            className="form-control" 
-                            type="text" 
-                            name="name"
-                            placeholder="Name" 
-                            value={name}
-                            onChange={e => onChange(e)}
-                            >
-                        </input>
-                        </form>
-                 
-                    </th>
-                    <th>
-                
-                    <form onSubmit={e => onSubmit(e)}>
-                        <input onSubmit={e => onSubmit(e)}
-                            className="form-control" 
-                            type="email" 
-                            name="email"
-                            placeholder="Email" 
-                            value={email}
-                            onChange={e => onChange(e)}
-                            >
-                        </input>
-                        </form>
-                      
-                
-                    </th>
-                    
-                </tr>
-               
-                <tr>
-                    <th>
-                    <form onSubmit={e => onSubmit(e)}>
-                        <input  type="submit" className="btn btn-dark my-1" value="Submit" />
-                    </form>
-                    </th>
-                    
-                </tr>
-               
+                   
+                  
             
         </Fragment>
         
