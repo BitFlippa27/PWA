@@ -1,18 +1,34 @@
-import React, { useEffect, Fragment, useState } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Loader from '../Loader';
 import  { loadData } from "../../actions/data";
 import DataItem from "./DataItem";
-import DataForm from "./DataForm"
-
+import DataForm from "./DataForm";
+import Dexie from "dexie";
 
 
 
 const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
     useEffect(() => {
-        loadData();
+        loadData(allData);
+        const db = new Dexie("currentData");
+        db.version(1).stores({ customers: "username,name,email" });
+        db.transaction("rw", db.customers, async () =>{
+            try {
+                await db.customers.bulkAdd(allData);
+            }
+            catch(err) {
+                console.error(err);
+            }
+        });
+            
+        
+        
+
+
     }, [loadData]);
+
     
     const rows = allData;
     //return <div> Welcome {user  && user.name}</div>;
@@ -24,14 +40,15 @@ const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
             <i className="fas fa-user"></i> Willkommen {user && user.name}
         </p>
         
-        <div className="table-responsive"> 
+        <div className="table-responsive" > 
+        <div className="scroll">
             <table className="table table-bordered">
                 <thead>
-                    <tr>
-                        <th key={rows.username} scope="col">Username</th>
-                        <th key={rows.name} scope="col">Name</th>
-                        <th key={rows.email} scope="col">Email</th>
-                        <th key={rows.email} scope="col">Aktion</th>
+                    <tr >
+                        <th  key={rows.username} scope="col">Username</th>
+                        <th  key={rows.name} scope="col">Name</th>
+                        <th  key={rows.email} scope="col">Email</th>
+                        <th  key={rows.email} scope="col">Aktion</th>
                     
                     </tr>
                 </thead>
@@ -49,7 +66,7 @@ const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
                
                    
             </table>
-            
+            </div>
          
                     
                
