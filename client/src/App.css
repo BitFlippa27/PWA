@@ -24,10 +24,12 @@ body {
 }
 .table-bordered tbody {
   height: 600px;
-  overflow-y: auto;
+  overflow-y: scroll;
   width: 100%;
 }
-
+.scroll {
+  overflow-y: scroll;
+}
 a {
   color: var(--primary-color);
   text-decoration: none;
@@ -38,9 +40,7 @@ ul {
   margin-top: 1rem;
   margin-bottom: 0.1rem;
 }
-.formcells {
-  
-}
+
 img {
   width: 100%;
 }
@@ -318,6 +318,12 @@ button {
 .table th {
   background: var(--light-color);
 }
+.table-th {
+  border-bottom: solid;
+  border-left: solid;
+  border-right: solid;
+  border-top: solid;
+  }
 
 /* Navbar */
 .navbar {
