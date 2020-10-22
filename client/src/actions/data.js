@@ -2,17 +2,31 @@ import {
     DATA_LOADED,
     DATA_INSERTED,
     DATA_INSERTED_FAILED
+} from "./types";
+import axios from "axios";
+import { setAlert } from "./alert"; 
+import dexie from "../dexie";
+
  
   
 
-    } from "./types";
-import axios from "axios";
-import { setAlert } from "./alert"; 
 
-//Load entire Data from MongoDB
+//Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadData = () => async dispatch => {
+    
     try {
         const res = await axios.get("api/customers");
+        //migrate to dexie DB
+        dexie.transaction("rw", dexie.customers, async ()=>{
+        try {
+            await dexie.customers.bulkAdd(res.data);
+        } 
+        catch(err) {
+            //dispatch({ type: DATALOAD_FAILED });
+            //try load data until it succeds
+            console.error(err);
+        }
+        });
 
         console.log("DATAAAAA",res.data);
         
@@ -22,11 +36,15 @@ export const loadData = () => async dispatch => {
             payload: res.data
         });
         
-    } catch(err) {
+    } 
+    catch(err) {
         //dispatch({ type: DATALOAD_FAILED });
         //try load data until it succeds
         console.error(err);
-    }
+    }   
+    
+
+           
 };
 
 export const insertData = formData => async dispatch => {
