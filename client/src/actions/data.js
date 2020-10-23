@@ -4,47 +4,42 @@ import {
     DATA_INSERTED_FAILED
 } from "./types";
 import axios from "axios";
-import { setAlert } from "./alert"; 
+import { setAlert } from "./alert";
 import dexie from "../dexie";
 
- 
-  
+
+
 
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadData = () => async dispatch => {
-    
+
     try {
-        const res = await axios.get("api/customers");
+        const res = await axios.get("api/zips");
         //migrate to dexie DB
-        dexie.transaction("rw", dexie.customers, async ()=>{
-        try {
-            await dexie.customers.bulkAdd(res.data);
-        } 
-        catch(err) {
-            //dispatch({ type: DATALOAD_FAILED });
-            //try load data until it succeds
-            console.error(err);
-        }
-        });
+        await dexie.zips.bulkAdd(res.data);
+        //// TODO: Database Versionierung
+
+
+
 
         console.log("DATAAAAA",res.data);
-        
+
 
         dispatch({
             type: DATA_LOADED,
             payload: res.data
         });
-        
-    } 
+
+    }
     catch(err) {
         //dispatch({ type: DATALOAD_FAILED });
         //try load data until it succeds
         console.error(err);
-    }   
-    
+    }
 
-           
+
+
 };
 
 export const insertData = formData => async dispatch => {
@@ -54,7 +49,7 @@ export const insertData = formData => async dispatch => {
         }
     }
     try {
-        const res = await axios.post("/api/customers", formData, config);
+        const res = await axios.post("/api/zips", formData, config);
 
         dispatch({
             type: DATA_INSERTED,

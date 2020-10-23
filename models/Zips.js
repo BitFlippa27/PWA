@@ -2,18 +2,16 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const ZipsSchema = new Schema({
-    username: {
+    city: {
         type: String
     },
-    name: {
-        type: String
+    zip: {
+        type: Number
     },
-    birthdate: {
-        type: Date
-    },
-    email: {
-        type: String
+    pop: {
+      type: Number
     }
+
 });
 
 module.exports = Main = mongoose.model("zips", ZipsSchema);

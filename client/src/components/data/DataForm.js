@@ -5,21 +5,21 @@ import { insertData } from "../../actions/data";
 
 const DataForm = ({insertData}) => {
     const [formData, setFormData] = useState({
-        username:"",
-        name:"",
-        email:""
+        city:"",
+        zip:"",
+        pop:""
     });
-    const { username, name, email} = formData;
+    const { city, zip, pop} = formData;
 
-    const onChange = e => 
+    const onChange = e =>
         setFormData({...formData, [e.target.name]: e.target.value});
-        
-    
+
+
     const onSubmit = async e => {
         e.preventDefault();
         if(!formData) return;
         insertData(formData);
-        setFormData({username:"", name:"", email:""});
+        setFormData({city:"", zip:"", pop:""});
 
     }
 
@@ -28,47 +28,47 @@ const DataForm = ({insertData}) => {
                 <tr className="formcells">
                     <th>
                         <form className="form "onSubmit={e => onSubmit(e)}>
-                           
-                                <input 
-                                    className="form-control" 
-                                    type="text" 
-                                    name="username"
-                                    placeholder="Username" 
-                                    value={username}
+
+                                <input
+                                    className="form-control"
+                                    type="text"
+                                    name="city"
+                                    placeholder="Stadt"
+                                    value={city}
                                     onChange={e => onChange(e)}
-                                >   
+                                >
                                 </input>
-                          
+
                             </form>
                     </th>
                     <th>
                         <form className="form "onSubmit={e => onSubmit(e)}>
-                           
-                                <input 
-                                    className="form-control" 
-                                    type="text" 
-                                    name="name"
-                                    placeholder="Name" 
-                                    value={name}
+
+                                <input
+                                    className="form-control"
+                                    type="text"
+                                    name="zip"
+                                    placeholder="Postleitzahl"
+                                    value={zip}
                                     onChange={e => onChange(e)}
-                                >   
+                                >
                                 </input>
-                           
+
                         </form>
                     </th>
                     <th>
                             <form className="form "onSubmit={e => onSubmit(e)}>
-                                
-                                    <input 
-                                        className="form-control" 
-                                        type="text" 
-                                        name="email"
-                                        placeholder="Email" 
-                                        value={email}
+
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="pop"
+                                        placeholder="Bevölkerung"
+                                        value={pop}
                                         onChange={e => onChange(e)}
-                                    >   
+                                    >
                                     </input>
-                               
+
                             </form>
                         </th>
 
@@ -76,20 +76,20 @@ const DataForm = ({insertData}) => {
                         <form className="form "onSubmit={e => onSubmit(e)}>
                             <input type="submit" className="btn btn-primary" value="Submit" />
                         </form>
-                            
+
                         </th>
-                
+
                 </tr>
-               
-                    
-                
-          
-                    
-                   
-                  
-            
+
+
+
+
+
+
+
+
         </Fragment>
-        
+
     )
 }
 
