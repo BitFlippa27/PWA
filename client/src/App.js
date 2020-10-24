@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import PrivateRoute from "./components/routes/PrivateRoute";
-import { loadUser } from "./actions/auth";  
+import { loadUser } from "./actions/auth";
 import { loadData } from './actions/data';
 import setToken from "./utils/setToken";
 //Redux
@@ -19,7 +19,7 @@ import store from "./store";
 
 
 if(localStorage.token) {
-  
+
   setToken(localStorage.token);   //every time app gets loaded
   store.dispatch(loadUser());
   store.dispatch(loadData());
@@ -29,8 +29,8 @@ const App = () => {
   console.log("geladen")
 
   return(
-    
-    
+
+
     <Provider store={store}>
         <Router>
           <Fragment>
@@ -47,7 +47,7 @@ const App = () => {
           </Fragment>
         </Router>
       </Provider>
-   
+
   );
 }
 

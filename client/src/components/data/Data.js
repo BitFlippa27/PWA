@@ -42,51 +42,47 @@ const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
                    )}
 
                         <DataForm />
-
-
                 </tbody>
-
-
-
-
-            </table>
+              </table>
             </div>
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-    </Fragment >
-
-
-
+          </div>
+        </Fragment >
 }
 
-
-
-
 Data.propTypes = {
-    auth: PropTypes.object.isRequired,
-    loadData:PropTypes.func.isRequired,
-    data: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  loadData:PropTypes.func.isRequired,
+  data: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
-     auth: state.auth,
-     data: state.data
+  auth: state.auth,
+  data: state.data
 
 
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 export default connect(mapStateToProps, { loadData })(Data);
