@@ -3,7 +3,7 @@ import Proptypes from "prop-types";
 import { connect } from "react-redux";
 
 
-const DataItem = ({data: {_id, city, zip, pop}, index}) =>
+  const DataItem = ({data: {_id, city, zip, pop}, index}) =>
     <Fragment>
         <tr key={index}>
                 <th  scope="col">{city}</th>
@@ -28,4 +28,6 @@ const DataItem = ({data: {_id, city, zip, pop}, index}) =>
 DataItem.propTypes = {
     data: Proptypes.object.isRequired
 }
+
+
 export default connect(null, {})(DataItem);

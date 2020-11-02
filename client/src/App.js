@@ -1,4 +1,5 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import './App.css';
 import Homepage from "./components/Homepage";
@@ -9,23 +10,22 @@ import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import { loadUser } from "./actions/auth";
-import { loadData } from './actions/data';
+import { loadData } from "./actions/data";
 import setToken from "./utils/setToken";
 //Redux
-import { Provider } from "react-redux";  //connects React to Redux
+import { Provider, connect } from "react-redux";  //connects React to Redux
 import store from "./store";
-
-
 
 
 if(localStorage.token) {
 
   setToken(localStorage.token);   //every time app gets loaded
   store.dispatch(loadUser());
-  store.dispatch(loadData());
 }
 
+
 const App = () => {
+
   console.log("geladen")
 
   return(
@@ -54,3 +54,4 @@ const App = () => {
 
 
 export default App;
+//TODO: Techdebt: {state mit immutable.js, responsiveness, scrollbar, pagination}

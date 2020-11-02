@@ -1,20 +1,38 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Loader from '../Loader';
 import  { loadData } from "../../actions/data";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
-import Dexie from "dexie";
+
 
 
 
 const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
     useEffect(() => {
-    }, [loadData]);
-
+        loadData();
+    },[]);
 
     const rows = allData;
+
+    /*
+    var map = new Map();
+    allData.forEach(item => {
+      let mapValue = {
+        city: item.city,
+        zip: item.zip,
+        pop: item.pop
+      };
+      map.set(item._id, mapValue);
+    });
+    */
+
+
+
+
+
+
     //return <div> Welcome {user  && user.name}</div>;
     //dont render UI until user is loaded so loader git in between
     return (loading && user === null) || (allData.length === 0) ? <Loader /> :
@@ -41,12 +59,15 @@ const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
                        <DataItem key={index} index={index} data={row}/>
                    )}
 
-                        <DataForm />
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </Fragment >
+
+                    <DataForm />
+                   </tbody>
+                 </table>
+                </div>
+              </div>
+            </Fragment >
+
+
 }
 
 Data.propTypes = {
@@ -62,27 +83,5 @@ const mapStateToProps = state => ({
 
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default connect(mapStateToProps, { loadData })(Data);
