@@ -2,18 +2,16 @@ import React, { Fragment, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Loader from '../Loader';
-import  { loadData } from "../../actions/data";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
+import { loadLocalData } from "../../actions/data";
 
 
 
-
-const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
+const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
     useEffect(() => {
-        loadData();
+        loadLocalData();
     },[]);
-
     const rows = allData;
 
     /*
@@ -35,7 +33,7 @@ const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
 
     //return <div> Welcome {user  && user.name}</div>;
     //dont render UI until user is loaded so loader git in between
-    return (loading && user === null) || (allData.length === 0) ? <Loader /> :
+    return (loading === null) || (allData === undefined) ? <Loader /> :
     <Fragment>
         <h1 className="large text-primary"> Alle Daten </h1>
         <p className="lead">
@@ -72,16 +70,16 @@ const Data = ({ auth: { user, loading }, loadData, data: { allData } }) => {
 
 Data.propTypes = {
   auth: PropTypes.object.isRequired,
-  loadData:PropTypes.func.isRequired,
-  data: PropTypes.object.isRequired
+  loadLocalData: PropTypes.func.isRequired,
+  allData: PropTypes.array.isRequired
 }
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  data: state.data
+  allData: state.data.allData
 
 
 
 });
 
-export default connect(mapStateToProps, { loadData })(Data);
+export default connect(mapStateToProps, { loadLocalData })(Data);

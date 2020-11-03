@@ -1,5 +1,6 @@
 import axios from "axios";
 import { setAlert } from "./alert";
+import { loadServerData } from "./data";
 
 import {
     REGISTER_SUCCESS,
@@ -14,7 +15,7 @@ import {
     } from "./types";
 import setToken from "../utils/setToken";
 
-
+//TODO: offline handlen, token in indexedDB speichern
 //Load User
 export const loadUser = () =>  async dispatch => {
     if(localStorage.token) {
@@ -89,10 +90,7 @@ export const login = ( email, password ) => async dispatch => {
         });
 
         dispatch(loadUser());
-
-
-
-
+        dispatch(loadServerData());
 
     }catch (err) {
         console.log(err)
@@ -106,6 +104,10 @@ export const login = ( email, password ) => async dispatch => {
         });
     }
 };
+
+
+
+
 
 
 //Logout

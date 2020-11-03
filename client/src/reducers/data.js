@@ -1,5 +1,8 @@
 import {
-    DATALOAD_SUCCESS,
+    SERVER_DATALOAD_SUCCESS,
+    SERVER_DATALOAD_FAILED,
+    CLIENT_DATALOAD_SUCCESS,
+    CLIENT_DATALOAD_FAILED,
     DEXIE_MIGRATION_SUCCESS,
     DEXIE_MIGRATION_FAILED,
     DATA_INSERTED_ONLINE,
@@ -20,8 +23,14 @@ export default function(state = initialState, action) {
     const { type, payload } = action;
 //TODO: Abfrage ob Datensatz schon existiert
     switch(type) {
-        case DATALOAD_SUCCESS:
+        case SERVER_DATALOAD_SUCCESS:
             return {...state, allData:payload, loading: false};
+        case SERVER_DATALOAD_FAILED:
+            return {...state, error:payload, loading: false};
+        case CLIENT_DATALOAD_SUCCESS:
+            return {...state, allData: payload, loading: false};
+        case CLIENT_DATALOAD_FAILED:
+            return {...state, error: payload, loading: false};
         case DEXIE_MIGRATION_SUCCESS:
               return {...state, loading: false};
         case DEXIE_MIGRATION_FAILED:

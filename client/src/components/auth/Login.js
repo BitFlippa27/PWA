@@ -12,28 +12,28 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
   const [formData, setFormData] = useState({
     email:"",
     password: ""
-    
-  }); 
+
+  });
 
   const { email, password} = formData;
 
-  const onChange = e => 
+  const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value});
 
-    
+
 
   const onSubmit = async e => {
-    e.preventDefault();    
+    e.preventDefault();
     login(email, password);
     checkIn();
-    
-  }
-  
-  if(isAuthenticated) {
-    return <Redirect to="/data" />;  
+
   }
 
-    
+  if(isAuthenticated) {
+    return <Redirect to="/data" />;
+  }
+
+
 
   return (
     <Fragment>
@@ -42,10 +42,10 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
       <p className="lead"><i className="fas fa-user"></i> Loggen Sie sich in ihr Konto ein</p>
       <form className="form" onSubmit={e => onSubmit(e)}>
         <div className="form-group">
-          <input 
-            type="email" 
-            placeholder="Email Adresse"  
-            name="email" 
+          <input
+            type="email"
+            placeholder="Email Adresse"
+            name="email"
             value={email}
             onChange={e =>onChange(e)}
             required
@@ -68,9 +68,9 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
         Noch keinen Account ? <Link to="/register">Registrieren</Link>
       </p>
     </section>
-   
+
   </Fragment>
-  
+
   );
 }
 

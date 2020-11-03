@@ -26,6 +26,7 @@
     "ionic": "^5.4.16",
     "jsonwebtoken": "^8.5.1",
     "localforage": "^1.9.0",
+    "lodash": "^4.17.20",
     "mdbreact": "^4.27.0",
     "mongoose": "^5.9.21",
     "react-redux": "^7.2.1",

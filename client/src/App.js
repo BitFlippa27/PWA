@@ -10,7 +10,7 @@ import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import { loadUser } from "./actions/auth";
-import { loadData } from "./actions/data";
+import { loadLocalData } from "./actions/data";
 import setToken from "./utils/setToken";
 //Redux
 import { Provider, connect } from "react-redux";  //connects React to Redux
@@ -21,6 +21,7 @@ if(localStorage.token) {
 
   setToken(localStorage.token);   //every time app gets loaded
   store.dispatch(loadUser());
+  store.dispatch(loadLocalData());
 }
 
 

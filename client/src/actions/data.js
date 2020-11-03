@@ -1,6 +1,8 @@
 import {
-  DATALOAD_SUCCESS,
-  DATALOAD_FAILED,
+  SERVER_DATALOAD_SUCCESS,
+  SERVER_DATALOAD_FAILED,
+  CLIENT_DATALOAD_SUCCESS,
+  CLIENT_DATALOAD_FAILED,
   DEXIE_MIGRATION_SUCCESS,
   DEXIE_MIGRATION_FAILED,
   DATA_INSERTED_ONLINE,
@@ -11,13 +13,13 @@ import axios from "axios";
 import {setAlert } from "./alert";
 //import dexie from "../dexie";
 import dexie from "../dexie";
-
+import _ from "lodash";
 
 
 
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
-export const loadData = ()  => async dispatch => {
+export const loadServerData = ()  => async dispatch => {
   //TODO: ServiceWorker einschalten
   try {
     var res = await axios.get("api/zips");
@@ -25,14 +27,14 @@ export const loadData = ()  => async dispatch => {
     console.log("DATAAAAA", res.data);
 
     dispatch({
-        type: DATALOAD_SUCCESS,
+        type: SERVER_DATALOAD_SUCCESS,
         payload: res.data
     });
 } catch (err) {
     //dispatch({ type: DATALOAD_FAILED });
     //try load data until it succeds
     dispatch({
-        type: DATALOAD_FAILED,
+        type: SERVER_DATALOAD_FAILED,
         payload: {
             msg: err.response.statusText,
             status: err.response.status
@@ -41,14 +43,17 @@ export const loadData = ()  => async dispatch => {
 }
 //migrate to dexie DB
 //TODO: SW, wenn online dann zum Server hochladen
+//TODO: stale data handlen
 try {
-    if(!dexie.cities) {
-        await dexie.cities.bulkPut(res.data);
-    }
 
-    dispatch({
-        type: DEXIE_MIGRATION_SUCCESS,
-    });
+
+            await dexie.cities.bulkPut(res.data);
+            dispatch({ type: DEXIE_MIGRATION_SUCCESS });
+            dispatch({
+                type: CLIENT_DATALOAD_SUCCESS,
+                payload: res.data
+            });
+
 
 
 } catch (err) {
@@ -60,10 +65,31 @@ try {
             status: err.response.status
         }
     });
+ }
 }
 
+export const loadLocalData = ()  => async dispatch => {
+  //TODO: ServiceWorker einschalten
+  try {
+    const res = await dexie.table("cities").toArray();
+    dispatch({
+        type: CLIENT_DATALOAD_SUCCESS,
+        payload: res
+    });
 
+} catch (err) {
+    //dispatch({ type: DATALOAD_FAILED });
+    //try load data until it succeds
+    dispatch({
+        type: CLIENT_DATALOAD_FAILED,
+        payload: {
+            msg: err.response.statusText,
+            status: err.response.status
+        }
+    });
+ }
 }
+
 
 export const insertData = formData => async dispatch => {
     const {city, zip, pop} = formData;
