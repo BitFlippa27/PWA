@@ -13,7 +13,7 @@ import axios from "axios";
 import {setAlert } from "./alert";
 //import dexie from "../dexie";
 import dexie from "../dexie";
-import _ from "lodash";
+//import _ from "lodash";
 
 
 
@@ -46,52 +46,54 @@ export const loadServerData = ()  => async dispatch => {
 //TODO: stale data handlen
 try {
 
+        //await dexie.delete();
+        //await dexie();
+        await dexie.cities.bulkPut(res.data);
 
-            await dexie.cities.bulkPut(res.data);
-            dispatch({ type: DEXIE_MIGRATION_SUCCESS });
-            dispatch({
-                type: CLIENT_DATALOAD_SUCCESS,
-                payload: res.data
-            });
+        dispatch({ type: DEXIE_MIGRATION_SUCCESS });
+        dispatch({
+            type: CLIENT_DATALOAD_SUCCESS,
+            payload: res.data
+        });
 
+    } catch (err) {
+        //try load data until it succeds
+        dispatch({
+            type: DEXIE_MIGRATION_FAILED,
+            payload: {
+                msg: err.response.statusText,
+                status: err.response.status
+            }
+        });
+    }
+    }
 
+    export const loadLocalData = ()  => async dispatch => {
+    //TODO: ServiceWorker einschalten
+    try {
 
-} catch (err) {
-    //try load data until it succeds
-    dispatch({
-        type: DEXIE_MIGRATION_FAILED,
-        payload: {
-            msg: err.response.statusText,
-            status: err.response.status
-        }
-    });
- }
-}
-
-export const loadLocalData = ()  => async dispatch => {
-  //TODO: ServiceWorker einschalten
-  try {
-    const res = await dexie.table("cities").toArray();
-    dispatch({
-        type: CLIENT_DATALOAD_SUCCESS,
-        payload: res
-    });
-
-} catch (err) {
-    //dispatch({ type: DATALOAD_FAILED });
-    //try load data until it succeds
-    dispatch({
-        type: CLIENT_DATALOAD_FAILED,
-        payload: {
-            msg: err.response.statusText,
-            status: err.response.status
-        }
-    });
- }
-}
+        const res = await dexie.table("cities").toArray();
+        dispatch({
+            type: CLIENT_DATALOAD_SUCCESS,
+            payload: res
+        });
 
 
-export const insertData = formData => async dispatch => {
+    } catch (err) {
+        //dispatch({ type: DATALOAD_FAILED });
+        //try load data until it succeds
+        dispatch({
+            type: CLIENT_DATALOAD_FAILED,
+            payload: {
+                msg: err.response.statusText,
+                status: err.response.status
+            }
+        });
+    }
+    }
+
+
+    export const insertData = formData => async dispatch => {
     const {city, zip, pop} = formData;
 
     try {
@@ -145,4 +147,4 @@ export const insertData = formData => async dispatch => {
             }
         });
     }
-}
+    }

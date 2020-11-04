@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from 'react';
-import PropTypes from 'prop-types';
+//TODO: responsive design
+import React, { Fragment } from 'react';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import './App.css';
 import Homepage from "./components/Homepage";
@@ -13,7 +13,7 @@ import { loadUser } from "./actions/auth";
 import { loadLocalData } from "./actions/data";
 import setToken from "./utils/setToken";
 //Redux
-import { Provider, connect } from "react-redux";  //connects React to Redux
+import { Provider } from "react-redux";  //connects React to Redux
 import store from "./store";
 
 
@@ -21,6 +21,7 @@ if(localStorage.token) {
 
   setToken(localStorage.token);   //every time app gets loaded
   store.dispatch(loadUser());
+  console.log("loadLocalData")
   store.dispatch(loadLocalData());
 }
 

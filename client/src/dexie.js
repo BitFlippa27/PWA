@@ -1,14 +1,14 @@
 import Dexie from "dexie";
 
-const db = new Dexie("localData");
-db.version(1).stores({
+const dexie = new Dexie("localData");
+dexie.version(1).stores({
   cities: "++id",
   inserted: "++id"
 });
 
 const openDB = async() => {
     try {
-        await db.open();
+        await dexie.open();
     } catch(err) {
         console.error(err);
     }
@@ -16,4 +16,4 @@ const openDB = async() => {
 openDB();
 
 
-export default db;
+export default dexie;
