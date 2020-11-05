@@ -1,19 +1,18 @@
 import Dexie from "dexie";
 
-const dexie = new Dexie("localData");
+
+export const dexie = new Dexie("AllData");
 dexie.version(1).stores({
-  cities: "++id",
-  inserted: "++id"
+    cities: "++id",
+    newCities: "++id"
 });
 
-const openDB = async() => {
+const openDB = async () => {
     try {
-        await dexie.open();
+        dexie.open();
     } catch(err) {
         console.error(err);
     }
 }
+
 openDB();
-
-
-export default dexie;

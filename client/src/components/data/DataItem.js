@@ -10,20 +10,11 @@ import { connect } from "react-redux";
                 <th  scope="col">{zip}</th>
                 <th  scope="col">{pop}</th>
                 <th  scope="col">
-
-                        <button className="actions"><i className="fas fa-pencil-alt" />{' '}</button>
-                        <button className="actions"><i className="fas fa-trash-alt" />{' '}</button>
-
-
+                    <button className="actions"><i className="fas fa-pencil-alt" />{' '}</button>
+                    <button className="actions"><i className="fas fa-trash-alt" />{' '}</button>
                 </th>
             </tr>
     </Fragment>
-
-
-
-
-
-
 
 DataItem.propTypes = {
     data: Proptypes.object.isRequired

@@ -12,7 +12,8 @@ import {
     } from "../actions/types";
 
 const initialState = {
-    allData: [],
+    allData:[],
+    timestamp: new Date().toLocaleTimeString("de-DE"),
     lastEntries: [],
     loading: true,
     error: {},
@@ -24,7 +25,7 @@ export default function(state = initialState, action) {
 //TODO: Abfrage ob Datensatz schon existiert
     switch(type) {
         case SERVER_DATALOAD_SUCCESS:
-            return {...state, allData:payload, loading: false};
+            return {...state, allData: payload, loading: false};
         case SERVER_DATALOAD_FAILED:
             return {...state, error:payload, loading: false};
         case CLIENT_DATALOAD_SUCCESS:

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Loader from '../Loader';
@@ -6,9 +6,14 @@ import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { loadLocalData } from "../../actions/data";
 
-
+//TODO: Button für loadServerData
 
 const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
+    useEffect(() => {
+        loadLocalData();
+    },[]);
+
+
     const rows = allData;
     console.log(allData);
     /*
@@ -30,7 +35,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
 
     //return <div> Welcome {user  && user.name}</div>;
     //dont render UI until user is loaded so loader git in between
-    return (loading && user === null) || (allData.length == 0) ? <Loader /> :
+    return (loading && user === null) || (allData.length === 0) ? <Loader /> :
     <Fragment>
         <h1 className="large text-primary"> Alle Daten </h1>
         <p className="lead">
@@ -45,7 +50,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
                         <th  key={rows.city} scope="col">Stadt</th>
                         <th  key={rows.zip} scope="col">ZIP</th>
                         <th  key={rows.pop} scope="col">Bevölkerung</th>
-                        <th   scope="col">Aktion</th>
+                        <th  scope="col">Aktion</th>
 
                     </tr>
                 </thead>

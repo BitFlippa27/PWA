@@ -1,6 +1,6 @@
 import axios from "axios";
 import { setAlert } from "./alert";
-import { loadServerData } from "./data";
+//import { loadServerData } from "./data";
 
 import {
     REGISTER_SUCCESS,
@@ -90,7 +90,7 @@ export const login = ( email, password ) => async dispatch => {
         });
 
         dispatch(loadUser());
-        dispatch(loadServerData());
+        //dispatch(loadServerData());
 
     }catch (err) {
         console.log(err)
