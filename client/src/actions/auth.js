@@ -1,7 +1,7 @@
 import axios from "axios";
 import { setAlert } from "./alert";
-//import { loadServerData } from "./data";
-
+import { loadServerData } from "./data";
+import dexie from "../dexie";
 import {
     REGISTER_SUCCESS,
     REGISTER_FAIL,
@@ -90,6 +90,7 @@ export const login = ( email, password ) => async dispatch => {
         });
 
         dispatch(loadUser());
+        //if(dexie.isEmpty)
         //dispatch(loadServerData());
 
     }catch (err) {

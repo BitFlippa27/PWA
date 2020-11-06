@@ -1,7 +1,7 @@
 import Dexie from "dexie";
 
 
-export const dexie = new Dexie("AllData");
+export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
     cities: "++id",
     newCities: "++id"
