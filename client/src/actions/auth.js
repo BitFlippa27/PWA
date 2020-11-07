@@ -90,8 +90,8 @@ export const login = ( email, password ) => async dispatch => {
         });
 
         dispatch(loadUser());
-        //if(dexie.isEmpty)
-        //dispatch(loadServerData());
+      
+        dispatch(loadServerData());
 
     }catch (err) {
         console.log(err)

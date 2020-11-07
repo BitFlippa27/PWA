@@ -46,4 +46,4 @@ const App = () => {
 };
 
 export default App;
-//TODO: Techdebt: {Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination}
+//TODO: Techdebt: {Offline Authentifikation,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination}

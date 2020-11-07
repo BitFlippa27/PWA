@@ -19,13 +19,16 @@ import { dexie } from "../dexie";
 export const loadServerData = () => async (dispatch) => {
   //TODO: ServiceWorker einschalten
   try {
-    var res = await axios.get("api/zips");
-    var allServerData = res.data;
+    var clientTable = await dexie.table("cities").toArray();
 
-    dispatch({
-      type: SERVER_DATALOAD_SUCCESS,
-      payload: allServerData,
-    });
+    if(clientTable.length === 0) {
+      var res = await axios.get("api/zips");
+      var allServerData = res.data;
+      dispatch({
+        type: SERVER_DATALOAD_SUCCESS,
+        payload: allServerData,
+      });
+    }
   } catch (err) {
     //dispatch({ type: DATALOAD_FAILED });
     //try load data until it succeds
@@ -41,13 +44,12 @@ export const loadServerData = () => async (dispatch) => {
   //TODO: SW, wenn online dann zum Server hochladen
   //TODO: stale data handlen
   try {
-    await dexie.table("cities").bulkAdd(allServerData);
-
-    dispatch({ type: DEXIE_MIGRATION_SUCCESS });
-    dispatch({
-      type: CLIENT_DATALOAD_SUCCESS,
-      payload: allServerData,
-    });
+    if(clientTable.length === 0) {
+      await dexie.table("cities").bulkAdd(allServerData);
+      dispatch({
+        type: DEXIE_MIGRATION_SUCCESS
+      });
+    }
   } catch (err) {
     //try load data until it succeds
     dispatch({
@@ -58,17 +60,31 @@ export const loadServerData = () => async (dispatch) => {
       },
     });
   }
+
 };
 
 export const loadLocalData = () => async (dispatch) => {
   //TODO: ServiceWorker einschalten
   try {
-    const res = await dexie.table("cities").toArray();
-    console.log(res);
-    dispatch({
-      type: CLIENT_DATALOAD_SUCCESS,
-      payload: res,
-    });
+    const clientTable = await dexie.table("cities").toArray();
+    //const count =  await dexie.cities.count();
+    //console.log(count);
+    if(clientTable.length === 0) {
+      const res = await axios.get("api/zips");
+      const allServerData = res.data;
+      await dexie.table("cities").bulkAdd(allServerData);
+
+      dispatch({
+        type: CLIENT_DATALOAD_SUCCESS,
+        payload: allServerData
+      });
+    }
+    else{
+      dispatch({
+        type: CLIENT_DATALOAD_SUCCESS,
+        payload: clientTable
+      });
+    }
   } catch (err) {
     //dispatch({ type: DATALOAD_FAILED });
     //try load data until it succeds
