@@ -1,1 +1,1 @@
-#A progressive web application using ServiceWorker, React, Bootstrap and Fontawesome.
+#A progressive web application using ServiceWorker, React, Redux, Bootstrap and Fontawesome.
