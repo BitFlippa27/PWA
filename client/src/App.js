@@ -16,7 +16,8 @@ import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
 
 if (localStorage.token) {
-  setToken(localStorage.token); //every time app gets loaded
+  //every time app gets loaded
+  setToken(localStorage.token); 
   store.dispatch(loadUser());
 
   //store.dispatch(loadLocalData());

@@ -30,7 +30,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
 
   //return <div> Welcome {user  && user.name}</div>;
   //dont render UI until user is loaded so loader git in between
-  return (loading && user === null) || allData.length === 0 ? (
+  return loading && user === null ? (
     <Loader />
   ) : (
     <Fragment>

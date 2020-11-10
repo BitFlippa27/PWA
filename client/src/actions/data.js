@@ -105,24 +105,26 @@ export const insertData = (formData) => async (dispatch) => {
     await dexie.cities.add({
       city: city,
       zip: zip,
-      pop: pop,
+      pop: pop
     });
     await dexie.newCities.add({
       city: city,
       zip: zip,
-      pop: pop,
+      pop: pop
     });
     //if Offline
     dispatch({
       type: DATA_INSERTED_OFFLINE,
-      payload: formData,
+      payload: formData
     });
+    dispatch(setAlert("Datensatz hinzugefügt", "success"));
+
   } catch (err) {
     dispatch({
       type: DATA_INSERTED_FAILED,
       payload: {
         msg: err.response.statusText,
-        status: err.response.status,
+        status: err.response.status
       },
     });
   }
@@ -146,7 +148,7 @@ export const insertData = (formData) => async (dispatch) => {
       type: DATA_INSERTED_FAILED,
       payload: {
         msg: err.response.statusText,
-        status: err.response.status,
+        status: err.response.status
       },
     });
   }

@@ -16,7 +16,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
     email:"",
     password: "",
     password2: ""
-  }); 
+  });
 
   const {name, email, password, password2} = formData;
 
@@ -35,34 +35,34 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
     }
   }
   if(isAuthenticated) {
-    return <Redirect to="/data" />;  
+    return <Redirect to="/data" />;
   }
-  
+
   return (
     <Fragment>
      <section className="container">
-     
+
       <h1 className="large text-primary">Registrierung</h1>
       <p className="lead"><i className="fas fa-user"></i> Erstellen Sie ihr Konto</p>
       <form className="form" onSubmit={e => onSubmit(e)}>
         <div className="form-group">
-          <input 
-            type="text" 
-            placeholder="Name" 
+          <input
+            type="text"
+            placeholder="Name"
             name="name"
             value= {name}
             onChange={e => onChange(e)}
-             
+
           />
         </div>
         <div className="form-group">
-          <input 
-            type="email" 
-            placeholder="Email Adresse"  
-            name="email" 
+          <input
+            type="email"
+            placeholder="Email Adresse"
+            name="email"
             value={email}
             onChange={e =>onChange(e)}
-            
+
           />
         </div>
         <div className="form-group">
@@ -72,7 +72,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
             name="password"
             value={password}
             onChange={e => onChange(e)}
-            
+
           />
         </div>
         <div className="form-group">
@@ -82,7 +82,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
             name="password2"
             value={password2}
             onChange={e => onChange(e)}
-            
+
           />
         </div>
         <input type="submit" className="btn btn-primary" value="Registrieren" />
@@ -92,7 +92,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
       </p>
     </section>
   </Fragment>
-  
+
   );
 }
 
