@@ -14,7 +14,7 @@ const User = require("../../models/User");
 //@route GET api/users
 //@desc Authentifizierung
 //@access privat
-router.get("/", async(req,res) => {   //Parameter auth, macht diese Route privat
+router.get("/", auth, async(req,res) => {   //Parameter auth, macht diese Route privat
     try {
         const user = await User.findById(req.user.id).select("-password");  //req.user.id included in token
         res.json(user);

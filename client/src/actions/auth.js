@@ -9,7 +9,10 @@ import {
     AUTH_ERROR,
     LOGIN_SUCCESS,
     LOGIN_FAIL,
-    LOGOUT, CHECK_OUT,
+    LOGOUT,
+    CHECK_OUT,
+    CLIENT_DATALOAD_SUCCESS
+
 
 
 
@@ -21,32 +24,35 @@ import jwt from "jsonwebtoken";
 //import { auth } from "../middleware/auth";
 
 
-//TODO: offline handlen, token in indexedDB speichern
+
 //Load User
 export const loadUser = () =>  async dispatch => {
     if(localStorage.token) {
         setToken(localStorage.token);
     }
 
-
     try {
-        var res = await axios.get("/api/auth");
 
-        dispatch({
-            type: USER_LOADED,
-            payload: res.data  //User
-        });
+      var res = await axios.get("/api/auth");
+      const user = res.data;
 
+      dispatch({
+        type: CLIENT_DATALOAD_SUCCESS,
+        payload: user
+      });
 
     }catch(err) {
-        dispatch({
-            type: AUTH_ERROR
-        });
-      }
+      dispatch({
+        type: AUTH_ERROR
+      });
+    }
+  }
 
 
 
-};
+
+
+
 
 
 //Register User
@@ -57,55 +63,45 @@ export const register = ({ name, email, password}) => async dispatch => {
         }
     }
 
-    //const body = JSON.stringify({ name, email, password });
-
+    const body = JSON.stringify({ name, email, password });
 
     try {
-        const res = await dexie.users.get("email", async () => {
-            const resultArray = await dexie.users.where("email").equals(email).toArray();
-              return resultArray[0];
-          });
+      const res = await axios.post("/api/users", body, config);
+      console.log(res)
+      const user = res.data.payload.user;
+      //console.log(res.config.data)
+      const token = res.data;
 
+      await dexie.users.add(user);
 
-        if(res) {
-          dispatch(setAlert("Email bereits vergeben !", "danger"));
-          return;
-        }
+      dispatch({
+        type: REGISTER_SUCCESS,
+        payload: token
+      });
+      dispatch(setAlert("Datensatz hinzugefügt", "success"));
+    }
+    catch(err) {
 
-    } catch(err) {
+      const errors = err.response.data.errors;  //array of errors
+
+      if(errors) {
+        errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
+      }
+
       console.error(err);
+      dispatch({
+        type: REGISTER_FAIL
+      });
     }
+  }
 
-    try {
-          const salt = await bcrypt.genSalt(13);
-          const pwHashed = await bcrypt.hash(password, salt);
 
-         const user = {
-            name: name,
-            email: email,
-            password: pwHashed
-          };
-
-          await dexie.users.add(user);
-
-          const jwtPayload = {
-            user: {
-                email: user.email
-              }
-            };
-
-            jwt.sign(jwtPayload,
-                "jwtSecret",
-                { expiresIn: 360000 },
-                (err, token) => {
-                    if (err) throw err;
-                    console.log(token)
-                    dispatch({
-                        type: REGISTER_SUCCESS,
-                        payload: token
-                    });
-                 }
-                );
+  /*
+  const res = await dexie.users.get("email", async () => {
+    const resultArray = await dexie.users.where("email").equals(email).toArray();
+    return resultArray[0];
+  });
+  */
 
 
 
@@ -113,27 +109,6 @@ export const register = ({ name, email, password}) => async dispatch => {
 
 
 
-
-        //if online upload to server
-        //const res = await axios.post("/api/users", body, config);
-        //const user = res.data;
-
-
-
-
-    }  catch (err) {
-      console.error(err)
-       /*const errors = err.response.data.errors;  //array of errors
-
-       if(errors) {
-           errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
-        }
-        */
-        dispatch({
-            type: REGISTER_FAIL
-        });
-    }
-};
 //Login User
 export const login = ( email, password ) => async dispatch => {
 

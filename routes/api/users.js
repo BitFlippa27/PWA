@@ -24,7 +24,7 @@ router.post("/", inputChecks, async(req,res) => {
     const { name, email, password } = req.body;
 
     try {
-        let user = await User.findOne({ email });
+        var user = await User.findOne({ email });
 
         if(user) {
             return res.status(400).json({ errors: [{msg: "Email bereits vergeben"}]});
@@ -44,16 +44,19 @@ router.post("/", inputChecks, async(req,res) => {
 
         const payload = {
             user: {
-                id: user.id
+                email: user.email,
+                _id: user.id,
+                name: user.name,
+                password: user.password
             }
         }
 
         jwt.sign(payload,
             config.get("jwtSecret"),
             { expiresIn: 360000 },
-            (err, token) => { 
+            (err, token) => {
                 if (err) throw err;
-                res.json({ token })
+                res.json({ token, payload })
              }
             );
     }
@@ -61,10 +64,25 @@ router.post("/", inputChecks, async(req,res) => {
         console.error(err.message);
         res.status(500).send("Server error");
     }
-    
 
-    
+
+
 });
 
+//get all users
+//@route GET api/zips
+//@access private
+  router.get("/",auth, async (req, res) => {   //auth nicht vergessen !
+    try{
+
+        const allUsers =  await Users.find({});
+        res.json(allUsers);
+
+    }catch(err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+
+});
 
 module.exports = router;

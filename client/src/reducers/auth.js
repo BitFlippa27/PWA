@@ -12,7 +12,8 @@ const initialState = {
     token: localStorage.getItem("token"),
     isAuthenticated: null,
     loading: true,
-    user: null
+    user: null,
+    allUsers: []
 }
 
 export default function(state = initialState, action) {
@@ -25,13 +26,18 @@ export default function(state = initialState, action) {
                 isAuthenticated: true,
                 user: payload
             }
-        case REGISTER_SUCCESS:
-        case LOGIN_SUCCESS:
-            localStorage.setItem("token", payload);
-            console.log(payload.token);
+        case ALL_USERS_TO_DEXIE_SUCCESS:
             return {
                 ...state,
-                token: payload,
+                isAuthenticated: true,
+                allUsers: payload
+            }
+        case REGISTER_SUCCESS:
+        case LOGIN_SUCCESS:
+            localStorage.setItem("token", payload.token);
+            return {
+                ...state,
+                ...payload,
                 isAuthenticated: true,
                 loading: false
             }

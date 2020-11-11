@@ -19,9 +19,9 @@ import { dexie } from "../dexie";
 export const loadServerData = () => async (dispatch) => {
   //TODO: ServiceWorker einschalten
   try {
-    var clientTable = await dexie.table("cities").toArray();
+    var citiesTable = await dexie.table("cities").toArray();
 
-    if(clientTable.length === 0) {
+    if(citiesTable.length === 0) {
       var res = await axios.get("api/zips");
       var allServerData = res.data;
       dispatch({
@@ -44,7 +44,7 @@ export const loadServerData = () => async (dispatch) => {
   //TODO: SW, wenn online dann zum Server hochladen
   //TODO: stale data handlen
   try {
-    if(clientTable.length === 0) {
+    if(citiesTable.length === 0) {
       await dexie.table("cities").bulkAdd(allServerData);
       dispatch({
         type: DEXIE_MIGRATION_SUCCESS
@@ -66,10 +66,10 @@ export const loadServerData = () => async (dispatch) => {
 export const loadLocalData = () => async (dispatch) => {
   //TODO: ServiceWorker einschalten
   try {
-    const clientTable = await dexie.table("cities").toArray();
+    const citiesTable = await dexie.table("cities").toArray();
     //const count =  await dexie.cities.count();
     //console.log(count);
-    if(clientTable.length === 0) {
+    if(citiesTable.length === 0) {
       const res = await axios.get("api/zips");
       const allServerData = res.data;
       await dexie.table("cities").bulkAdd(allServerData);
@@ -82,7 +82,7 @@ export const loadLocalData = () => async (dispatch) => {
     else{
       dispatch({
         type: CLIENT_DATALOAD_SUCCESS,
-        payload: clientTable
+        payload: citiesTable
       });
     }
   } catch (err) {
