@@ -61,23 +61,26 @@ export const register = ({ name, email, password}) => async dispatch => {
 
 
     try {
-        console.log("register()")
-        var user = await dexie.users.where("email").equals(email);
+        const res = await dexie.users.get("email", async () => {
+            const resultArray = await dexie.users.where("email").equals(email).toArray();
+              return resultArray[0];
+          });
+
+
+        if(res) {
+          dispatch(setAlert("Email bereits vergeben !", "danger"));
+          return;
+        }
 
     } catch(err) {
       console.error(err);
-    }
-    if(user.toArray()) {
-      console.log(user)
-      dispatch(setAlert("Email bereits vergeben !", "danger"));
-      return;
     }
 
     try {
           const salt = await bcrypt.genSalt(13);
           const pwHashed = await bcrypt.hash(password, salt);
 
-          user = {
+         const user = {
             name: name,
             email: email,
             password: pwHashed
@@ -91,18 +94,19 @@ export const register = ({ name, email, password}) => async dispatch => {
               }
             };
 
-            const jwtToken = jwt.sign(jwtPayload,
+            jwt.sign(jwtPayload,
                 "jwtSecret",
                 { expiresIn: 360000 },
                 (err, token) => {
                     if (err) throw err;
-                    return token;
+                    console.log(token)
+                    dispatch({
+                        type: REGISTER_SUCCESS,
+                        payload: token
+                    });
                  }
                 );
-                dispatch({
-                    type: REGISTER_SUCCESS,
-                    payload: jwtToken
-                });
+
 
 
 
@@ -118,11 +122,13 @@ export const register = ({ name, email, password}) => async dispatch => {
 
 
     }  catch (err) {
-       const errors = err.response.data.errors;  //array of errors
+      console.error(err)
+       /*const errors = err.response.data.errors;  //array of errors
 
        if(errors) {
            errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
         }
+        */
         dispatch({
             type: REGISTER_FAIL
         });

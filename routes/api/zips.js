@@ -43,7 +43,7 @@ router.post("/", auth, async (req, res) => {
 //get all data
 //@route GET api/zips
 //@access private
-  router.get("/",auth, async (req, res) => {
+  router.get("/", async (req, res) => {   //auth nicht vergessen !
     try{
 
         const currentData =  await Zips.find({});

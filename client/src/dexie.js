@@ -16,12 +16,5 @@ const openDB = async () => {
 }
 
 openDB();
-const user = {
-  name: "Hans",
-  email: "x",
-  password: "pwHashed"
-};
 
 //dexie.users.add(user);
-
-//const resUser = dexie.users.where("email").equals("x").each( item => {console.log("Found",item)});
