@@ -3,8 +3,8 @@ import {
   SERVER_DATALOAD_FAILED,
   CLIENT_DATALOAD_SUCCESS,
   CLIENT_DATALOAD_FAILED,
-  DEXIE_MIGRATION_SUCCESS,
-  DEXIE_MIGRATION_FAILED,
+  ALL_DATA_TO_DEXIE_SUCCESS,
+  ALL_DATA_TO_DEXIE_FAILED,
   DATA_INSERTED_ONLINE,
   DATA_INSERTED_OFFLINE,
   DATA_INSERTED_FAILED,
@@ -30,9 +30,9 @@ export default function (state = initialState, action) {
       return { ...state, allData: payload, loading: false };
     case CLIENT_DATALOAD_FAILED:
       return { ...state, error: payload, loading: false };
-    case DEXIE_MIGRATION_SUCCESS:
+    case ALL_DATA_TO_DEXIE_SUCCESS:
       return { ...state, loading: false };
-    case DEXIE_MIGRATION_FAILED:
+    case ALL_DATA_TO_DEXIE_FAILED:
       return { ...state, error: payload, loading: false };
     case DATA_INSERTED_ONLINE:
       return { ...state, loading: false };

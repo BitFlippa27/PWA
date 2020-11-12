@@ -1,10 +1,10 @@
 import {
   SERVER_DATALOAD_SUCCESS,
   SERVER_DATALOAD_FAILED,
+  ALL_DATA_TO_DEXIE_SUCCESS,
+  ALL_DATA_TO_DEXIE_FAILED,
   CLIENT_DATALOAD_SUCCESS,
   CLIENT_DATALOAD_FAILED,
-  DEXIE_MIGRATION_SUCCESS,
-  DEXIE_MIGRATION_FAILED,
   DATA_INSERTED_ONLINE,
   DATA_INSERTED_OFFLINE,
   DATA_INSERTED_FAILED,
@@ -19,9 +19,9 @@ import { dexie } from "../dexie";
 export const loadServerData = () => async (dispatch) => {
   //TODO: ServiceWorker einschalten
   try {
-    var citiesTable = await dexie.table("cities").toArray();
-
-    if(citiesTable.length === 0) {
+    var clientTable = await dexie.table("cities").toArray();
+    console.log(clientTable)
+    if(clientTable.length === 0) {
       var res = await axios.get("api/zips");
       var allServerData = res.data;
       dispatch({
@@ -40,36 +40,15 @@ export const loadServerData = () => async (dispatch) => {
       },
     });
   }
-  //migrate to dexie DB
-  //TODO: SW, wenn online dann zum Server hochladen
-  //TODO: stale data handlen
-  try {
-    if(citiesTable.length === 0) {
-      await dexie.table("cities").bulkAdd(allServerData);
-      dispatch({
-        type: DEXIE_MIGRATION_SUCCESS
-      });
-    }
-  } catch (err) {
-    //try load data until it succeds
-    dispatch({
-      type: DEXIE_MIGRATION_FAILED,
-      payload: {
-        msg: err.response.statusText,
-        status: err.response.status,
-      },
-    });
-  }
-
-};
+}
 
 export const loadLocalData = () => async (dispatch) => {
   //TODO: ServiceWorker einschalten
   try {
-    const citiesTable = await dexie.table("cities").toArray();
+    const clientTable = await dexie.table("cities").toArray();
     //const count =  await dexie.cities.count();
     //console.log(count);
-    if(citiesTable.length === 0) {
+    if(clientTable.length === 0) {
       const res = await axios.get("api/zips");
       const allServerData = res.data;
       await dexie.table("cities").bulkAdd(allServerData);
@@ -82,7 +61,7 @@ export const loadLocalData = () => async (dispatch) => {
     else{
       dispatch({
         type: CLIENT_DATALOAD_SUCCESS,
-        payload: citiesTable
+        payload: clientTable
       });
     }
   } catch (err) {
@@ -97,7 +76,6 @@ export const loadLocalData = () => async (dispatch) => {
     });
   }
 };
-
 export const insertData = (formData) => async (dispatch) => {
   const { city, zip, pop } = formData;
 
@@ -139,7 +117,7 @@ export const insertData = (formData) => async (dispatch) => {
 
     dispatch({
       type: DATA_INSERTED_ONLINE,
-      payload: formData,
+      payload: formData
     });
 
     dispatch(setAlert("Datensatz hinzugefügt", "success"));

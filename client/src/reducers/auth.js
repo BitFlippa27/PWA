@@ -1,11 +1,14 @@
 import { REGISTER_SUCCESS,
-    REGISTER_FAIL,
+    REGISTER_FAILED,
     USER_LOADED,
-    AUTH_ERROR,
-    LOGIN_FAIL,
+    USER_LOADED_FAILED,
+    ALL_USER_LOADED_SUCCESS,
+    ALL_USER_LOADED_FAILED,
+    LOGIN_FAILED,
     LOGIN_SUCCESS,
     LOGOUT
 } from "../actions/types";
+import { dexie } from "../dexie";
 
 
 const initialState = {
@@ -24,13 +27,20 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isAuthenticated: true,
-                user: payload
+                user: payload,
+                loading: false
             }
-        case ALL_USERS_TO_DEXIE_SUCCESS:
+        case ALL_USER_LOADED_SUCCESS:
             return {
                 ...state,
-                isAuthenticated: true,
-                allUsers: payload
+                allUsers: payload,
+                loading: false
+            }
+        case ALL_USER_LOADED_FAILED:
+            return {
+                ...state,
+                allUsers: null,
+                loading: false
             }
         case REGISTER_SUCCESS:
         case LOGIN_SUCCESS:
@@ -43,13 +53,24 @@ export default function(state = initialState, action) {
             }
         case LOGOUT:
             localStorage.removeItem("token");
+            dexie.currentUser.clear();
             return {
                 ...state,
                 token: null,
                 isAuthenticated: false,
                 loading: false,
+                user: null
             }
-        case AUTH_ERROR:
+        case USER_LOADED_FAILED:
+            localStorage.removeItem("token");
+            dexie.currentUser.clear();
+            return {
+                ...state,
+                token: null,
+                isAuthenticated: false,
+                loading: false
+            }
+        case LOGIN_FAILED:
             localStorage.removeItem("token");
             return {
                 ...state,
@@ -57,15 +78,7 @@ export default function(state = initialState, action) {
                 isAuthenticated: false,
                 loading: false
             }
-        case LOGIN_FAIL:
-            localStorage.removeItem("token");
-            return {
-                ...state,
-                token: null,
-                isAuthenticated: false,
-                loading: false
-            }
-        case REGISTER_FAIL:
+        case REGISTER_FAILED:
             localStorage.removeItem("token");
             return {
                 ...state,

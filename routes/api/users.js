@@ -10,6 +10,7 @@ const inputChecks = [
     check("password", "Bitte geben Sie ein Passwort mit 7 oder mehr Zeichen ein.").isLength({ min: 7})
 ];
 const User = require("../../models/User");
+const auth = require("../../middleware/auth");
 
 //@route POST api/users
 //@desc User registrieren

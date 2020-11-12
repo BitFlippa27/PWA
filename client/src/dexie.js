@@ -4,7 +4,8 @@ export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
     cities: "++id",
     newCities: "++id",
-    users: "email"
+    users: "email",
+    currentUser: "email"
 });
 
 const openDB = async () => {
@@ -17,4 +18,4 @@ const openDB = async () => {
 
 openDB();
 
-//dexie.users.add(user);
+//dexie.currentUser.add({email: "x"});

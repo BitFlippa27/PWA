@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 
-export const auth = () => {
+export const verifyUser = () => {
     const token = localStorage.token;
     if(!token) {
         return console.log("Kein Token");
@@ -17,3 +17,4 @@ export const auth = () => {
 
     }
 }
+//export const signToken = (token) => {}
