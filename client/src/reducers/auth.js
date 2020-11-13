@@ -16,7 +16,8 @@ const initialState = {
     isAuthenticated: null,
     loading: true,
     user: null,
-    allUsers: []
+    allUsers: [],
+    errors: {}
 }
 
 export default function(state = initialState, action) {
@@ -40,7 +41,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 allUsers: null,
-                loading: false
+                loading: false,
+                errors: payload
             }
         case REGISTER_SUCCESS:
         case LOGIN_SUCCESS:
@@ -63,12 +65,13 @@ export default function(state = initialState, action) {
             }
         case USER_LOADED_FAILED:
             localStorage.removeItem("token");
-            dexie.currentUser.clear();
+            localStorage.removeItem("id");
             return {
                 ...state,
                 token: null,
                 isAuthenticated: false,
-                loading: false
+                loading: false,
+                errors: payload
             }
         case LOGIN_FAILED:
             localStorage.removeItem("token");
@@ -76,7 +79,8 @@ export default function(state = initialState, action) {
                 ...state,
                 token: null,
                 isAuthenticated: false,
-                loading: false
+                loading: false,
+                errors: payload
             }
         case REGISTER_FAILED:
             localStorage.removeItem("token");
@@ -84,7 +88,8 @@ export default function(state = initialState, action) {
                 ...state,
                 token: null,
                 isAuthenticated: false,
-                loading: false
+                loading: false,
+                errors: payload
             }
         default:
             return state;

@@ -16,11 +16,11 @@ import {
     USER_TO_DEXIE_SUCCESS,
     USER_TO_DEXIE_FAILED
 } from "./types";
-import setToken from "../utils/setToken";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
-import { verifyToken } from "../middleware/auth";
+import {setToken, verifyUser } from "../utils/tokening";
 import jwt_decode from "jwt-decode";
+
 
 
 export const loadAllUsers = () => async dispatch => {
@@ -44,28 +44,26 @@ export const loadAllUsers = () => async dispatch => {
     }
   }
   catch(err) {
+    console.error(err);
     dispatch({
-      type: ALL_USER_LOADED_FAILED,
-      payload: {
-        msg: err.response.statusText,
-        status: err.response.status,
-      },
+      type: ALL_USER_LOADED_FAILED
     });
   }
 }
 //Load User
 export const loadUser = () =>  async dispatch => {
+  var currentUserID = localStorage.getItem("id");
+
+  console.log("loadUser")
     if(localStorage.token) {
         setToken(localStorage.token);
     }
+
     if(navigator.onLine === true) {
       console.log("online")
         try {
           const res = await axios.get("/api/auth");
           var user = res.data;
-          var id = user._id;
-          console.log(user)
-          var currentUser = await dexie.currentUser.get(id);
 
           dispatch({
             type: USER_LOADED,
@@ -75,36 +73,44 @@ export const loadUser = () =>  async dispatch => {
         catch(err) {
           console.error(err);
         }
-
-        if(!currentUser) {
-          dispatch({
-            type: USER_TO_DEXIE_SUCCESS,
-            payload: user
-          });
-        }
       }
 
-      if(navigator.offLine === true) {
+      if(navigator.onLine === false) {
         console.log("offline")
-        try{
+        try {
+          var decoded = jwt_decode(localStorage.getItem("token"));
+          var id = decoded.user.id;
+          var user = decoded.user;
+          console.log(currentUserID);
+          console.log(decoded.user.id);
 
-           var currentUser = await dexie.currentUser.get(id);
+          if (currentUserID === id) {
+            dispatch({
+              type: USER_LOADED,
+              payload:  user
+            });
+          }
         }
+
         catch(err) {
+          console.error(err);
           dispatch({
             type: USER_LOADED_FAILED
           });
-        }
-        const verifiedToken = verifyToken();
-        if(verifiedToken.id === currentUser.id) {
-          dispatch({
-            type: USER_LOADED,
-            payload: currentUser
-          });
-        }
 
+        }
       }
+
+
+
 }
+
+
+
+
+
+
+
 
 
 
@@ -218,6 +224,7 @@ export const login = ( email, password ) => async dispatch => {
     var res = await axios.post("/api/auth", body, config);
     var token = res.data;
 
+
   }
   catch (err) {
     console.log(err)
@@ -235,19 +242,19 @@ export const login = ( email, password ) => async dispatch => {
     type: LOGIN_SUCCESS,
     payload: token
   });
-  const tok = localStorage.getItem("token");
-  const decoded = await jwt_decode(tok);
-  const id = decoded.user.id;
 
 
   try {
-    await dexie.currentUser.add({
-      _id: id
-    });
+    const tok = localStorage.getItem("token");
+    const decoded = await jwt_decode(tok);
+    const id = decoded.user.id;
+    localStorage.setItem("id", id);
   }
   catch(err) {
     console.error(err);
   }
+
+
   dispatch(loadUser());
   dispatch(loadServerData());
 };

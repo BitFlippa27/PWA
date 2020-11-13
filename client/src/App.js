@@ -10,7 +10,7 @@ import Data from "./components/data/Data";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import { loadUser } from "./actions/auth";
 //import { loadLocalData } from "./actions/data";
-import setToken from "./utils/setToken";
+import { setToken } from "./utils/tokening";
 //Redux
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
@@ -50,4 +50,4 @@ const App = () => {
 };
 
 export default App;
-//TODO: Techdebt: {Offline Authentifikation,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination, Isolation(Clean Code)}
+//TODO: Techdebt: {Offline Authentifikation, Login offline Fehler abfangen,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination, Isolation(Clean Code)}

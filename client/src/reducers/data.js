@@ -15,7 +15,7 @@ const initialState = {
   timestamp: new Date().toLocaleTimeString("de-DE"),
   lastEntries: [],
   loading: true,
-  error: {},
+  error: {}
 };
 
 export default function (state = initialState, action) {
