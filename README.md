@@ -1,1 +1,1 @@
-#A progressive web application using React, Redux, ServiceWorker, IndexedDB (Dexie) Bootstrap and Fontawesome.
+Figuring out a good synchronization strategy for a progressive webapp
