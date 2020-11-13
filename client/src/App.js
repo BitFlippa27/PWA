@@ -17,12 +17,15 @@ import store from "./store";
 
 if (localStorage.token) {
   //every time app gets loaded
-  setToken(localStorage.token); 
+  setToken(localStorage.token);
   store.dispatch(loadUser());
 
   //store.dispatch(loadLocalData());
 }
-
+if(navigator.onLine === true)
+{
+  console.log("online")
+}
 const App = () => {
   console.log("geladen");
 
@@ -47,4 +50,4 @@ const App = () => {
 };
 
 export default App;
-//TODO: Techdebt: {Offline Authentifikation,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination}
+//TODO: Techdebt: {Offline Authentifikation,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination, Isolation(Clean Code)}

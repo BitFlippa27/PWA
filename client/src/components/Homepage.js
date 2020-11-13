@@ -9,10 +9,10 @@ import PropTypes from 'prop-types';
 const Homepage = ({ isAuthenticated }) => {
   if(isAuthenticated) {
     console.log("Redirect");
-    return <Redirect to="/data" />;
+    return <Redirect to="/login" />;
   }
 
-  return ( 
+  return (
   <Fragment>
     <section className="homepage">
       <div className="dark-overlay">
@@ -35,6 +35,6 @@ Homepage.propTypes = {
 
  const mapStateToProps = state => ({
    isAuthenticated: state.auth.isAuthenticated
- }); 
+ });
 
 export default connect(mapStateToProps)(Homepage);

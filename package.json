@@ -26,6 +26,7 @@
     "idb": "^5.0.7",
     "ionic": "^5.4.16",
     "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.1",
     "localforage": "^1.9.0",
     "lodash": "^4.17.20",
     "lodash.isequal": "^4.5.0",

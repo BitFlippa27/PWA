@@ -1,16 +1,18 @@
+import jwt_decode from "jwt-decode";
 const jwt = require("jsonwebtoken");
 
 
-export const verifyUser = () => {
+export const verifyToken = () => {
     const token = localStorage.token;
     if(!token) {
         return console.log("Kein Token");
     }
     try {
-      const decoded = jwt.verify(token, "jwtSecret");
-      const user = decoded.user;
+      const decoded = jwt_decode(token);
+      //console.log(decoded)
 
-      return user;
+
+      return decoded;
 
     } catch(err) {
         console.log("Token ist nicht gültig");

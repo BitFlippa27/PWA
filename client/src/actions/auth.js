@@ -12,14 +12,17 @@ import {
     LOGOUT,
     CHECK_OUT,
     ALL_USER_LOADED_SUCCESS,
-    ALL_USER_LOADED_FAILED
+    ALL_USER_LOADED_FAILED,
+    USER_TO_DEXIE_SUCCESS,
+    USER_TO_DEXIE_FAILED
 } from "./types";
 import setToken from "../utils/setToken";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
-import { verifyUser } from "../middleware/auth";
+import { verifyToken } from "../middleware/auth";
+import jwt_decode from "jwt-decode";
 
-//import { auth } from "../middleware/auth";
+
 export const loadAllUsers = () => async dispatch => {
   try {
     const usersTable = await dexie.table("users").toArray();
@@ -51,49 +54,113 @@ export const loadAllUsers = () => async dispatch => {
   }
 }
 //Load User
-export const loadUser = (email) =>  async dispatch => {
+export const loadUser = () =>  async dispatch => {
     if(localStorage.token) {
         setToken(localStorage.token);
     }
+    if(navigator.onLine === true) {
+      console.log("online")
+        try {
+          const res = await axios.get("/api/auth");
+          var user = res.data;
+          var id = user._id;
+          console.log(user)
+          var currentUser = await dexie.currentUser.get(id);
+
+          dispatch({
+            type: USER_LOADED,
+            payload: user
+          });
+        }
+        catch(err) {
+          console.error(err);
+        }
+
+        if(!currentUser) {
+          dispatch({
+            type: USER_TO_DEXIE_SUCCESS,
+            payload: user
+          });
+        }
+      }
+
+      if(navigator.offLine === true) {
+        console.log("offline")
+        try{
+
+           var currentUser = await dexie.currentUser.get(id);
+        }
+        catch(err) {
+          dispatch({
+            type: USER_LOADED_FAILED
+          });
+        }
+        const verifiedToken = verifyToken();
+        if(verifiedToken.id === currentUser.id) {
+          dispatch({
+            type: USER_LOADED,
+            payload: currentUser
+          });
+        }
+
+      }
+}
 
 
-    try {
-      var currentUser = await dexie.currentUser.get("email", async () => {
+
+
+
+
+
+
+
+
+    /*
+    var currentUser = await dexie.currentUser.get("email", async () => {
+      try {
         const resultArray = await dexie.users.where("email").equals(email).toArray();
-        return resultArray[0];
-      });
-      console.log(currentUser);
-      //var currentUser = await dexie.currentUser.get(email);
-      if(!currentUser) {
-        var res = await axios.get("/api/auth");
-        const user = res.data;
-        await dexie.currentUser.add(user);
-
-        dispatch({
-          type: USER_LOADED,
-          payload: user
-        });
+      }catch(err) {
+        console.error(err);
       }
-      /*
-      else {
-        //const user = verifyUser();
-        dispatch({
-          type: USER_LOADED,
-          payload: user
-        });
-      }
-*/
-
-    }catch(err) {
-      console.error(err)
-      dispatch({
-        type: USER_LOADED_FAILED
+      return resultArray[0];
       });
+      */
 
-
-
-    }
+/*
+const addUserToDexie = async (user) => {
+  try {
+    await dexie.currentUser.add(user);
   }
+  catch(err) {
+    console.error(err);
+  }
+}
+*/
+/*
+const userInDexie = async (id) => {
+  try {
+    const user =  await dexie.currentUser.get(id);
+    console.log(user)
+    if(user)
+      return true;
+    else
+      return false;
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+*/
+/*const getCurrentUser = async (id) => {
+  try {
+    const user =  await dexie.currentUser.get(id);
+    return user;
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+*/
 
 //Register User
 export const register = ({ name, email, password}) => async dispatch => {
@@ -109,8 +176,6 @@ export const register = ({ name, email, password}) => async dispatch => {
     var res = await axios.post("/api/users", body, config);
     const user = res.data.payload.user;
     var token = res.data;
-
-    await dexie.currentUser.add(user);
   }
   catch(err) {
 
@@ -132,8 +197,6 @@ export const register = ({ name, email, password}) => async dispatch => {
   dispatch(setAlert("Sie sind jetzt registriert !", "success"));
 }
 
-
-
 /*
 const res = await dexie.users.get("email", async () => {
   const resultArray = await dexie.users.where("email").equals(email).toArray();
@@ -143,8 +206,6 @@ const res = await dexie.users.get("email", async () => {
 
 //Login User
 export const login = ( email, password ) => async dispatch => {
-
-
   const config = {
     headers: {
       "Content-Type": "application/json"
@@ -155,7 +216,8 @@ export const login = ( email, password ) => async dispatch => {
 
   try {
     var res = await axios.post("/api/auth", body, config);
-    console.log(res)
+    var token = res.data;
+
   }
   catch (err) {
     console.log(err)
@@ -168,12 +230,25 @@ export const login = ( email, password ) => async dispatch => {
       type: LOGIN_FAILED
     });
   }
+
   dispatch({
     type: LOGIN_SUCCESS,
-    payload: res.data
+    payload: token
   });
+  const tok = localStorage.getItem("token");
+  const decoded = await jwt_decode(tok);
+  const id = decoded.user.id;
 
-  dispatch(loadUser(email));
+
+  try {
+    await dexie.currentUser.add({
+      _id: id
+    });
+  }
+  catch(err) {
+    console.error(err);
+  }
+  dispatch(loadUser());
   dispatch(loadServerData());
 };
 
