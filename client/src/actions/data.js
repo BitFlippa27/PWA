@@ -5,8 +5,7 @@ import {
   ALL_DATA_TO_DEXIE_FAILED,
   CLIENT_DATALOAD_SUCCESS,
   CLIENT_DATALOAD_FAILED,
-  DATA_INSERTED_ONLINE,
-  DATA_INSERTED_OFFLINE,
+  DATA_INSERTED,
   DATA_INSERTED_FAILED,
 } from "./types";
 import axios from "axios";
@@ -92,7 +91,7 @@ export const insertData = (formData) => async (dispatch) => {
     });
     //if Offline
     dispatch({
-      type: DATA_INSERTED_OFFLINE,
+      type: DATA_INSERTED,
       payload: formData
     });
     dispatch(setAlert("Datensatz hinzugefügt", "success"));
@@ -116,11 +115,10 @@ export const insertData = (formData) => async (dispatch) => {
     await axios.post("/api/zips", formData, config);
 
     dispatch({
-      type: DATA_INSERTED_ONLINE,
+      type: DATA_INSERTED,
       payload: formData
     });
 
-    dispatch(setAlert("Datensatz hinzugefügt", "success"));
   } catch (err) {
     dispatch({
       type: DATA_INSERTED_FAILED,

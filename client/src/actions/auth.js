@@ -53,57 +53,54 @@ export const loadAllUsers = () => async dispatch => {
 //Load User
 export const loadUser = () =>  async dispatch => {
   var currentUserID = localStorage.getItem("id");
-
   console.log("loadUser")
-    if(localStorage.token) {
-        setToken(localStorage.token);
+  if(localStorage.token) {
+    setToken(localStorage.token);
+  }
+
+  if(navigator.onLine === true) {
+    console.log("online")
+    try {
+      const res = await axios.get("/api/auth");
+      var user = res.data;
+
+      dispatch({
+        type: USER_LOADED,
+        payload: user
+      });
+    }
+    catch(err) {
+      console.error(err);
+    }
+  }
+
+  if(navigator.onLine === false) {
+    console.log("offline")
+    try {
+      var decoded = jwt_decode(localStorage.getItem("token"));
+      var id = decoded.user.id;
+      var user = decoded.user;
+      console.log(currentUserID);
+      console.log(decoded.user.id);
+
+      if (currentUserID === id) {
+        dispatch({
+          type: USER_LOADED,
+          payload:  user
+        });
+      }
     }
 
-    if(navigator.onLine === true) {
-      console.log("online")
-        try {
-          const res = await axios.get("/api/auth");
-          var user = res.data;
+    catch(err) {
+      console.error(err);
+      dispatch({
+        type: USER_LOADED_FAILED
+      });
 
-          dispatch({
-            type: USER_LOADED,
-            payload: user
-          });
-        }
-        catch(err) {
-          console.error(err);
-        }
-      }
-
-      if(navigator.onLine === false) {
-        console.log("offline")
-        try {
-          var decoded = jwt_decode(localStorage.getItem("token"));
-          var id = decoded.user.id;
-          var user = decoded.user;
-          console.log(currentUserID);
-          console.log(decoded.user.id);
-
-          if (currentUserID === id) {
-            dispatch({
-              type: USER_LOADED,
-              payload:  user
-            });
-          }
-        }
-
-        catch(err) {
-          console.error(err);
-          dispatch({
-            type: USER_LOADED_FAILED
-          });
-
-        }
-      }
-
-
-
+    }
+  }
 }
+
 
 
 

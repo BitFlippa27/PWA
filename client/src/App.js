@@ -22,10 +22,6 @@ if (localStorage.token) {
 
   //store.dispatch(loadLocalData());
 }
-if(navigator.onLine === true)
-{
-  console.log("online")
-}
 const App = () => {
   console.log("geladen");
 
@@ -50,4 +46,4 @@ const App = () => {
 };
 
 export default App;
-//TODO: Techdebt: {Offline Authentifikation, Login offline Fehler abfangen,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination, Isolation(Clean Code)}
+//TODO: Techdebt: {Offline Authentifikation, Wenn DB leer login failed,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination, Isolation(Clean Code)}
