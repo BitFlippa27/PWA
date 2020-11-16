@@ -55,7 +55,7 @@ export default function(state = initialState, action) {
             }
         case LOGOUT:
             localStorage.removeItem("token");
-            dexie.currentUser.clear();
+            localStorage.removeItem("id");
             return {
                 ...state,
                 token: null,

@@ -35,6 +35,7 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
     </ul>
   );
 
+
   return (
     <nav className="navbar bg-dark">
       <h1>
@@ -44,6 +45,8 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
       </h1>
       <Fragment>{isAuthenticated ? authLinks : guestLinks}</Fragment>
     </nav>
+
+
   );
 };
 

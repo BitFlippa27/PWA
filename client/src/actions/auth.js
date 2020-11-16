@@ -59,7 +59,6 @@ export const loadUser = () =>  async dispatch => {
   }
 
   if(navigator.onLine === true) {
-    console.log("online")
     try {
       const res = await axios.get("/api/auth");
       var user = res.data;
@@ -75,7 +74,6 @@ export const loadUser = () =>  async dispatch => {
   }
 
   if(navigator.onLine === false) {
-    console.log("offline")
     try {
       var decoded = jwt_decode(localStorage.getItem("token"));
       var id = decoded.user.id;
@@ -221,7 +219,10 @@ export const login = ( email, password ) => async dispatch => {
     var res = await axios.post("/api/auth", body, config);
     var token = res.data;
 
-
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: token
+    });
   }
   catch (err) {
     console.log(err)
@@ -235,26 +236,33 @@ export const login = ( email, password ) => async dispatch => {
     });
   }
 
-  dispatch({
-    type: LOGIN_SUCCESS,
-    payload: token
-  });
+
 
 
   try {
     const tok = localStorage.getItem("token");
-    const decoded = await jwt_decode(tok);
-    const id = decoded.user.id;
-    localStorage.setItem("id", id);
+    if(tok) {
+      const decoded = await jwt_decode(tok);
+      const id = decoded.user.id;
+      localStorage.setItem("id", id);
+    }
   }
   catch(err) {
     console.error(err);
+    dispatch({
+      type: LOGIN_FAILED
+    });
   }
 
 
   dispatch(loadUser());
   dispatch(loadServerData());
 };
+
+
+
+
+
 
 //Logout
 export const logout = () => async (dispatch) => {

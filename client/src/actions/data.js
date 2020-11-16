@@ -12,7 +12,7 @@ import axios from "axios";
 import { setAlert } from "./alert";
 //import dexie from "../dexie";
 import { dexie } from "../dexie";
-//var isEqual = require("lodash.isequal");
+var isEqual = require("lodash.isequal");
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadServerData = () => async (dispatch) => {
@@ -28,6 +28,7 @@ export const loadServerData = () => async (dispatch) => {
         payload: allServerData,
       });
     }
+
   } catch (err) {
     //dispatch({ type: DATALOAD_FAILED });
     //try load data until it succeds
@@ -105,27 +106,36 @@ export const insertData = (formData) => async (dispatch) => {
       },
     });
   }
-  //TODO: wenn Online dann zum Server hochladen
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  try {
-    await axios.post("/api/zips", formData, config);
+  if(navigator.onLine === true) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    };
+    try {
+      await axios.post("/api/zips", formData, config);
 
-    dispatch({
-      type: DATA_INSERTED,
-      payload: formData
-    });
+      dispatch({
+        type: DATA_INSERTED,
+        payload: formData
+      });
 
-  } catch (err) {
-    dispatch({
-      type: DATA_INSERTED_FAILED,
-      payload: {
-        msg: err.response.statusText,
-        status: err.response.status
-      },
-    });
+    } catch (err) {
+      dispatch({
+        type: DATA_INSERTED_FAILED,
+        payload: {
+          msg: err.response.statusText,
+          status: err.response.status
+        }
+      });
+    }
   }
 };
+
+const syncToServer = async () => {
+
+}
+
+const syncFromServer = async () => {
+
+}

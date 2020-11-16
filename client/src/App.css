@@ -45,6 +45,20 @@ img {
   width: 100%;
 }
 
+
+.connectivity-status {
+	position: absolute;
+	top: 5px;
+	right: 500px;
+	width: 5px;
+	height: 50px;
+	background: url(img/offline.png) 0px 0px/55px 49px no-repeat;
+}
+
+#connectivity-status.hidden {
+	display: none;
+}
+
 /* Utilities */
 .container {
   max-width: 2000px;
@@ -159,7 +173,7 @@ img {
   margin: 0.3rem;
   background: var(--light-color);
   color: #333;
-  
+
 }
 
 .alert {
@@ -255,7 +269,7 @@ img {
 /* Forms */
 .form .form-group {
   margin: 1.2rem 0;
-  
+
 
 }
 
@@ -348,7 +362,7 @@ button {
   padding: 0.45rem;
   margin:  0.25rem;
   font-weight: bold;
-  
+
 }
 
 .navbar a:hover {
@@ -363,8 +377,8 @@ button {
 .homepage {
   position: relative;
   height: 100vh;
-  
-  
+
+
 }
 
 .homepage-inner {
@@ -554,7 +568,7 @@ button {
 
   .navbar h1 {
     margin-bottom: 1rem;
-  
+
   }
 
   .navbar .welcome {

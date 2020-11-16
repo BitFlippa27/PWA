@@ -8,6 +8,9 @@ import { loadLocalData } from "../../actions/data";
 import { loadUser } from "../../actions/auth";
 
 
+
+
+
 //TODO: Button für loadServerData
 
 const Data = ({ auth: { user, loading }, allData, loadLocalData, loadUser }) => {
@@ -55,7 +58,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData, loadUser }) => 
                 <th key={rows.pop} scope="col">
                   Bevölkerung
                 </th>
-                <th scope="col">Aktion</th>
+                <th scope="col">Aktion </th>
               </tr>
             </thead>
             <tbody>
@@ -67,6 +70,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData, loadUser }) => 
             </tbody>
           </table>
       </div>
+
     </Fragment>
   );
 };

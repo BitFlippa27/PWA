@@ -15,6 +15,9 @@ import { setToken } from "./utils/tokening";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
 
+
+
+
 if (localStorage.token) {
   //every time app gets loaded
   setToken(localStorage.token);
@@ -46,4 +49,4 @@ const App = () => {
 };
 
 export default App;
-//TODO: Techdebt: {Input Validation Submit inserted data, Offline Authentifikation, Wenn DB leer login failed,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,responsiveness, scrollbar, pagination, Isolation(Clean Code)}
+//TODO: Techdebt: {Input Validation Submit inserted data, Offline Authentifikation(pubKey), Wenn DB leer login failed,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,Offlineicon,responsiveness, scrollbar, pagination, Isolation(Clean Code)}
