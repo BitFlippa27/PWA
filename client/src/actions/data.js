@@ -1,8 +1,6 @@
 import {
   SERVER_DATALOAD_SUCCESS,
   SERVER_DATALOAD_FAILED,
-  ALL_DATA_TO_DEXIE_SUCCESS,
-  ALL_DATA_TO_DEXIE_FAILED,
   CLIENT_DATALOAD_SUCCESS,
   CLIENT_DATALOAD_FAILED,
   DATA_INSERTED,
@@ -12,7 +10,7 @@ import axios from "axios";
 import { setAlert } from "./alert";
 //import dexie from "../dexie";
 import { dexie } from "../dexie";
-var isEqual = require("lodash.isequal");
+//var isEqual = require("lodash.isequal");
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadServerData = () => async (dispatch) => {
@@ -132,10 +130,5 @@ export const insertData = (formData) => async (dispatch) => {
   }
 };
 
-const syncToServer = async () => {
-
-}
-
-const syncFromServer = async () => {
-
-}
+//const syncToServer = async () => {}
+//const syncFromServer = async () => {}

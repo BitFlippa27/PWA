@@ -1,6 +1,5 @@
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-const jwt = require("jsonwebtoken");
 
 //global header, send token from localStorage with every request
 export const setToken = token => {

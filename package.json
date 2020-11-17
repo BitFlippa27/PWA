@@ -1,7 +1,9 @@
 {
-  "name": "pwa",
+  "author": "Dennis Erdelean",
+  "license": "MIT",
+  "name": "good-sync",
   "version": "1.0.0",
-  "description": "thesis",
+  "description": "syncPWA",
   "main": "index.js",
   "scripts": {
     "start": "node server",
@@ -9,34 +11,21 @@
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "author": "Dennis Erdelean",
-  "license": "MIT",
   "dependencies": {
-    "@cloudant/cloudant": "^4.2.4",
-    "@ionic/react": "^5.4.0",
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/data-grid": "^4.0.0-alpha.6",
-    "@material-ui/icons": "^4.9.1",
     "babel-plugin-lodash": "^3.3.4",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.1",
     "dexie": "^3.0.2",
     "express": "^4.17.1",
     "express-validator": "^6.5.0",
-    "idb": "^5.0.7",
-    "ionic": "^5.4.16",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.1",
-    "localforage": "^1.9.0",
     "lodash": "^4.17.20",
     "lodash.isequal": "^4.5.0",
-    "mdbreact": "^4.27.0",
     "mongoose": "^5.9.21",
-    "react-redux": "^7.2.1",
     "redux": "^4.0.5",
-    "redux-devtools": "^3.7.0",
     "request": "^2.88.2",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",

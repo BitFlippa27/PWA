@@ -12,13 +12,9 @@ import {
     LOGOUT,
     CHECK_OUT,
     ALL_USER_LOADED_SUCCESS,
-    ALL_USER_LOADED_FAILED,
-    USER_TO_DEXIE_SUCCESS,
-    USER_TO_DEXIE_FAILED
+    ALL_USER_LOADED_FAILED
 } from "./types";
-import bcrypt from 'bcryptjs';
-import jwt from "jsonwebtoken";
-import {setToken, verifyUser } from "../utils/tokening";
+import {setToken } from "../utils/tokening";
 import jwt_decode from "jwt-decode";
 
 
@@ -60,8 +56,9 @@ export const loadUser = () =>  async dispatch => {
 
   if(navigator.onLine === true) {
     try {
+      console.log("getReq")
       const res = await axios.get("/api/auth");
-      var user = res.data;
+      const user = res.data;
 
       dispatch({
         type: USER_LOADED,
@@ -175,7 +172,6 @@ export const register = ({ name, email, password}) => async dispatch => {
 
   try {
     var res = await axios.post("/api/users", body, config);
-    const user = res.data.payload.user;
     var token = res.data;
   }
   catch(err) {

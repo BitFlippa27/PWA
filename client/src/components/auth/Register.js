@@ -88,7 +88,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
         <input type="submit" className="btn btn-primary" value="Registrieren" />
       </form>
       <p className="my-1">
-        Bereits registriert ?  <Link to="/data">Anmelden</Link>
+        Bereits registriert ?  <Link to="/login">Anmelden</Link>
       </p>
     </section>
   </Fragment>

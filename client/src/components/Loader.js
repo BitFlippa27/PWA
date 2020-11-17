@@ -1,12 +1,16 @@
 import React, { Fragment } from 'react';
-import loader from './loader.gif';
+import loaderGif from './loader-gif.gif';
 
-export default () => (
-  <Fragment>
-    <img
-      src={loader}
-      style={{ width: '200px', margin: 'auto', display: 'block' }}
-      alt='Lädt...'
-    />
-  </Fragment>
-);
+const Loader = () => {
+  return (
+    <Fragment>
+      <img
+        src={loaderGif}
+        style={{ width: '200px', margin: 'auto', display: 'block' }}
+        alt='Lädt...'
+      />
+    </Fragment>
+  );
+}
+
+export default Loader;

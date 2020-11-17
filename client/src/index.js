@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
-var isLoggedIn = true;
+var isLoggedIn = false;
 var swRegistration;
 var svWorker;
 var swExists = ("serviceWorker" in navigator);
@@ -28,7 +28,7 @@ if(!isOnline) {
   //offlineIcon.remove()
 }
 
-(function ready() {
+
   window.addEventListener("online", function online() {
     //offlineIcon.remove();
     console.log("online");
@@ -43,7 +43,6 @@ if(!isOnline) {
     sendStatusUpdate(); //kein Argument -> nimm automatisch aktuellen SW
   });
 
-})();
 
 async function initServiceWorker() {
   try {

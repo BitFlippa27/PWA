@@ -18,7 +18,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData, loadUser }) => 
     //loadUser();
     loadLocalData();
     console.log("loadLocalData");
-  }, []);
+  }, [loadLocalData]);
 
   const rows = allData;
   console.log(rows);

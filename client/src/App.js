@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import "./App.css";
+import "./index.css";
 import Homepage from "./components/Homepage";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
@@ -26,8 +26,6 @@ if (localStorage.token) {
   //store.dispatch(loadLocalData());
 }
 const App = () => {
-  console.log("geladen");
-
   return (
     <Provider store={store}>
       <Router>

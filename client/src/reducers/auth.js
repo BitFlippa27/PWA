@@ -8,8 +8,6 @@ import { REGISTER_SUCCESS,
     LOGIN_SUCCESS,
     LOGOUT
 } from "../actions/types";
-import { dexie } from "../dexie";
-
 
 const initialState = {
     token: localStorage.getItem("token"),
