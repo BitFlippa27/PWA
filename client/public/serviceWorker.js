@@ -29,16 +29,9 @@ var urlsToCache = [
   "/static/media/offline.e95fcf01.png"
 ]
 
-
-
-
-
-
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
 self.addEventListener("message", onMessage);
-
-
 
 main();
 
@@ -47,9 +40,9 @@ async function main() {
     await sendMessage({ requestStatusUpdate: true });
     //await cacheAppShell();
   }
-    catch(err) {
-      console.error(err);
-    }
+  catch(err) {
+    console.error(err);
+  }
 }
 
 async function onInstall(evt) {
@@ -58,33 +51,32 @@ async function onInstall(evt) {
   self.skipWaiting();
 }
 
- async function addToCache() {
-   try {
-     const cache = await caches.open(cacheName);
-     return await cache.addAll(urlsToCache);
-   }
-   catch(err) {
-     console.error(err);
-   }
-
- }
+async function addToCache() {
+  try {
+    const cache = await caches.open(cacheName);
+    return await cache.addAll(urlsToCache);
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
 
 //Statusanfrage an alle Clients
 async function sendMessage(msg) {
-	var allClients =  await clients.matchAll({ includeUncontrolled: true});  // Liste aller Clients
-	return Promise.all(
-		allClients.map(function clientMsg(client){
-			var channel = new MessageChannel();   		         //neuer Messagechannel für jeden Client
-			channel.port1.onmessage = onMessage; 			        //auf Statusupdates auf aktuellen Message Channel lauschen
-			return client.postMessage(msg,[channel.port2]); // Statusanfrage senden
-		})
-	);
+  var allClients =  await clients.matchAll({ includeUncontrolled: true});  // Liste aller Clients
+  return Promise.all(
+    allClients.map(function clientMsg(client){
+      var channel = new MessageChannel();   		         //neuer Messagechannel für jeden Client
+      channel.port1.onmessage = onMessage; 			        //auf Statusupdates auf aktuellen Message Channel lauschen
+      return client.postMessage(msg,[channel.port2]); // Statusanfrage senden
+    })
+  );
 }
 
 function onMessage({ data }) {
   if(data.statusUpdate) {
     ({ isOnline, isLoggedIn } = data.statusUpdate);
-    console.log(`ServiceWorker (v${version}) status update... isOnline: ${isOnline}, isLoggedIn: ${isLoggedIn}`);
+    console.log(`ServiceWorker (v${cacheName}) status update... isOnline: ${isOnline}, isLoggedIn: ${isLoggedIn}`);
   }
 }
 function onActivate(evt) {
@@ -98,7 +90,7 @@ async function handleActivation() {
   //await cacheAppShell(/*forceReload=*/true);
   console.log(`ServiceWorker (${version}) activated..`);
 }
-
+/*
 async function cacheIt(forceReload = false) {
   var cache = await caches.match(cacheName);
 
@@ -130,3 +122,4 @@ async function cacheIt(forceReload = false) {
     })
   )
 }
+*/
