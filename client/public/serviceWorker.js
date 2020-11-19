@@ -83,10 +83,10 @@ async function handleActivation() {
 }
 
 async function cacheAppShell(forceReload = false) {
-  var cache = await caches.match(cacheName);
+  var cache = await caches.open(cacheName);
 
   return Promise.all(
-    urlsToCache.loggedOut.map(async function requestFile(url){
+    urlsToCache.map(async function requestFile(url){
       try {
         let res;
 
