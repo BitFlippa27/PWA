@@ -38,7 +38,7 @@ main();
 async function main() {
   try {
     await sendMessage({ requestStatusUpdate: true });
-    //await cacheAppShell();
+    await cacheAppShell();
   }
   catch(err) {
     console.error(err);
@@ -47,19 +47,10 @@ async function main() {
 
 async function onInstall(evt) {
   console.log(`ServiceWorker (${version}) installed...`);
-  evt.waitUntil(addToCache());
+  evt.waitUntil(cacheAppShell(true));
   self.skipWaiting();
 }
 
-async function addToCache() {
-  try {
-    const cache = await caches.open(cacheName);
-    return await cache.addAll(urlsToCache);
-  }
-  catch(err) {
-    console.error(err);
-  }
-}
 
 //Statusanfrage an alle Clients
 async function sendMessage(msg) {
@@ -90,8 +81,8 @@ async function handleActivation() {
   //await cacheAppShell(/*forceReload=*/true);
   console.log(`ServiceWorker (${version}) activated..`);
 }
-/*
-async function cacheIt(forceReload = false) {
+
+async function cacheAppShell(forceReload = false) {
   var cache = await caches.match(cacheName);
 
   return Promise.all(
@@ -120,6 +111,5 @@ async function cacheIt(forceReload = false) {
         console.error(err);
       }
     })
-  )
+  );
 }
-*/
