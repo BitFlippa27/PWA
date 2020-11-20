@@ -2,7 +2,7 @@
 var version = 3;
 var isOnline = true;
 var isLoggedIn = false;
-var cacheName = `AppShell`;
+var cacheName = "AppShell";
 
 var urlsToCache = [
   "/src/App.js"

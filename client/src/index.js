@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 
+
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = false;
 var swRegistration;

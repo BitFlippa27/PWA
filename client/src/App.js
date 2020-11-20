@@ -47,4 +47,4 @@ const App = () => {
 };
 
 export default App;
-//TODO: Techdebt: {Input Validation Submit inserted data, Offline Authentifikation(pubKey), Wenn DB leer login failed,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,Offlineicon,responsiveness, scrollbar, pagination, Isolation(Clean Code)}
+//TODO: Techdebt: {Input Validation Submit inserted data, Offline Authentifikation(pubKey), Wenn DB leer login failed,Zellen als Input, state mit immutable.js, Data Component lädt zu oft ,Offlineicon,responsiveness, scrollbar, pagination, Isolation(Clean Code, JSLINT)}
