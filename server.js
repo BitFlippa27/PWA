@@ -20,22 +20,3 @@ app.use(express.json({ extended : false}));
 app.use("/api/users", require("./routes/api/users"));
 app.use("/api/auth", require("./routes/api/auth"));
 app.use("/api/zips", require("./routes/api/zips"));
-//zips.update({}, { $unset: { "accounts": 1 }}, { multi: true });
- /*const deleteKey = async () =>  {
-    try {
-        await
-        .find({}, async (docs, err) => {
-            if(err) {
-                throw err;
-            }
-            docs.forEach(doc => console.log(doc.name));
-        });
-    }
-    catch(err){
-        console.error(err);
-    }
-
-
-}
-deleteKey();
-*/

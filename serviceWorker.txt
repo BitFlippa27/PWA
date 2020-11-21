@@ -5,7 +5,7 @@ var isLoggedIn = false;
 var cacheName = `AppShell`;
 
 var urlsToCache = [
-  "/src/App.js"
+  "/assets/"
 ];
 
 self.addEventListener("install", onInstall);

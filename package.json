@@ -25,7 +25,9 @@
     "mongoose": "^5.9.21",
     "redux": "^4.0.5",
     "request": "^2.88.2",
-    "uuid": "^8.3.1"
+    "uuid": "^8.3.1",
+    "workbox-build": "^5.1.4",
+    "workbox-precaching": "^5.1.4"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
