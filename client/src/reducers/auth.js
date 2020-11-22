@@ -53,7 +53,6 @@ export default function(state = initialState, action) {
             }
         case LOGOUT:
             localStorage.removeItem("token");
-            localStorage.removeItem("id");
             return {
                 ...state,
                 token: null,
@@ -63,7 +62,6 @@ export default function(state = initialState, action) {
             }
         case USER_LOADED_FAILED:
             localStorage.removeItem("token");
-            localStorage.removeItem("id");
             return {
                 ...state,
                 token: null,

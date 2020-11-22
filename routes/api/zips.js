@@ -47,6 +47,7 @@ router.post("/", auth, async (req, res) => {
     try{
 
         const currentData =  await Zips.find({});
+        console.log(req);
         res.json(currentData);
 
     }catch(err) {

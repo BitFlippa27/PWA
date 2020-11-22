@@ -46,15 +46,13 @@ export const loadAllUsers = () => async dispatch => {
     });
   }
 }
+
 //Load User
 export const loadUser = () =>  async dispatch => {
-  var currentUserID = localStorage.getItem("id");
   console.log("loadUser")
   if(localStorage.token) {
     setToken(localStorage.token);
   }
-
-  if(navigator.onLine === true) {
     try {
       console.log("getReq")
       const res = await axios.get("/api/auth");
@@ -64,37 +62,108 @@ export const loadUser = () =>  async dispatch => {
         type: USER_LOADED,
         payload: user
       });
+      dispatch(loadServerData());
     }
-    catch(err) {
-      console.error(err);
-    }
-  }
-
-  if(navigator.onLine === false) {
-    try {
-      var decoded = jwt_decode(localStorage.getItem("token"));
-      var id = decoded.user.id;
-      var user = decoded.user;
-      console.log(currentUserID);
-      console.log(decoded.user.id);
-
-      if (currentUserID === id) {
-        dispatch({
-          type: USER_LOADED,
-          payload:  user
-        });
-      }
-    }
-
     catch(err) {
       console.error(err);
       dispatch({
         type: USER_LOADED_FAILED
       });
+    }  
+}
 
+//Register User
+export const register = ({ name, email, password}) => async dispatch => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
     }
   }
+
+  const body = JSON.stringify({ name, email, password });
+
+  try {
+    var res = await axios.post("/api/users", body, config);
+    var token = res.data;
+  }
+  catch(err) {
+
+    const errors = err.response.data.errors;  //array of errors
+
+    if(errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
+    }
+    console.error(err);
+    dispatch({
+      type: REGISTER_FAILED
+    });
+  }
+
+  dispatch({
+    type: REGISTER_SUCCESS,
+    payload: token
+  });
+  dispatch(setAlert("Sie sind jetzt registriert !", "success"));
 }
+
+/*
+const res = await dexie.users.get("email", async () => {
+  const resultArray = await dexie.users.where("email").equals(email).toArray();
+  return resultArray[0];
+});
+*/
+
+//Login User
+export const login = ( email, password ) => async dispatch => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }
+
+  const body = JSON.stringify({ email, password });
+
+  try {
+    var res = await axios.post("/api/auth", body, config);
+    var token = res.data;
+
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: token
+    });
+    dispatch(loadUser());
+  }
+  catch (err) {
+    console.log(err)
+    const errors = err.response.data.errors;  //array of errors
+
+    if(errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
+    }
+    dispatch({
+      type: LOGIN_FAILED
+    });
+  }    
+
+};
+
+//Logout
+export const logout = () => async (dispatch) => {
+  dispatch({ type: CHECK_OUT});
+  dispatch({ type: LOGOUT});
+};
+
+
+
+
+  
+
+
+
+
+
+
+
 
 
 
@@ -159,109 +228,3 @@ const userInDexie = async (id) => {
   }
 }
 */
-
-//Register User
-export const register = ({ name, email, password}) => async dispatch => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  }
-
-  const body = JSON.stringify({ name, email, password });
-
-  try {
-    var res = await axios.post("/api/users", body, config);
-    var token = res.data;
-  }
-  catch(err) {
-
-    const errors = err.response.data.errors;  //array of errors
-
-    if(errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
-    }
-    console.error(err);
-    dispatch({
-      type: REGISTER_FAILED
-    });
-  }
-
-  dispatch({
-    type: REGISTER_SUCCESS,
-    payload: token
-  });
-  dispatch(setAlert("Sie sind jetzt registriert !", "success"));
-}
-
-/*
-const res = await dexie.users.get("email", async () => {
-  const resultArray = await dexie.users.where("email").equals(email).toArray();
-  return resultArray[0];
-});
-*/
-
-//Login User
-export const login = ( email, password ) => async dispatch => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  }
-
-  const body = JSON.stringify({ email, password });
-
-  try {
-    var res = await axios.post("/api/auth", body, config);
-    var token = res.data;
-
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: token
-    });
-  }
-  catch (err) {
-    console.log(err)
-    const errors = err.response.data.errors;  //array of errors
-
-    if(errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
-    }
-    dispatch({
-      type: LOGIN_FAILED
-    });
-  }
-
-
-
-
-  try {
-    const tok = localStorage.getItem("token");
-    if(tok) {
-      const decoded = await jwt_decode(tok);
-      const id = decoded.user.id;
-      localStorage.setItem("id", id);
-    }
-  }
-  catch(err) {
-    console.error(err);
-    dispatch({
-      type: LOGIN_FAILED
-    });
-  }
-
-
-  dispatch(loadUser());
-  dispatch(loadServerData());
-};
-
-
-
-
-
-
-//Logout
-export const logout = () => async (dispatch) => {
-  dispatch({ type: CHECK_OUT});
-  dispatch({ type: LOGOUT});
-};

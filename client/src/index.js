@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
@@ -17,10 +18,12 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+serviceWorkerRegistration.register();
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
+/*
 if(swExists) {
   initServiceWorker();
 }
@@ -88,3 +91,5 @@ function sendSWMessage(msg, target) {
     navigator.serviceWorker.controller.postMessage(msg);
   }
 }
+*/
+

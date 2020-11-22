@@ -23,7 +23,7 @@ export const loadServerData = () => async (dispatch) => {
       var allServerData = res.data;
       dispatch({
         type: SERVER_DATALOAD_SUCCESS,
-        payload: allServerData,
+        payload: allServerData
       });
     }
 
@@ -49,6 +49,7 @@ export const loadLocalData = () => async (dispatch) => {
     if(clientTable.length === 0) {
       const res = await axios.get("api/zips");
       const allServerData = res.data;
+      console.log("AllData: get(api/zips)",res);
       await dexie.table("cities").bulkAdd(allServerData);
 
       dispatch({
