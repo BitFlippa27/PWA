@@ -19,8 +19,18 @@ export const loadServerData = () => async (dispatch) => {
     var clientTable = await dexie.table("cities").toArray();
     console.log(clientTable)
     if(clientTable.length === 0) {
-      var res = await axios.get("api/zips");
-      var allServerData = res.data;
+      //var res = await axios.get("api/zips");
+      const res = await fetch("http://localhost:5555/api/zips", {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        headers:{
+          "Content-Type" : "application/json",
+          "Authorization": "x-auth-token"
+        }, 
+        credentials: "omit"
+      });
+      const allServerData = await res.json();
       dispatch({
         type: SERVER_DATALOAD_SUCCESS,
         payload: allServerData
@@ -41,15 +51,24 @@ export const loadServerData = () => async (dispatch) => {
 }
 
 export const loadLocalData = () => async (dispatch) => {
-  //TODO: ServiceWorker einschalten
+  //TODO: ServiceWorker einschalten 
   try {
     const clientTable = await dexie.table("cities").toArray();
     //const count =  await dexie.cities.count();
     //console.log(count);
     if(clientTable.length === 0) {
-      const res = await axios.get("api/zips");
-      const allServerData = res.data;
-      console.log("AllData: get(api/zips)",res);
+      //const res = await axios.get("api/zips");
+      const res = await fetch("http://localhost:5555/api/zips", {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        headers:{
+          "Content-Type" : "application/json"
+        }, 
+        credentials: "omit"
+      });
+      const allServerData = await res.json();
+      console.log("allServerDAta",allServerData);
       await dexie.table("cities").bulkAdd(allServerData);
 
       dispatch({

@@ -1,4 +1,5 @@
 const express = require("express");
+var cors = require('cors');
 const router = express.Router();
 const { check, validationResult } = require("express-validator");
 const auth =  require("../../middleware/auth");
@@ -9,7 +10,6 @@ const inputCheck = [
     check("zip", "Bitte Postleitzahl eingeben").not().isEmpty(),
     check("pop", "Bitte Bevölkerungszahl eingeben").not().isEmpty()
 ];
-
 
 
 //@route POST api/zips

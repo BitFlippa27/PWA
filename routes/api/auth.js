@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const config = require("config");
@@ -10,7 +11,10 @@ const inputChecks = [
     check("password", "Das Passwort wird benötigt").exists()
 ];
 const User = require("../../models/User");
-
+var corsOptions = {
+    origin: 'http://localhost:5000',
+    optionsSuccessStatus: 200 
+};
 //@route GET api/users
 //@desc Authentifizierung
 //@access privat

@@ -1,4 +1,5 @@
 const express = require("express");
+//var cors = require('cors');
 const router = express.Router();
 const { check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
@@ -11,11 +12,13 @@ const inputChecks = [
 ];
 const User = require("../../models/User");
 const auth = require("../../middleware/auth");
+const cors = require("../../middleware/cors");
+
 
 //@route POST api/users
 //@desc User registrieren
 //@access öffentlich
-router.post("/", inputChecks, async(req,res) => {
+router.post("/", inputChecks,  async(req,res) => {
     //console.log("api/users register", req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

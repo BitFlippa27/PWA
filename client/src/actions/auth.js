@@ -15,62 +15,53 @@ import {
     ALL_USER_LOADED_FAILED
 } from "./types";
 import {setToken } from "../utils/tokening";
-import jwt_decode from "jwt-decode";
 
 
 
-export const loadAllUsers = () => async dispatch => {
-  try {
-    const usersTable = await dexie.table("users").toArray();
-    if(usersTable.length === 0) {
-      var res = await axios.get("api/users");
-      var allUsers = res.data;
-      await dexie.users.bulkAdd(allUsers);
 
-      dispatch({
-        type: ALL_USER_LOADED_SUCCESS,
-        payload: allUsers
-      });
-    }
-    else {
-      dispatch({
-        type: ALL_USER_LOADED_SUCCESS,
-        payload: usersTable
-      });
-    }
-  }
-  catch(err) {
-    console.error(err);
-    dispatch({
-      type: ALL_USER_LOADED_FAILED
-    });
-  }
-}
+
 
 //Load User
 export const loadUser = () =>  async dispatch => {
   console.log("loadUser")
   if(localStorage.token) {
     setToken(localStorage.token);
+    var token = localStorage.getItem("token");
   }
     try {
       console.log("getReq")
-      const res = await axios.get("/api/auth");
-      const user = res.data;
+      //const res = await axios.get("/api/auth");
+      const res = await fetch("http://localhost:5555/api/auth", {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        headers:  {
+          "Content-Type" : "application/json",
+          "Authorization" : `Bearer ${token}`
+        },
+        credentials: "omit"
+      });
 
+      const user = await res.json();
+      console.log("User", user);
       dispatch({
         type: USER_LOADED,
         payload: user
       });
-      dispatch(loadServerData());
     }
+
     catch(err) {
       console.error(err);
       dispatch({
         type: USER_LOADED_FAILED
       });
     }  
+    
+      
 }
+
+      
+     
 
 //Register User
 export const register = ({ name, email, password}) => async dispatch => {
@@ -121,11 +112,24 @@ export const login = ( email, password ) => async dispatch => {
     }
   }
 
-  const body = JSON.stringify({ email, password });
+  const fetchBody = JSON.stringify({ email, password });
 
   try {
-    var res = await axios.post("/api/auth", body, config);
-    var token = res.data;
+    //var res = await axios.post("/api/auth", body, config);
+    const res = await fetch("http://localhost:5555/api/auth", {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers:  {
+        "Content-Type": "application/json",
+        "Authorization": "x-auth-token"
+      },
+      credentials: "omit",
+      body: fetchBody
+      });
+    
+    const token = await res.json();
+    //var token = res.data;
 
     dispatch({
       type: LOGIN_SUCCESS,
@@ -155,34 +159,41 @@ export const logout = () => async (dispatch) => {
 
 
 
-
   
+/*
+export const loadAllUsers = () => async dispatch => {
+  try {
+    const usersTable = await dexie.table("users").toArray();
+    if(usersTable.length === 0) {
+      var res = await axios.get("api/users");
+      var allUsers = res.data;
+      await dexie.users.bulkAdd(allUsers);
+
+      dispatch({
+        type: ALL_USER_LOADED_SUCCESS,
+        payload: allUsers
+      });
+    }
+    else {
+      dispatch({
+        type: ALL_USER_LOADED_SUCCESS,
+        payload: usersTable
+      });
+    }
+  }
+  catch(err) {
+    console.error(err);
+    dispatch({
+      type: ALL_USER_LOADED_FAILED
+    });
+  }
+}
 
 
 
+------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
+    
     var currentUser = await dexie.currentUser.get("email", async () => {
       try {
         const resultArray = await dexie.users.where("email").equals(email).toArray();

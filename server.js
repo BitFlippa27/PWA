@@ -1,14 +1,11 @@
-const concurrently = require("concurrently");
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const connectDB = require("./config/db");
-const zips = require("./models/Zips");
-
-
 
 
 app.get("/", (req, res) => res.send("Server läuft!"));
-
+app.use(cors());
 connectDB();
 
 const PORT = process.env.PORT || 5555;
