@@ -10,26 +10,14 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAILED,
     LOGOUT,
-    CHECK_OUT,
-    ALL_USER_LOADED_SUCCESS,
-    ALL_USER_LOADED_FAILED
+    CHECK_OUT
 } from "./types";
 import {setToken } from "../utils/tokening";
 
-
-
-
-
-
 //Load User
 export const loadUser = () =>  async dispatch => {
-  console.log("loadUser")
-  if(localStorage.token) {
-    setToken(localStorage.token);
-    var token = localStorage.getItem("token");
-  }
+  const token = localStorage.getItem("token");
     try {
-      console.log("getReq")
       //const res = await axios.get("/api/auth");
       const res = await fetch("http://localhost:5555/api/auth", {
         method: "GET",
@@ -37,13 +25,12 @@ export const loadUser = () =>  async dispatch => {
         cache: "no-cache",
         headers:  {
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${token}`
+          "X-Auth-Token" :  `${token}` 
         },
         credentials: "omit"
       });
 
       const user = await res.json();
-      console.log("User", user);
       dispatch({
         type: USER_LOADED,
         payload: user
@@ -121,8 +108,7 @@ export const login = ( email, password ) => async dispatch => {
       mode: "cors",
       cache: "no-cache",
       headers:  {
-        "Content-Type": "application/json",
-        "Authorization": "x-auth-token"
+        "Content-Type": "application/json"
       },
       credentials: "omit",
       body: fetchBody

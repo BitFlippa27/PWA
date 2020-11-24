@@ -15,9 +15,7 @@ import { loadUser } from "../../actions/auth";
 
 const Data = ({ auth: { user, loading }, allData, loadLocalData, loadUser }) => {
   useEffect(() => {
-    loadUser();
     loadLocalData();
-    console.log("loadLocalData");
   }, [loadLocalData]);
 
   const rows = allData;

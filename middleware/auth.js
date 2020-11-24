@@ -3,11 +3,11 @@ const config = require("config");
 
 module.exports = function(req, res, next) {
     //Token vom header holen
-    const token = req.headers("Authorization");
+    const token = req.header("x-auth-token");
     //private Route und kein Token vorhanden
     if(!token) {
-        console.log("Kein Token")
-        return res.status(401).json({ msg: "Kein Token, Authentifizierung fehlgeschlagen"});
+        console.log("Kein Token im Header")
+        return res.status(401).json({ msg: "Kein Token im Header, Authentifizierung fehlgeschlagen"});
     }
 
     try {

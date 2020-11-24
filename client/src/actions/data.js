@@ -14,10 +14,9 @@ import { dexie } from "../dexie";
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadServerData = () => async (dispatch) => {
-  //TODO: ServiceWorker einschalten
+  const token = localStorage.getItem("token");
   try {
     var clientTable = await dexie.table("cities").toArray();
-    console.log(clientTable)
     if(clientTable.length === 0) {
       //var res = await axios.get("api/zips");
       const res = await fetch("http://localhost:5555/api/zips", {
@@ -26,7 +25,7 @@ export const loadServerData = () => async (dispatch) => {
         cache: "no-cache",
         headers:{
           "Content-Type" : "application/json",
-          "Authorization": "x-auth-token"
+          "X-Auth-Token": `${token}`
         }, 
         credentials: "omit"
       });
@@ -51,7 +50,7 @@ export const loadServerData = () => async (dispatch) => {
 }
 
 export const loadLocalData = () => async (dispatch) => {
-  //TODO: ServiceWorker einschalten 
+  const token = localStorage.getItem("token");
   try {
     const clientTable = await dexie.table("cities").toArray();
     //const count =  await dexie.cities.count();
@@ -63,12 +62,12 @@ export const loadLocalData = () => async (dispatch) => {
         mode: "cors",
         cache: "no-cache",
         headers:{
-          "Content-Type" : "application/json"
+          "Content-Type" : "application/json",
+          "X-Auth-Token" : `${token}`
         }, 
         credentials: "omit"
       });
       const allServerData = await res.json();
-      console.log("allServerDAta",allServerData);
       await dexie.table("cities").bulkAdd(allServerData);
 
       dispatch({
