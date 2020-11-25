@@ -1,94 +1,297 @@
-//für laden von neuem Cache
-var version = 3;
-var isOnline = true;
+Index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+
+var svworker;
+var swRegistration;
+var usingSW = ("serviceWorker" in navigator);
+var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = false;
-var cacheName = `AppShell`;
 
-var urlsToCache = [
-  "/assets/"
-];
 
-self.addEventListener("install", onInstall);
-self.addEventListener("activate", onActivate);
-self.addEventListener("message", onMessage);
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 
-main();
+if (usingSW) {
+  initServiceWorker().catch(console.error);
+}
 
-async function main() {
+window.addEventListener("online", function online(){
+  isOnline = true;
+  sendStatusUpdate(); //ohne Parameter, nimmt also automatisch aktiven SW
+});
+
+window.addEventListener("offline", function offline() {
+  isOnline = false;
+  sendStatusUpdate();
+});
+
+function isSiteOnline() {
+  return isOnline;
+}
+
+
+async function initServiceWorker() {
+  swRegistration = await navigator.serviceWorker.register("service-worker.js",{
+    updateViaCache: "none" //wir wollen caching selber kontrollieren
+  });
+  // 3 Statuse
+  svworker = swRegistration.installing || swRegistration.waiting || swRegistration.active;
+  sendStatusUpdate(svworker);
+  //Wenn Statusänderung, Benachrichtigung dass neuer aktiver Service Worker jetzt die Webseite kontrolliert
+  navigator.serviceWorker.addEventListener("controllerchange", function onController(){
+    svworker = navigator.serviceWorker.controller;   
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.register('service-worker.js')
+          .then( function (registration) {
+          console.log('Success!', registration.scope);
+          })
+          .catch( function (error) {
+          console.error('Failure!', error);
+          });
+        }
+
+    sendStatusUpdate(svworker);
+  });
+  //auf SW Nachrichten hören
+  navigator.serviceWorker.addEventListener("message", onSWMessage);
+}
+
+
+function onSWMessage(evt) {
+  var { data } = evt;
+  if (data.requestStatusUpdate) {
+    console.log(`Received status update request from service worker, responding...`);
+     //SW kommuniziert mit mehreren Seiten/Tabs somit Nachrichten an einen Message channel mit Ports wo SW hört
+    sendStatusUpdate(evt.ports && evt.ports[0]);
+
+  }
+}
+
+function sendStatusUpdate(target) {
+  sendSWMessage({statusUpdate: { isOnline, isLoggedIn }}, target);
+}
+
+
+async function sendSWMessage(msg, target) {
+  if (target) {
+    target.postMessage(msg);
+  }
+  else {
+    navigator.serviceWorker.controller.postMessage(msg);
+  }
+}
+
+
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+/*
+if(swExists) {
+  initServiceWorker();
+}
+
+if(!isOnline) {
+  //offlineIcon.remove()
+}
+
+
+  window.addEventListener("online", function online() {
+    //offlineIcon.remove();
+    console.log("online");
+    isOnline = true;
+    sendStatusUpdate();
+  });
+
+  window.addEventListener("offline", function offline() {
+    //offlineIcon.add();
+    console.log("offline");
+    isOnline = false;
+    sendStatusUpdate(); //kein Argument -> nimm automatisch aktuellen SW
+  });
+
+
+async function initServiceWorker() {
   try {
-    await sendMessage({ requestStatusUpdate: true });
-    await cacheAppShell();
+    swRegistration = await navigator.serviceWorker.register("serviceWorker.js", {
+      updateViaCache: "none"
+    });
+    svWorker = swRegistration.installing || swRegistration.waiting || swRegistration.active;
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      svWorker = navigator.serviceWorker.controller;
+      sendStatusUpdate(svWorker);
+    }); // neuer SW hat übernommen
+
+    navigator.serviceWorker.addEventListener("message", onSWMessage);
   }
   catch(err) {
     console.error(err);
   }
 }
 
-async function onInstall(evt) {
-  console.log(`ServiceWorker (${version}) installed...`);
-  evt.waitUntil(cacheAppShell(true));
-  self.skipWaiting();
-}
-
-
-//Statusanfrage an alle Clients
-async function sendMessage(msg) {
-  var allClients =  await clients.matchAll({ includeUncontrolled: true});  // Liste aller Clients
-  return Promise.all(
-    allClients.map(function clientMsg(client){
-      var channel = new MessageChannel();   		         //neuer Messagechannel für jeden Client
-      channel.port1.onmessage = onMessage; 			        //auf Statusupdates auf aktuellen Message Channel lauschen
-      return client.postMessage(msg,[channel.port2]); // Statusanfrage senden
-    })
-  );
-}
-
-function onMessage({ data }) {
-  if(data.statusUpdate) {
-    ({ isOnline, isLoggedIn } = data.statusUpdate);
-    console.log(`ServiceWorker (v${cacheName}) status update... isOnline: ${isOnline}, isLoggedIn: ${isLoggedIn}`);
+// SW hat kein offline,online Event und kein Zugriff auf Cookies deswegen soll App uns informieren
+function onSWMessage(evt) {
+  var { data } = evt;
+  if(data.requestStatusUpdate) {
+    console.log("Statusupdate request from SW received");
+    sendStatusUpdate(evt.ports && evt.ports[0]); //SW lauscht auf diesen MessageChannelPort
   }
 }
+
+function sendStatusUpdate(target) {
+  sendSWMessage({statusUpdate: { isOnline, isLoggedIn }}, target);
+}
+
+function sendSWMessage(msg, target) {
+  if(target) {
+    target.postMessage(msg);
+  }
+  else if (svWorker) {
+    svWorker.postMessage(msg);
+  }
+  else {
+    navigator.serviceWorker.controller.postMessage(msg);
+  }
+}
+*/
+
+service-worker.js
+/* eslint-disable no-restricted-globals */
+
+// This service worker can be customized!
+// See https://developers.google.com/web/tools/workbox/modules
+// for the list of available Workbox modules, or add any other
+// code you'd like.
+// You can also remove this file if you'd prefer not to use a
+// service worker, and the Workbox build step will be skipped.
+
+import { clientsClaim, setCacheNameDetails } from 'workbox-core';
+import { ExpirationPlugin } from 'workbox-expiration';
+import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
+import { StaleWhileRevalidate } from 'workbox-strategies';
+
+const version = 8;
+var isLoggedIn = false;
+var isOnline = true;
+
+self.addEventListener("install", onInstall);
+self.addEventListener("activate", onActivate);
+self.addEventListener("message", onMessage);
+//self.addEventListener("fetch", onFetch);
+
+main().catch(console.error);
+
+setCacheNameDetails({
+  prefix: 'goodSync',
+  suffix: 'v1',
+  precache: 'appShellPrecache',
+  runtime: 'runtimeCaching'
+});
+
+
+async function main() {
+	await sendMessage({ requestStatusUpdate: true});
+}
+
+async function sendMessage(msg) {
+	var allClients =  await clients.matchAll({ includeUncontrolled: true});  // Liste aller Clients
+	return Promise.all(
+		allClients.map(function clientMsg(client){
+			var channel = new MessageChannel();   			//neuer Messagechannel für jeden Client
+			channel.port1.onmessage = onMessage; 			//auf Statusupdates auf aktuellen Message Channel lauschen
+			return client.postMessage(msg,[channel.port2]); // Statusanfrage senden
+
+		})
+	);
+}
+
+
+
+
+//clientsClaim();
+
+// Precache all of the assets generated by your build process.
+// Their URLs are injected into the manifest variable below.
+// This variable must be present somewhere in your service worker file,
+// even if you decide not to use precaching. See https://cra.link/PWA
+precacheAndRoute(self.__WB_MANIFEST);
+
+// Set up App Shell-style routing, so that all navigation requests
+// are fulfilled with your index.html shell. Learn more at
+// https://developers.google.com/web/fundamentals/architecture/app-shell
+const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
+registerRoute(
+  // Return false to exempt requests from being fulfilled by index.html.
+  ({ request, url }) => {
+    // If this isn't a navigation, skip.
+    if (request.mode !== 'navigate') {
+      return false;
+    } // If this is a URL that starts with /_, skip.
+
+    if (url.pathname.startsWith('/_')) {
+      return false;
+    } // If this looks like a URL for a resource, because it contains // a file extension, skip.
+
+    if (url.pathname.match(fileExtensionRegexp)) {
+      return false;
+    } // Return true to signal that we want to use the handler.
+
+    return true;
+  },
+  createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
+);
+
+// An example runtime caching route for requests that aren't handled by the
+// precache, in this case same-origin .png requests like those from in public/
+registerRoute(
+  // Add in any other file extensions or routing criteria as needed.
+  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+  new StaleWhileRevalidate({
+    cacheName: 'images',
+    plugins: [
+      // Ensure that once this runtime cache reaches a maximum size the
+      // least-recently used images are removed.
+      new ExpirationPlugin({ maxEntries: 50 }),
+    ],
+  })
+);
+
+// This allows the web app to trigger skipWaiting via
+// registration.waiting.postMessage({type: 'SKIP_WAITING'})
+
+function onMessage({ data }) {
+	if (data.statusUpdate) {
+		({ isOnline, isLoggedIn } = data.statusUpdate);
+		console.log(`Service Worker (v${version}) status update, isOnline: ${isOnline}, isLoggedIn${isLoggedIn}`);
+
+	}
+}
+
+async function onInstall(evt) {
+	console.log(`Service Worker (${version}) installed... `);
+	self.skipWaiting();
+}
+
 function onActivate(evt) {
-  //beende SW erst wenn kompletter Cache geladen
-  evt.waitUntil(handleActivation());
+	evt.waitUntil(handleActivation()); 			//Browser informieren noch nicht alle Prozesse zu beenden bis alles gecached ist
+
 }
 
 async function handleActivation() {
-  //nutze neuen SW direkt und nicht bis zum nächsten laden der Seite
-  await clients.claim();
-  //await cacheAppShell(/*forceReload=*/true);
-  console.log(`ServiceWorker (${version}) activated..`);
+	await clients.claim();    		//nutze neuen SW direkt und nicht bis zum nächsten laden der Seite
+	console.log(`Service Worker (${version}) activated... `);
 }
 
-async function cacheAppShell(forceReload = false) {
-  var cache = await caches.open(cacheName);
 
-  return Promise.all(
-    urlsToCache.map(async function requestFile(url){
-      try {
-        let res;
-
-        if(!forceReload) {
-          res = await cache.match(url);
-          if(res) {
-            return res;
-          }
-        }
-
-        let fetchOptions = {
-          method: "GET",
-          cache: "no-cache", //eigene Kontrolle über caching
-          credentials: "omit"
-        };
-        res = await fetch(url, fetchOptions);
-        if(res.ok) {
-          await cache.put(url, res);
-        }
-      }
-      catch(err) {
-        console.error(err);
-      }
-    })
-  );
-}
+// Any other custom service worker logic can go here.

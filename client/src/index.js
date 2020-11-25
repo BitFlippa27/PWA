@@ -2,14 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+
 
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = false;
 var swRegistration;
-var svWorker;
-var swExists = ("serviceWorker" in navigator);
+var svworker;
+var usingSW = ("serviceWorker" in navigator);
 
 ReactDOM.render(
   <React.StrictMode>
@@ -18,61 +18,61 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-serviceWorkerRegistration.register();
 
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-/*
-if(swExists) {
-  initServiceWorker();
+if (usingSW) {
+  initServiceWorker().catch(console.error);
 }
 
-if(!isOnline) {
-  //offlineIcon.remove()
+window.addEventListener("online", function online(){
+  isOnline = true;
+  sendStatusUpdate(); //ohne Parameter, nimmt also automatisch aktiven SW
+});
+
+window.addEventListener("offline", function offline() {
+  isOnline = false;
+  sendStatusUpdate();
+});
+
+function isSiteOnline() {
+  return isOnline;
 }
-
-
-  window.addEventListener("online", function online() {
-    //offlineIcon.remove();
-    console.log("online");
-    isOnline = true;
-    sendStatusUpdate();
-  });
-
-  window.addEventListener("offline", function offline() {
-    //offlineIcon.add();
-    console.log("offline");
-    isOnline = false;
-    sendStatusUpdate(); //kein Argument -> nimm automatisch aktuellen SW
-  });
 
 
 async function initServiceWorker() {
-  try {
-    swRegistration = await navigator.serviceWorker.register("serviceWorker.js", {
-      updateViaCache: "none"
-    });
-    svWorker = swRegistration.installing || swRegistration.waiting || swRegistration.active;
+  swRegistration = await navigator.serviceWorker.register("service-worker.js",{
+    updateViaCache: "none" //wir wollen caching selber kontrollieren
+  });
+  // 3 Statuse
+  svworker = swRegistration.installing || swRegistration.waiting || swRegistration.active;
+  sendStatusUpdate(svworker);
+  //Wenn Statusänderung, Benachrichtigung dass neuer aktiver Service Worker jetzt die Webseite kontrolliert
+  navigator.serviceWorker.addEventListener("controllerchange", function onController(){
+    svworker = navigator.serviceWorker.controller;   
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.register('service-worker.js')
+          .then( function (registration) {
+          console.log('Success!', registration.scope);
+          })
+          .catch( function (error) {
+          console.error('Failure!', error);
+          });
+        }
 
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      svWorker = navigator.serviceWorker.controller;
-      sendStatusUpdate(svWorker);
-    }); // neuer SW hat übernommen
-
-    navigator.serviceWorker.addEventListener("message", onSWMessage);
-  }
-  catch(err) {
-    console.error(err);
-  }
+    sendStatusUpdate(svworker);
+  });
+  //auf SW Nachrichten hören
+  navigator.serviceWorker.addEventListener("message", onSWMessage);
 }
 
-// SW hat kein offline,online Event und kein Zugriff auf Cookies deswegen soll App uns informieren
+
 function onSWMessage(evt) {
   var { data } = evt;
-  if(data.requestStatusUpdate) {
-    console.log("Statusupdate request from SW received");
-    sendStatusUpdate(evt.ports && evt.ports[0]); //SW lauscht auf diesen MessageChannelPort
+  if (data.requestStatusUpdate) {
+    console.log(`Received status update request from service worker, responding...`);
+     //SW kommuniziert mit mehreren Seiten/Tabs somit Nachrichten an einen Message channel mit Ports wo SW hört
+    sendStatusUpdate(evt.ports && evt.ports[0]);
+
   }
 }
 
@@ -80,16 +80,15 @@ function sendStatusUpdate(target) {
   sendSWMessage({statusUpdate: { isOnline, isLoggedIn }}, target);
 }
 
-function sendSWMessage(msg, target) {
-  if(target) {
+
+async function sendSWMessage(msg, target) {
+  if (target) {
     target.postMessage(msg);
-  }
-  else if (svWorker) {
-    svWorker.postMessage(msg);
   }
   else {
     navigator.serviceWorker.controller.postMessage(msg);
   }
 }
-*/
+
+
 
