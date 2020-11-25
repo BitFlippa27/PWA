@@ -14,11 +14,12 @@ import { StaleWhileRevalidate } from 'workbox-strategies';
 const version = 8;
 var isLoggedIn = false;
 var isOnline = true;
+var cacheName = "tmpCache";
 
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
 self.addEventListener("message", onMessage);
-//self.addEventListener("fetch", onFetch);
+self.addEventListener("fetch", onFetch);
 
 main().catch(console.error);
 
@@ -97,8 +98,38 @@ registerRoute(
   })
 );
 
-// This allows the web app to trigger skipWaiting via
-// registration.waiting.postMessage({type: 'SKIP_WAITING'})
+/*
+function onFetch(evt) {
+  evt.respondWith(serviveWorkerRouter(evt.request));
+}
+
+async function serviveWorkerRouter(req) {
+  var url = new URL(req.url);
+  var reqURL = url.pathname;
+  var cache = await caches.open(cacheName);
+
+  if (url === "http://localhost:5555/api/user"){
+    try {
+      let fetchOptions = {
+        method: req.method,
+        headers: req.headers,
+        credentials: "omit",
+        cache: "no-store",
+        mode: "cors"
+      };
+      let res = await fetch(req.url, fetchOptions);
+      if (res && res.ok) {
+        await cache.put(reqURL, res.clone());
+        return res;
+      }
+    }
+    catch(err) {}
+  }
+  
+ 
+  
+}
+*/
 
 function onMessage({ data }) {
 	if (data.statusUpdate) {
@@ -108,12 +139,14 @@ function onMessage({ data }) {
 	}
 }
 
+
 async function onInstall(evt) {
 	console.log(`Service Worker (${version}) installed... `);
 	self.skipWaiting();
 }
 
 function onActivate(evt) {
+  //await clearCaches(); // wenn neuer SW in Kontrolle, alten cache leeren
 	evt.waitUntil(handleActivation()); 			//Browser informieren noch nicht alle Prozesse zu beenden bis alles gecached ist
 
 }
