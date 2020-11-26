@@ -3,6 +3,7 @@ export const REMOVE_ALERT = "REMOVE_ALERT";
 export const REGISTER_FAILED = "REGISTER_FAIL";
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const USER_LOADED = "USER_LOADED";
+export const USER_ID_SAVED = "USER_ID_SAVED"
 export const USER_LOADED_FAILED =  "USER_LOADED_FAILED";
 export const LOGIN_SUCCESS =  "LOGIN_SUCCESS";
 export const LOGIN_FAILED =  "LOGIN_FAIL";

@@ -6,7 +6,7 @@ import App from './App';
 
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
-var isLoggedIn = false;
+var isLoggedIn = ("token" in localStorage) ? true : false;  
 var swRegistration;
 var svworker;
 var usingSW = ("serviceWorker" in navigator);

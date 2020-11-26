@@ -5,7 +5,7 @@ import Loader from "../Loader";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { loadLocalData } from "../../actions/data";
-import { loadUser } from "../../actions/auth";
+
 
 
 
@@ -13,7 +13,7 @@ import { loadUser } from "../../actions/auth";
 
 //TODO: Button für loadServerData
 
-const Data = ({ auth: { user, loading }, allData, loadLocalData, loadUser }) => {
+const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
   useEffect(() => {
     loadLocalData();
   }, [loadLocalData]);
@@ -76,7 +76,6 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData, loadUser }) => 
 Data.propTypes = {
   auth: PropTypes.object.isRequired,
   loadLocalData: PropTypes.func.isRequired,
-  loadUser: PropTypes.func.isRequired,
   allData: PropTypes.array.isRequired,
 };
 
@@ -85,4 +84,4 @@ const mapStateToProps = (state) => ({
   allData: state.data.allData,
 });
 
-export default connect(mapStateToProps, { loadLocalData, loadUser })(Data);
+export default connect(mapStateToProps, { loadLocalData })(Data);

@@ -19,7 +19,7 @@ var cacheName = "tmpCache";
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
 self.addEventListener("message", onMessage);
-self.addEventListener("fetch", onFetch);
+
 
 main().catch(console.error);
 
@@ -83,6 +83,8 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
+
+
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
@@ -98,38 +100,24 @@ registerRoute(
   })
 );
 
-/*
-function onFetch(evt) {
-  evt.respondWith(serviveWorkerRouter(evt.request));
+const apiAuth = ({url, request, event}) => {
+  return (url.origin === "http://localhost:5000/data");
 }
-
-async function serviveWorkerRouter(req) {
-  var url = new URL(req.url);
-  var reqURL = url.pathname;
-  var cache = await caches.open(cacheName);
-
-  if (url === "http://localhost:5555/api/user"){
-    try {
-      let fetchOptions = {
-        method: req.method,
-        headers: req.headers,
-        credentials: "omit",
-        cache: "no-store",
-        mode: "cors"
-      };
-      let res = await fetch(req.url, fetchOptions);
-      if (res && res.ok) {
-        await cache.put(reqURL, res.clone());
-        return res;
-      }
+const authHandler = async ({url, event, request}) => {
+  if(isOnline === false) {
+    if (isLoggedIn === false) {
+      return new Response.redirect("http://localhost:5000/login",307);
     }
-    catch(err) {}
   }
-  
- 
-  
+  if(isOnline === true) {
+    if (isLoggedIn === false) {
+      return new Response.redirect("http://localhost:5000/login",307);
+    }
+  }
 }
-*/
+
+registerRoute(apiAuth, authHandler);
+
 
 function onMessage({ data }) {
 	if (data.statusUpdate) {

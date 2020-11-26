@@ -1,18 +1,18 @@
-import axios from "axios";
+  import axios from "axios";
 import { setAlert } from "./alert";
-import { loadServerData } from "./data";
-import { dexie } from "../dexie";
+import jwt_decode from "jwt-decode";
 import {
     REGISTER_SUCCESS,
     REGISTER_FAILED,
     USER_LOADED,
+    USER_ID_SAVED,
     USER_LOADED_FAILED,
     LOGIN_SUCCESS,
     LOGIN_FAILED,
     LOGOUT,
     CHECK_OUT
 } from "./types";
-import {setToken } from "../utils/tokening";
+
 
 //Load User
 export const loadUser = () =>  async dispatch => {
@@ -42,12 +42,44 @@ export const loadUser = () =>  async dispatch => {
       dispatch({
         type: USER_LOADED_FAILED
       });
-    }  
-    
-      
+    }     
 }
 
+export const loadUserOffline = () =>  async dispatch => {
+  //aktueller Token, wir wissen nicht ob es der Token ist der vom Server ausgestellt wurde
+  const token = localStorage.getItem("token"); 
+  //UserID vom Token der direkt nach dem Login vom Server herausgegeben wurde
+  const userID = localStorage.getItem("UserID");
+
+    try {
+      const decoded = await jwt_decode(token);
+      const user = decoded.user;
+      const currentUserID = user.id;
+      //Wenn die UserIds nicht gleich sind bedeutet das, der Token wurde kompromitiert bzw. ausgetauscht
+      if(userID === currentUserID) {
+        dispatch({
+          type: USER_LOADED,
+          payload: user
+        });
+      }
+    }
+    catch(err) {
       
+      dispatch({
+        type: USER_LOADED_FAILED
+      });
+
+      dispatch({
+        type: LOGOUT
+      });
+      console.error(err);
+    }     
+    
+
+    
+
+}
+    
      
 
 //Register User
@@ -114,13 +146,14 @@ export const login = ( email, password ) => async dispatch => {
       body: fetchBody
       });
     
-    const token = await res.json();
+    var token = await res.json();
     //var token = res.data;
-
+    
     dispatch({
       type: LOGIN_SUCCESS,
       payload: token
     });
+
     dispatch(loadUser());
   }
   catch (err) {
@@ -133,8 +166,22 @@ export const login = ( email, password ) => async dispatch => {
     dispatch({
       type: LOGIN_FAILED
     });
-  }    
+  }
+  try {
+    
+    console.log(token)
+    const decoded = await jwt_decode(token.token);
+    const id = decoded.user.id;
 
+    dispatch({
+      type: USER_ID_SAVED,
+      payload: id
+    });
+  } 
+  catch (err) {
+    console.error(err);
+  }
+  
 };
 
 //Logout

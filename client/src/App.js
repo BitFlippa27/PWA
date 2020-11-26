@@ -8,23 +8,27 @@ import Navbar from "./components/Navbar";
 import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import PrivateRoute from "./components/routes/PrivateRoute";
-import { loadUser } from "./actions/auth";
+import { loadUser, loadUserOffline } from "./actions/auth";
 //import { loadLocalData } from "./actions/data";
-import { setToken } from "./utils/tokening";
+
 //Redux
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
 
 
 
-
-if (localStorage.token) {
-  //every time app gets loaded
-  setToken(localStorage.token);
-  store.dispatch(loadUser());
-
-  //store.dispatch(loadLocalData());
+if(navigator.onLine === true) {
+  if (localStorage.token) {
+    store.dispatch(loadUser());
+  }
 }
+if(navigator.onLine === false) {
+  if (localStorage.token) {
+    store.dispatch(loadUserOffline());
+  } 
+}
+
+
 const App = () => {
   return (
     <Provider store={store}>
