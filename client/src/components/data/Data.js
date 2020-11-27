@@ -38,6 +38,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
     <Loader />
   ) : (
     <Fragment>
+      <section className="container-data">
       <h1 className="large text-primary"> Alle Daten </h1>
       <p className="lead">
         <i className="fas fa-user"></i> Willkommen {user && user.name}
@@ -68,7 +69,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
             </tbody>
           </table>
       </div>
-
+      </section>
     </Fragment>
   );
 };

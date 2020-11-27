@@ -1,4 +1,3 @@
-
 /* Global Styles */
 :root {
   --primary-color: #17a2b8;
@@ -7,7 +6,6 @@
   --danger-color: #dc3545;
   --success-color: #28a745;
 }
-
 
 * {
   box-sizing: border-box;
@@ -45,31 +43,53 @@ img {
   width: 100%;
 }
 
+.pictures {
+  border: 1px solid #ddd; /* Gray border */
+  border-radius: 4px; /* Rounded border */
+  padding: 5px; /* Some padding */
+  width: 150px; /* Set a small width */
+}
+
+.pictures:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
 
 .connectivity-status {
-	position: absolute;
-	top: 5px;
-	right: 500px;
-	width: 5px;
-	height: 50px;
-	background: url(img/offline.png) 0px 0px/55px 49px no-repeat;
+  position: absolute;
+  top: 5px;
+  right: 500px;
+  width: 5px;
+  height: 50px;
+  background: url(img/offline.png) 0px 0px/55px 49px no-repeat;
 }
 
 #connectivity-status.hidden {
-	display: none;
+  display: none;
 }
 
 /* Utilities */
-.container {
-  max-width: 2000px;
+
+.container-data {
+  height: 100%;
+  width: 90%;
   margin: auto;
-  overflow: hidden;
-  padding: 0 2rem;
-  margin-top: 6rem;
-  margin-bottom: 3rem;
+  margin-top: 8rem;
+  display: flex;
+  flex-direction: column;
+  
 }
 
-
+.container-home {
+  height: 100%;
+  width: 80%;
+  margin: auto;
+  margin-top: 13rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 /* Text Styles*/
 .x-large {
   font-size: 4rem;
@@ -173,7 +193,6 @@ img {
   margin: 0.3rem;
   background: var(--light-color);
   color: #333;
-
 }
 
 .alert {
@@ -237,7 +256,7 @@ img {
 .btn:hover {
   opacity: 0.8;
 }
-.actions:hover{
+.actions:hover {
   opacity: 0.8;
 }
 
@@ -269,8 +288,6 @@ img {
 /* Forms */
 .form .form-group {
   margin: 1.2rem 0;
-
-
 }
 
 .form .form-text {
@@ -278,49 +295,23 @@ img {
   margin-top: 0.3rem;
   color: #888;
 }
-
-.form input[type='text'],
-.form input[type='email'],
-.form input[type='password'],
-.form input[type='date'],
+.form input[type="text"],
+.form input[type="email"],
+.form input[type="password"],
+.form input[type="date"],
 .form select,
 .form textarea {
   display: block;
-  width: 70%;
   padding: 0.4rem;
+  width: 100%;
   font-size: 1.2rem;
   border: 1px solid #ccc;
   border-radius: 10px;
 }
 
-.form input[type='submit'],
+.form input[type="submit"],
 button {
   font: inherit;
-}
-
-.form .social-input {
-  display: flex;
-}
-
-.form .social-input i {
-  padding: 0.5rem;
-  width: 4rem;
-}
-
-.form .social-input i.fa-twitter {
-  color: #38a1f3;
-}
-.form .social-input i.fa-facebook {
-  color: #3b5998;
-}
-.form .social-input i.fa-instagram {
-  color: #3f729b;
-}
-.form .social-input i.fa-youtube {
-  color: #c4302b;
-}
-.form .social-input i.fa-linkedin {
-  color: #0077b5;
 }
 
 .table th,
@@ -337,14 +328,14 @@ button {
   border-left: solid;
   border-right: solid;
   border-top: solid;
-  }
+}
 
 /* Navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.7rem 2rem;
+  padding: 0.8rem 2rem;
   position: fixed;
   z-index: 1;
   width: 100%;
@@ -360,9 +351,8 @@ button {
 .navbar a {
   color: #fff;
   padding: 0.45rem;
-  margin:  0.25rem;
+  margin: 0.25rem;
   font-weight: bold;
-
 }
 
 .navbar a:hover {
@@ -377,8 +367,6 @@ button {
 .homepage {
   position: relative;
   height: 100vh;
-
-
 }
 
 .homepage-inner {
@@ -408,10 +396,10 @@ button {
 .profile-grid {
   display: grid;
   grid-template-areas:
-    'top top'
-    'about about'
-    'exp edu'
-    'github github';
+    "top top"
+    "about about"
+    "exp edu"
+    "github github";
   grid-gap: 1rem;
 }
 
@@ -568,7 +556,6 @@ button {
 
   .navbar h1 {
     margin-bottom: 1rem;
-
   }
 
   .navbar .welcome {
@@ -595,11 +582,11 @@ button {
 
   .profile-grid {
     grid-template-areas:
-      'top'
-      'about'
-      'exp'
-      'edu'
-      'github';
+      "top"
+      "about"
+      "exp"
+      "edu"
+      "github";
   }
 
   .profile-about .skills {
@@ -622,6 +609,6 @@ button {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }

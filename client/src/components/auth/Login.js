@@ -29,14 +29,14 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
 
   return (
     <Fragment>
-      <section className="container">
+      <section className="container-home">
         <h1 className="large text-primary">Anmelden</h1>
         <p className="lead">
           <i className="fas fa-user"></i> Loggen Sie sich in ihr Konto ein
         </p>
         <form className="form" onSubmit={(e) => onSubmit(e)}>
-          <div className="form-group">
-            <input
+          <div className="form-group ">
+            <input 
               type="email"
               placeholder="Email Adresse"
               name="email"
@@ -45,8 +45,8 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
               required
             />
           </div>
-          <div className="form-group">
-            <input
+          <div className="form-group ">
+            <input 
               type="password"
               placeholder="Passwort"
               name="password"

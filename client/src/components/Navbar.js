@@ -38,11 +38,11 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
 
   return (
     <nav className="navbar bg-dark">
-      <h1>
+      <h2>
         <Link to="/">
-          <i className="fas fa-code" /> Company
+          <i className="fas fa-code" /> GoodSync
         </Link>
-      </h1>
+      </h2>
       <Fragment>{isAuthenticated ? authLinks : guestLinks}</Fragment>
     </nav>
 

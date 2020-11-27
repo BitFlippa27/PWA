@@ -39,13 +39,13 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
 
   return (
     <Fragment>
-     <section className="container">
+     <section className="container-home">
 
       <h1 className="large text-primary">Registrierung</h1>
       <p className="lead"><i className="fas fa-user"></i> Erstellen Sie ihr Konto</p>
       <form className="form" onSubmit={e => onSubmit(e)}>
         <div className="form-group">
-          <input
+          <input 
             type="text"
             placeholder="Name"
             name="name"
@@ -55,7 +55,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
           />
         </div>
         <div className="form-group">
-          <input
+          <input 
             type="email"
             placeholder="Email Adresse"
             name="email"
@@ -65,7 +65,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
           />
         </div>
         <div className="form-group">
-          <input
+          <input 
             type="password"
             placeholder="Passwort"
             name="password"
@@ -75,7 +75,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
           />
         </div>
         <div className="form-group">
-          <input
+          <input 
             type="password"
             placeholder="Passwort bestätigen"
             name="password2"

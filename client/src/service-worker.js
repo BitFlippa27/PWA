@@ -26,8 +26,7 @@ main().catch(console.error);
 setCacheNameDetails({
   prefix: 'goodSync',
   suffix: 'v1',
-  precache: 'appShellPrecache',
-  runtime: 'runtimeCaching'
+  precache: 'appShellPrecache'
 });
 
 
@@ -62,7 +61,7 @@ precacheAndRoute(self.__WB_MANIFEST);
 // are fulfilled with your index.html shell. Learn more at
 // https://developers.google.com/web/fundamentals/architecture/app-shell
 const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
-registerRoute(
+/*registerRoute(
   // Return false to exempt requests from being fulfilled by index.html.
   ({ request, url }) => {
     // If this isn't a navigation, skip.
@@ -82,14 +81,14 @@ registerRoute(
   },
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
-
+*/
 
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.jpg'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: 'images',
     plugins: [
@@ -115,8 +114,8 @@ const authHandler = async ({url, event, request}) => {
     }
   }
 }
-
-registerRoute(apiAuth, authHandler);
+registerRoute(/.*(?:googleapis|bootstrap|fontawesome)\.com.*$/, new StaleWhileRevalidate({cacheName: "3rdParty"}));
+//registerRoute(apiAuth, authHandler);
 
 
 function onMessage({ data }) {
