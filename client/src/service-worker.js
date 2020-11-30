@@ -4,12 +4,13 @@
 // code you'd like.
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
-
+//importScripts("dexie.js");
 import { clientsClaim, setCacheNameDetails } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import { dexie } from './dexie';
 
 const version = 8;
 var isLoggedIn = false;
@@ -19,7 +20,6 @@ var cacheName = "tmpCache";
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
 self.addEventListener("message", onMessage);
-
 
 main().catch(console.error);
 
@@ -99,24 +99,27 @@ registerRoute(
   })
 );
 
-const apiAuth = ({url, request, event}) => {
-  return (url.origin === "http://localhost:5000/data");
-}
-const authHandler = async ({url, event, request}) => {
-  if(isOnline === false) {
-    if (isLoggedIn === false) {
-      return new Response.redirect("http://localhost:5000/login",307);
-    }
-  }
-  if(isOnline === true) {
-    if (isLoggedIn === false) {
-      return new Response.redirect("http://localhost:5000/login",307);
-    }
-  }
-}
-registerRoute(/.*(?:googleapis|bootstrap|fontawesome)\.com.*$/, new StaleWhileRevalidate({cacheName: "3rdParty"}));
-//registerRoute(apiAuth, authHandler);
 
+registerRoute(/.*(?:googleapis|bootstrapcdn|fontawesome)\.com.*$/, new StaleWhileRevalidate({cacheName: "3rdParty"}));
+
+const dataUploadHandler = async({url, request, event}) => {
+  try {
+  
+    const res = await fetch(request);
+    const clonedRes = await res.clone();
+    const city = await clonedRes.json();
+
+    await dexie.cities.clear();
+    await dexie.newCities.add(city);
+    
+    return res;
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+
+registerRoute("http://localhost:5555/api/zips", dataUploadHandler, "POST");
 
 function onMessage({ data }) {
 	if (data.statusUpdate) {

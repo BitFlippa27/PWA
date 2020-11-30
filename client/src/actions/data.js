@@ -3,8 +3,11 @@ import {
   SERVER_DATALOAD_FAILED,
   CLIENT_DATALOAD_SUCCESS,
   CLIENT_DATALOAD_FAILED,
-  DATA_INSERTED,
-  DATA_INSERTED_FAILED,
+  LOCALDATA_INSERT_SUCCESS,
+  LOCALDATA_INSERT_FAILED,
+  SERVER_DATAUPLOAD_SUCCESS,
+  SERVER_DATAUPLOAD_FAILED
+
 } from "./types";
 import axios from "axios";
 import { setAlert } from "./alert";
@@ -94,6 +97,7 @@ export const loadLocalData = () => async (dispatch) => {
   }
 };
 export const insertData = (formData) => async (dispatch) => {
+  const token = localStorage.getItem("token");
   const { city, zip, pop } = formData;
 
   try {
@@ -102,21 +106,23 @@ export const insertData = (formData) => async (dispatch) => {
       zip: zip,
       pop: pop
     });
+    /*
     await dexie.newCities.add({
       city: city,
       zip: zip,
       pop: pop
     });
-    //if Offline
+    */
+   
     dispatch({
-      type: DATA_INSERTED,
+      type: LOCALDATA_INSERT_SUCCESS,
       payload: formData
     });
     dispatch(setAlert("Datensatz hinzugefügt", "success"));
 
   } catch (err) {
     dispatch({
-      type: DATA_INSERTED_FAILED,
+      type: LOCALDATA_INSERT_FAILED,
       payload: {
         msg: err.response.statusText,
         status: err.response.status
@@ -130,16 +136,27 @@ export const insertData = (formData) => async (dispatch) => {
       }
     };
     try {
-      await axios.post("/api/zips", formData, config);
+      //await axios.post("/api/zips", formData, config);
+      const postData = JSON.stringify(formData); 
+      await fetch("http://localhost:5555/api/zips", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers:{
+          "Content-Type" : "application/json",
+          "X-Auth-Token" : `${token}`
+        }, 
+        credentials: "omit",
+        body: `${postData}`
+      });
 
       dispatch({
-        type: DATA_INSERTED,
-        payload: formData
+        type: SERVER_DATAUPLOAD_SUCCESS
       });
 
     } catch (err) {
       dispatch({
-        type: DATA_INSERTED_FAILED,
+        type: SERVER_DATAUPLOAD_FAILED,
         payload: {
           msg: err.response.statusText,
           status: err.response.status

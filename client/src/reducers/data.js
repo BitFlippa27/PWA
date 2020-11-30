@@ -5,8 +5,10 @@ import {
   CLIENT_DATALOAD_FAILED,
   ALL_DATA_TO_DEXIE_SUCCESS,
   ALL_DATA_TO_DEXIE_FAILED,
-  DATA_INSERTED,
-  DATA_INSERTED_FAILED,
+  LOCALDATA_INSERT_SUCCESS,
+  LOCALDATA_INSERT_FAILED,
+  SERVER_DATAUPLOAD_SUCCESS,
+  SERVER_DATAUPLOAD_FAILED
 } from "../actions/types";
 
 const initialState = {
@@ -33,15 +35,22 @@ export default function (state = initialState, action) {
       return { ...state, loading: false };
     case ALL_DATA_TO_DEXIE_FAILED:
       return { ...state, error: payload, loading: false };
-    case DATA_INSERTED:
+    case LOCALDATA_INSERT_SUCCESS:
       return {
         ...state,
         allData: [...state.allData, payload],
         lastEntries: [...state.lastEntries, payload],
         loading: false,
       };
-    case DATA_INSERTED_FAILED:
+    case LOCALDATA_INSERT_SUCCESS:
       return { ...state, error: payload, loading: false };
+    case LOCALDATA_INSERT_FAILED:
+      return { ...state, error: payload, loading: false };
+    case SERVER_DATAUPLOAD_SUCCESS:
+      return { ...state, loading: false };
+    case SERVER_DATAUPLOAD_FAILED:
+      return { ...state, error: payload, loading: false };
+
     default:
       return state;
   }
