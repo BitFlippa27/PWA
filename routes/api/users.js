@@ -12,7 +12,7 @@ const inputChecks = [
 ];
 const User = require("../../models/User");
 const auth = require("../../middleware/auth");
-const cors = require("../../middleware/cors");
+
 
 
 //@route POST api/users

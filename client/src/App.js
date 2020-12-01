@@ -37,7 +37,7 @@ const App = () => {
         <Fragment>
           <Route exact path="/" component={Homepage} />
           <Navbar />
-            <Alert />
+          <Alert />
             <Switch>
               <Route exact path="/pictures" component={Pictures} />
               <Route exact path="/register" component={Register} />

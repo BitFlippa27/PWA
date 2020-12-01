@@ -79,6 +79,16 @@ img {
   
 }
 
+.container-pics {
+  height: 100%;
+  width: 90%;
+  margin: auto;
+  margin-top: 8rem;
+  display: flex;
+  flex-direction: column;
+  
+}
+
 .container-home {
   height: 100%;
   width: 80%;
@@ -197,7 +207,7 @@ img {
 
 .alert {
   padding: 0.8rem;
-  margin: 1rem 0;
+  margin: 1rem 5rem;
   opacity: 0.9;
   background: var(--light-color);
   color: #333;
@@ -335,7 +345,7 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 2rem;
+  padding: 1.3rem 2rem;
   position: fixed;
   z-index: 1;
   width: 100%;

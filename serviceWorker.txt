@@ -295,3 +295,28 @@ async function handleActivation() {
 
 
 // Any other custom service worker logic can go here.
+
+
+function matchURL({ url, request }) {
+  return request.headers.get("accept").includes("text/html");
+}
+async function fallbackHandler({ url, request }) {
+  try { 
+    const res = await caches.match(request);
+    if(res) {
+      return res;
+    }
+    else {
+      const res = await fetch(request);
+      const cache = await caches.open("dynamic");
+      await cache.put(url, res.clone());
+
+      return res;
+    }
+  }
+  catch(err) {
+    return notFoundResponse();
+  }
+}
+
+registerRoute(matchURL, fallbackHandler);

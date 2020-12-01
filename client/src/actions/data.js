@@ -106,13 +106,13 @@ export const insertData = (formData) => async (dispatch) => {
       zip: zip,
       pop: pop
     });
-    /*
+    
     await dexie.newCities.add({
       city: city,
       zip: zip,
       pop: pop
     });
-    */
+    
    
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,

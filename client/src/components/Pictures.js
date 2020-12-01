@@ -3,7 +3,7 @@ import q from '../img/q.jpg';
 
 const Pictures = () => {
     return (
-        <div className="container">
+        <div className="container-pics">
         <div className="row">
             <div className="col-sm">
                 <a target="_blank" href="q.jpg">
