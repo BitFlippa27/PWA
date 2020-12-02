@@ -33,11 +33,13 @@ export async function addData(formData) {
   }
 }
 
-export async function addTask(data) {
+export async function addTask(task) {
   try {
-    await dexie.tasks.add(data);
+    console.log(task);
+    await dexie.tasks.add(task);
   }
   catch(err) {
+    console.error("add failed");
     console.error(err);
   }
 }
@@ -61,6 +63,53 @@ export async function addAllData(allData) {
     console.error(err);
   }
 }
+
+export async function saveToken(token) {
+  console.log(token)
+  try {
+    await dexie.currentUser.add({
+      token: token
+    });
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getToken() {
+  try {
+    const res = await dexie.currentUser.get(1);
+    const token = await res.token;
+
+    return token;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getTask() {
+  try {
+    const token = await dexie.tasks.get(1);
+
+    return token;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function deleteTask() {
+  try {
+    const token = await dexie.tasks.clear(); // ändern
+
+    return token;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
 
 
 /*

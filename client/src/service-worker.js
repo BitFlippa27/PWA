@@ -11,7 +11,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import { dexie } from './dexie';
+import { getToken, getTask, deleteTask } from './dexie';
 
 const version = 8;
 var isLoggedIn = false;
@@ -81,7 +81,7 @@ registerRoute(
 const bgSyncPlugin = new BackgroundSyncPlugin('toSend', {
   maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
 });
-
+/*
 registerRoute(
   "http://localhost:5555/api/zips",
   new NetworkOnly({
@@ -89,7 +89,8 @@ registerRoute(
   }),
   'POST'
 );
-/*
+
+
 async function dataUploadHandler ({ request, event }) {
   try {
     
@@ -98,7 +99,7 @@ async function dataUploadHandler ({ request, event }) {
   }
   catch(err) {
     const queue = new Queue('newDataQueue');
-    return queue.pushRequest({ request: event.request });
+    queue.pushRequest({ request: event.request });
   }
 }
 
@@ -107,31 +108,39 @@ registerRoute("http://localhost:5555/api/zips", dataUploadHandler, "POST");
 
 
 function onSync(evt) {
-  
+  console.log("onSync")
   if(evt.tag === "toSend") {
+    console.log("tag")
     evt.waitUntil(fetchData());
   }
 }
 
+
 async function fetchData() {
+  console.log("fetch")
   try {
+    //const token = await getToken();
+    const task = await getTask();
+    const postData = JSON.stringify(task); 
+
     await fetch("http://localhost:5555/api/zips", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
       headers:{
-        "Content-Type" : "application/json",
-        "X-Auth-Token" : `${token}`
+        "Content-Type" : "application/json"
       }, 
       credentials: "omit",
       body: `${postData}`
-    });  
+    });
 
+    await deleteTask();
   } 
-  catch (error) {
-    
+  catch(err) {
+    console.error(err);
   }
 }
+
 
 function onMessage({ data }) {
 	if (data.statusUpdate) {

@@ -10,7 +10,7 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { addData, addAllData, getAllData, addTask } from "../dexie";
+import { addData, addAllData, getAllData, addTask, getToken, saveToken } from "../dexie";
 //var isEqual = require("lodash.isequal");
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
@@ -78,7 +78,9 @@ export const loadLocalData = () => async (dispatch) => {
   }
 };
 export const insertData = (formData) => async (dispatch) => {
-  const token = localStorage.getItem("token");
+  //var token = localStorage.getItem("token");
+  //console.log(token);
+  //await saveToken(token);
 
   try {
     await addData(formData);
@@ -99,34 +101,33 @@ export const insertData = (formData) => async (dispatch) => {
     });
   }
   try {
-    await storeTaskSendSignal(formData);
     
     //macht ServiceWorker
+    
     const postData = JSON.stringify(formData); 
-    const res = await fetch("http://localhost:5555/api/zips", {
+    await fetch("http://localhost:5555/api/zips", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
       headers:{
-        "Content-Type" : "application/json",
-        "X-Auth-Token" : `${token}`
+        "Content-Type" : "application/json"
       }, 
       credentials: "omit",
       body: `${postData}`
     });
+    
+    
+    
 
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
 
   } catch (err) {
-    dispatch({
-      type: SERVER_DATAUPLOAD_FAILED,
-      payload: {
-        msg: err.response.statusText,
-        status: err.response.status
-      }
-    });
+    console.error(err);
+    console.log(formData);
+    await storeTaskSendSignal(formData);
+    
   }
   
 }

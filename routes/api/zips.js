@@ -14,7 +14,7 @@ const inputCheck = [
 
 //@route POST api/zips
 //@access private
-router.post("/", auth, async (req, res) => {
+router.post("/", async (req, res) => {  //auth nicht vergessen
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
 
@@ -31,7 +31,6 @@ router.post("/", auth, async (req, res) => {
 
 
         const dataSet = await newDataSet.save();
-        console.log(dataSet)
         res.json(dataSet);
 
     } catch (err) {
@@ -47,7 +46,6 @@ router.post("/", auth, async (req, res) => {
     try{
 
         const currentData =  await Zips.find({});
-        console.log(req);
         res.json(currentData);
 
     }catch(err) {

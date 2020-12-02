@@ -45,7 +45,7 @@ async function initServiceWorker() {
     updateViaCache: "none" //wir wollen caching selber kontrollieren
   });
   // 3 Statuse
-  svworker = swRegistration.installing || swRegistration.waiting || swRegistration.active || swRegistration.sync.register("toSend");
+  svworker = swRegistration.installing || swRegistration.waiting || swRegistration.active;
   sendStatusUpdate(svworker);
   //Wenn Statusänderung, Benachrichtigung dass neuer aktiver Service Worker jetzt die Webseite kontrolliert
   navigator.serviceWorker.addEventListener("controllerchange", function onController(){
