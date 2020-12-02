@@ -16,10 +16,12 @@ import { dexie } from './dexie';
 const version = 8;
 var isLoggedIn = false;
 var isOnline = true;
+var token;
 
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
 self.addEventListener("message", onMessage);
+self.addEventListener("sync", onSync);
 
 main().catch(console.error);
 
@@ -76,29 +78,69 @@ registerRoute(
   })
 );
 
+const bgSyncPlugin = new BackgroundSyncPlugin('toSend', {
+  maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
+});
 
-
+registerRoute(
+  "http://localhost:5555/api/zips",
+  new NetworkOnly({
+    plugins: [bgSyncPlugin]
+  }),
+  'POST'
+);
+/*
 async function dataUploadHandler ({ request, event }) {
   try {
     
     var reqCloned = await fetch(request.clone());
+    return reqCloned;
   }
   catch(err) {
     const queue = new Queue('newDataQueue');
-    queue.pushRequest({ request: reqCloned });
+    return queue.pushRequest({ request: event.request });
   }
 }
 
 registerRoute("http://localhost:5555/api/zips", dataUploadHandler, "POST");
+*/
 
+
+function onSync(evt) {
+  
+  if(evt.tag === "toSend") {
+    evt.waitUntil(fetchData());
+  }
+}
+
+async function fetchData() {
+  try {
+    await fetch("http://localhost:5555/api/zips", {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers:{
+        "Content-Type" : "application/json",
+        "X-Auth-Token" : `${token}`
+      }, 
+      credentials: "omit",
+      body: `${postData}`
+    });  
+
+  } 
+  catch (error) {
+    
+  }
+}
 
 function onMessage({ data }) {
 	if (data.statusUpdate) {
-		({ isOnline, isLoggedIn } = data.statusUpdate);
+		({ isOnline, isLoggedIn, token } = data.statusUpdate);
 		console.log(`Service Worker (v${version}) status update, isOnline: ${isOnline}, isLoggedIn${isLoggedIn}`);
-
+    token = data.statusUpdate.token;
 	}
 }
+
 
 
 async function onInstall(evt) {

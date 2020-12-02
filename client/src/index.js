@@ -7,6 +7,7 @@ import App from './App';
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = ("token" in localStorage) ? true : false;  
+var token = localStorage.getItem("token");
 var swRegistration;
 var svworker;
 var usingSW = ("serviceWorker" in navigator);
@@ -44,7 +45,7 @@ async function initServiceWorker() {
     updateViaCache: "none" //wir wollen caching selber kontrollieren
   });
   // 3 Statuse
-  svworker = swRegistration.installing || swRegistration.waiting || swRegistration.active;
+  svworker = swRegistration.installing || swRegistration.waiting || swRegistration.active || swRegistration.sync.register("toSend");
   sendStatusUpdate(svworker);
   //Wenn Statusänderung, Benachrichtigung dass neuer aktiver Service Worker jetzt die Webseite kontrolliert
   navigator.serviceWorker.addEventListener("controllerchange", function onController(){
@@ -63,6 +64,9 @@ async function initServiceWorker() {
   });
   //auf SW Nachrichten hören
   navigator.serviceWorker.addEventListener("message", onSWMessage);
+
+  
+  
 }
 
 
@@ -77,18 +81,27 @@ function onSWMessage(evt) {
 }
 
 function sendStatusUpdate(target) {
-  sendSWMessage({statusUpdate: { isOnline, isLoggedIn }}, target);
+  const token = localStorage.getItem("token");
+  sendSWMessage({statusUpdate: { isOnline, isLoggedIn, token }}, target);
 }
 
+function sendToken(target) {
+  sendSWMessage({statusUpdate: { token }}, target);
+
+}
 
 async function sendSWMessage(msg, target) {
   if (target) {
     target.postMessage(msg);
   }
+  else if (svworker) {
+    svworker.postMessage(msg);
+  }
   else {
     navigator.serviceWorker.controller.postMessage(msg);
   }
 }
+
 
 
 

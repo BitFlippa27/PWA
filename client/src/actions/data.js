@@ -9,82 +9,63 @@ import {
   SERVER_DATAUPLOAD_FAILED
 
 } from "./types";
-import axios from "axios";
 import { setAlert } from "./alert";
-//import dexie from "../dexie";
-import { dexie } from "../dexie";
+import { addData, addAllData, getAllData, addTask } from "../dexie";
 //var isEqual = require("lodash.isequal");
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadServerData = () => async (dispatch) => {
   const token = localStorage.getItem("token");
+  
   try {
-    var clientTable = await dexie.table("cities").toArray();
-    if(clientTable.length === 0) {
-      //var res = await axios.get("api/zips");
-      const res = await fetch("http://localhost:5555/api/zips", {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        headers:{
-          "Content-Type" : "application/json",
-          "X-Auth-Token": `${token}`
-        }, 
-        credentials: "omit"
-      });
-      const allServerData = await res.json();
-      dispatch({
-        type: SERVER_DATALOAD_SUCCESS,
-        payload: allServerData
-      });
-    }
-
-  } catch (err) {
-    //dispatch({ type: DATALOAD_FAILED });
-    //try load data until it succeds
-    dispatch({
-      type: SERVER_DATALOAD_FAILED,
-      payload: {
-        msg: err.response.statusText,
-        status: err.response.status,
-      },
+    const res = await fetch("http://localhost:5555/api/zips", {
+      method: "GET",
+      mode: "cors",
+      cache: "no-cache",
+      headers:{
+        "Content-Type" : "application/json",
+        "X-Auth-Token": `${token}`
+      }, 
+      credentials: "omit"
     });
+    const serverData = await res.json();
+    await addAllData(serverData);
+
+    dispatch({
+      type: SERVER_DATALOAD_SUCCESS,
+      payload: serverData
+    });
+  
+} catch (err) {
+  //dispatch({ type: DATALOAD_FAILED });
+  //try load data until it succeds #sync
+  dispatch({
+    type: SERVER_DATALOAD_FAILED,
+    payload: {
+      msg: err.response.statusText,
+      status: err.response.status,
+    },
+  });
+  
   }
 }
 
+
 export const loadLocalData = () => async (dispatch) => {
-  const token = localStorage.getItem("token");
   try {
-    const clientTable = await dexie.table("cities").toArray();
+    const dexieData = await getAllData();
+    if(dexieData.length === 0 || dexieData === undefined) {
+      dispatch(loadServerData());
+    }
     //const count =  await dexie.cities.count();
     //console.log(count);
-    if(clientTable.length === 0) {
-      //const res = await axios.get("api/zips");
-      const res = await fetch("http://localhost:5555/api/zips", {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        headers:{
-          "Content-Type" : "application/json",
-          "X-Auth-Token" : `${token}`
-        }, 
-        credentials: "omit"
-      });
-      const allServerData = await res.json();
-      await dexie.table("cities").bulkAdd(allServerData);
-
-      dispatch({
-        type: CLIENT_DATALOAD_SUCCESS,
-        payload: allServerData
-      });
-    }
-    else{
-      dispatch({
-        type: CLIENT_DATALOAD_SUCCESS,
-        payload: clientTable
-      });
-    }
-  } catch (err) {
+    dispatch({
+      type: CLIENT_DATALOAD_SUCCESS,
+      payload: dexieData
+    });
+  }
+    
+ catch (err) {
     //dispatch({ type: DATALOAD_FAILED });
     //try load data until it succeds
     dispatch({
@@ -98,22 +79,10 @@ export const loadLocalData = () => async (dispatch) => {
 };
 export const insertData = (formData) => async (dispatch) => {
   const token = localStorage.getItem("token");
-  const { city, zip, pop } = formData;
 
   try {
-    await dexie.cities.add({
-      city: city,
-      zip: zip,
-      pop: pop
-    });
-    
-    await dexie.newCities.add({
-      city: city,
-      zip: zip,
-      pop: pop
-    });
-    
-   
+    await addData(formData);
+
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,
       payload: formData
@@ -129,42 +98,57 @@ export const insertData = (formData) => async (dispatch) => {
       },
     });
   }
-  if(navigator.onLine === true) {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
+  try {
+    await storeTaskSendSignal(formData);
+    
+    //macht ServiceWorker
+    const postData = JSON.stringify(formData); 
+    const res = await fetch("http://localhost:5555/api/zips", {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers:{
+        "Content-Type" : "application/json",
+        "X-Auth-Token" : `${token}`
+      }, 
+      credentials: "omit",
+      body: `${postData}`
+    });
+
+    dispatch({
+      type: SERVER_DATAUPLOAD_SUCCESS
+    });
+
+  } catch (err) {
+    dispatch({
+      type: SERVER_DATAUPLOAD_FAILED,
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
       }
-    };
-    try {
-      //await axios.post("/api/zips", formData, config);
-      const postData = JSON.stringify(formData); 
-      await fetch("http://localhost:5555/api/zips", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        headers:{
-          "Content-Type" : "application/json",
-          "X-Auth-Token" : `${token}`
-        }, 
-        credentials: "omit",
-        body: `${postData}`
-      });
-
-      dispatch({
-        type: SERVER_DATAUPLOAD_SUCCESS
-      });
-
-    } catch (err) {
-      dispatch({
-        type: SERVER_DATAUPLOAD_FAILED,
-        payload: {
-          msg: err.response.statusText,
-          status: err.response.status
-        }
-      });
-    }
+    });
   }
-};
+  
+}
 
-//const syncToServer = async () => {}
-//const syncFromServer = async () => {}
+
+async function registerSync() {
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.sync.register("toSend");
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+
+async function storeTaskSendSignal(task) {
+  try {
+    await addTask(task);
+    await registerSync();
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+

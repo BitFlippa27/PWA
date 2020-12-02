@@ -4,36 +4,19 @@ import { connect } from "react-redux";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
-import { loadLocalData } from "../../actions/data";
-
-
-
-
-
+import { loadLocalData, loadServerData } from "../../actions/data";
 
 //TODO: Button für loadServerData
 
-const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
+const Data = ({ auth: { user, loading }, allData, loadLocalData, loadServerData }) => {
   useEffect(() => {
-    loadLocalData();
-  }, [loadLocalData]);
+      loadLocalData();
+    }
+  ,[loadLocalData]);
 
   const rows = allData;
   console.log(rows);
-  /*
-    var map = new Map();
-    allData.forEach(item => {
-      let mapValue = {
-        city: item.city,
-        zip: item.zip,
-        pop: item.pop
-      };
-      map.set(item._id, mapValue);
-    });
-    */
 
-  //return <div> Welcome {user  && user.name}</div>;
-  //dont render UI until user is loaded so loader git in between
   return loading && user === null ? (
     <Loader />
   ) : (
@@ -77,6 +60,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
 Data.propTypes = {
   auth: PropTypes.object.isRequired,
   loadLocalData: PropTypes.func.isRequired,
+  loadServerData: PropTypes.func.isRequired,
   allData: PropTypes.array.isRequired,
 };
 
@@ -85,4 +69,4 @@ const mapStateToProps = (state) => ({
   allData: state.data.allData,
 });
 
-export default connect(mapStateToProps, { loadLocalData })(Data);
+export default connect(mapStateToProps, { loadLocalData, loadServerData })(Data);

@@ -3,8 +3,6 @@ import {
   SERVER_DATALOAD_FAILED,
   CLIENT_DATALOAD_SUCCESS,
   CLIENT_DATALOAD_FAILED,
-  ALL_DATA_TO_DEXIE_SUCCESS,
-  ALL_DATA_TO_DEXIE_FAILED,
   LOCALDATA_INSERT_SUCCESS,
   LOCALDATA_INSERT_FAILED,
   SERVER_DATAUPLOAD_SUCCESS,
@@ -30,10 +28,6 @@ export default function (state = initialState, action) {
     case CLIENT_DATALOAD_SUCCESS:
       return { ...state, allData: payload, loading: false };
     case CLIENT_DATALOAD_FAILED:
-      return { ...state, error: payload, loading: false };
-    case ALL_DATA_TO_DEXIE_SUCCESS:
-      return { ...state, loading: false };
-    case ALL_DATA_TO_DEXIE_FAILED:
       return { ...state, error: payload, loading: false };
     case LOCALDATA_INSERT_SUCCESS:
       return {
