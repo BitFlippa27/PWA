@@ -320,3 +320,43 @@ async function fallbackHandler({ url, request }) {
 }
 
 registerRoute(matchURL, fallbackHandler);
+
+
+
+
+
+function onSync(evt) {
+  console.log("onSync")
+  console.log(evt)
+  if(evt.registration.tag === "toSend") {
+    console.log("tag")
+    evt.waitUntil(uploadData());
+  }
+}
+
+
+async function uploadData() {
+  try {
+    //const token = await getToken();
+    const task = await getTask();
+    console.log(task)
+    const postData = JSON.stringify(task); 
+    console.log(postData);
+
+      await fetch("http://localhost:5555/api/zips", {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers:{
+        "Content-Type" : "application/json"
+      }, 
+      credentials: "omit",
+      body: `${postData}`
+    });
+
+    await deleteTask();
+  } 
+  catch(err) {
+    console.error(err);
+  }
+}

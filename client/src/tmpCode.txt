@@ -1,22 +1,26 @@
-"/index.html",
-"/manifest.json",
-"serviceWorker.js",
-"/asset-manifest.json",
-"/robots.txt",
-"/icons/android-chrome-192x192.png",
-"/icons/android-chrome-512x512.png",
-"/icons/apple-touch-icon.png",
-"/icons/favicon-16x16.png",
-"/icons/favicon-32x32.png",
-"/icons/favicon.ico",
-"/icons/logo192.png",
-"/icons/logo512.png",
-"/static/css/main.e58f2272.chunk.css",
-"/static/css/main.e58f2272.chunk.css.map",
-"/static/js/2.d07223fd.chunk.js",
-"/static/js/2.d07223fd.chunk.js.map",
-"/static/js/main.cff4c997.chunk.js",
-"static/js/main.cff4c997.chunk.js.map",
-"/static/js/runtime-main.4f4bbab1.js",
-"/static/js/runtime-main.4f4bbab1.js.map",
-"/static/media/offline.e95fcf01.png"
+async function registerSync() {
+  
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.periodicSync.register({
+      tag: 'toSend',         // default: ''
+      minPeriod: 12 * 60 * 60 * 1000, // default: 0
+      powerState: 'auto',   // default: 'auto' , sync auch bei Batterieentladung
+      networkState: 'any'  // default: 'online', sync auch wenn offline
+    });
+  }
+  catch(err) {
+    console.error(err);
+    console.log("Browser unterstützt kein ServiceWorker");
+  }
+}
+
+async function storeTaskSendSignal(task) {
+  try {
+    await addTask(task);
+    await registerSync();
+  }
+  catch(err) {
+    console.error(err);
+  }
+}

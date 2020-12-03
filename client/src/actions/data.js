@@ -11,6 +11,7 @@ import {
 } from "./types";
 import { setAlert } from "./alert";
 import { addData, addAllData, getAllData, addTask, getToken, saveToken } from "../dexie";
+
 //var isEqual = require("lodash.isequal");
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
@@ -76,12 +77,14 @@ export const loadLocalData = () => async (dispatch) => {
       },
     });
   }
-};
+}
+
+
 export const insertData = (formData) => async (dispatch) => {
   //var token = localStorage.getItem("token");
   //console.log(token);
   //await saveToken(token);
-
+  
   try {
     await addData(formData);
 
@@ -100,10 +103,8 @@ export const insertData = (formData) => async (dispatch) => {
       },
     });
   }
+  
   try {
-    
-    //macht ServiceWorker
-    
     const postData = JSON.stringify(formData); 
     await fetch("http://localhost:5555/api/zips", {
       method: "POST",
@@ -115,9 +116,6 @@ export const insertData = (formData) => async (dispatch) => {
       credentials: "omit",
       body: `${postData}`
     });
-    
-    
-    
 
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
@@ -125,15 +123,22 @@ export const insertData = (formData) => async (dispatch) => {
 
   } catch (err) {
     console.error(err);
-    console.log(formData);
-    await storeTaskSendSignal(formData);
-    
   }
+
+  await storeTaskSendSignal(formData);
   
 }
+    
+    
+    
+    
+
+   
+    
 
 
 async function registerSync() {
+  
   try {
     const registration = await navigator.serviceWorker.ready;
     await registration.sync.register("toSend");

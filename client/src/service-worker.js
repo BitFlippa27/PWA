@@ -13,6 +13,7 @@ import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
 import { getToken, getTask, deleteTask } from './dexie';
 
+
 const version = 8;
 var isLoggedIn = false;
 var isOnline = true;
@@ -77,11 +78,11 @@ registerRoute(
     ],
   })
 );
-
+/*
 const bgSyncPlugin = new BackgroundSyncPlugin('toSend', {
   maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
 });
-/*
+
 registerRoute(
   "http://localhost:5555/api/zips",
   new NetworkOnly({
@@ -89,9 +90,9 @@ registerRoute(
   }),
   'POST'
 );
-
-
-async function dataUploadHandler ({ request, event }) {
+*/
+/*
+async function dataUploadHandler({ request, event }) {
   try {
     
     var reqCloned = await fetch(request.clone());
@@ -100,7 +101,30 @@ async function dataUploadHandler ({ request, event }) {
   catch(err) {
     const queue = new Queue('newDataQueue');
     queue.pushRequest({ request: event.request });
+    //fetchUntilSucceeds(reqCloned);
   }
+}
+
+async function fetchUntilSucceeds(request) {
+  var needToFetch = true;
+
+  if (needToFetch) {
+    await delay(50000);
+    if(isOnline) {
+      try {
+        const res = await fetch(request);
+        if(res) {
+          needToFetch = false;
+        }
+      } 
+      catch (error) {}
+    }
+    if (needToFetch) {
+      return fetchUntilSucceeds(request);
+    }
+  }
+  
+
 }
 
 registerRoute("http://localhost:5555/api/zips", dataUploadHandler, "POST");
@@ -109,35 +133,52 @@ registerRoute("http://localhost:5555/api/zips", dataUploadHandler, "POST");
 
 function onSync(evt) {
   console.log("onSync")
+  console.log(evt)
   if(evt.tag === "toSend") {
     console.log("tag")
-    evt.waitUntil(fetchData());
+    evt.waitUntil(uploadData());
   }
 }
 
 
-async function fetchData() {
-  console.log("fetch")
-  try {
-    //const token = await getToken();
-    const task = await getTask();
-    const postData = JSON.stringify(task); 
+async function uploadData() {
+  var needToFetch = true;
 
-    await fetch("http://localhost:5555/api/zips", {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      headers:{
-        "Content-Type" : "application/json"
-      }, 
-      credentials: "omit",
-      body: `${postData}`
-    });
-
-    await deleteTask();
-  } 
-  catch(err) {
-    console.error(err);
+  if(needToFetch) {
+    await delay(5000);
+    if(isOnline) {
+      try {
+        //const token = await getToken();
+        const task = await getTask();
+        console.log(task)
+        const postData = JSON.stringify(task); 
+        console.log(postData);
+    
+        const res = await fetch("http://localhost:5555/api/zips", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers:{
+          "Content-Type" : "application/json"
+        }, 
+        credentials: "omit",
+        body: `${postData}`
+      });
+      console.log(res)
+      if (res && res.ok) {
+        needToFetch = false;
+        await deleteTask();
+      }
+     
+    } 
+    catch(err) {
+  
+    }
+    if(needToFetch) {
+     return uploadData();
+    }
+    
+    }  
   }
 }
 
@@ -174,4 +215,11 @@ function notFoundResponse() {
 			status: 404,
 			statusText: "Not Found"
 		});
+}
+
+
+function delay(ms) {
+	return new Promise((res) =>{
+		setTimeout(res,ms);
+	});
 }
