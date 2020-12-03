@@ -11,7 +11,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import { getToken, getTask, deleteTask } from './dexie';
+import { getToken, getTask, deleteTask, addTask } from './dexie';
 
 
 const version = 8;
@@ -64,72 +64,75 @@ registerRoute(
   );
 
 
-// An example runtime caching route for requests that aren't handled by the
-// precache, in this case same-origin .png requests like those from in public/
 registerRoute(
-  // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.jpg'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
-  new StaleWhileRevalidate({
-    cacheName: 'images',
-    plugins: [
-      // Ensure that once this runtime cache reaches a maximum size the
-      // least-recently used images are removed.
-      new ExpirationPlugin({ maxEntries: 50 }),
-    ],
-  })
+  "http://localhost:5555/api/zips", 
+  dataUploadHandler, "POST"
 );
-/*
-const bgSyncPlugin = new BackgroundSyncPlugin('toSend', {
-  maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
-});
 
-registerRoute(
-  "http://localhost:5555/api/zips",
-  new NetworkOnly({
-    plugins: [bgSyncPlugin]
-  }),
-  'POST'
-);
-*/
-/*
-async function dataUploadHandler({ request, event }) {
-  try {
-    
-    var reqCloned = await fetch(request.clone());
-    return reqCloned;
+
+async function dataUploadHandler({ request }) {
+  
+  try {   
+    const res = await fetch(request);
+
+    return res;
   }
   catch(err) {
-    const queue = new Queue('newDataQueue');
-    queue.pushRequest({ request: event.request });
-    //fetchUntilSucceeds(reqCloned);
+    await fetchData(request);
   }
 }
 
-async function fetchUntilSucceeds(request) {
-  var needToFetch = true;
 
-  if (needToFetch) {
-    await delay(50000);
-    if(isOnline) {
-      try {
-        const res = await fetch(request);
-        if(res) {
-          needToFetch = false;
-        }
-      } 
-      catch (error) {}
-    }
-    if (needToFetch) {
-      return fetchUntilSucceeds(request);
-    }
+
+async function fetchData(req) {
+  var needToFetch = true;
+  const task = await getTask();
+  const postBody = JSON.stringify(task);
+  token = req.headers.get("X-Auth-Token");
+
+  const fetchOptions = {
+    method: "POST",
+    mode: "cors",
+    cache: "no-cache",
+    headers:{
+      "Content-Type" : "application/json",
+      "X-Auth-Token" : `${token}`
+    }, 
+    credentials: "omit",
+    body: `${postBody}`
   }
   
-
+  if(needToFetch) {
+    await delay(5000);
+    if(isOnline) {
+      try {
+        
+        const res = await fetch("http://localhost:5555/api/zips", fetchOptions);
+        
+        if (res && res.ok) {
+          needToFetch = false;
+          await deleteTask();
+        }
+      }
+      catch (err) {
+        console.error(err);
+      }
+      if (needToFetch) {
+        return fetchData(req);
+      }
+    }
+  } 
 }
 
-registerRoute("http://localhost:5555/api/zips", dataUploadHandler, "POST");
-*/
 
+
+function onMessage({ data }) {
+	if (data.statusUpdate) {
+		({ isOnline, isLoggedIn } = data.statusUpdate);
+		console.log(`Service Worker (v${version}) status update, isOnline: ${isOnline}, isLoggedIn${isLoggedIn}`);
+    
+	}
+}
 
 function onSync(evt) {
   console.log("onSync")
@@ -140,67 +143,13 @@ function onSync(evt) {
   }
 }
 
-
-async function uploadData() {
-  var needToFetch = true;
-
-  if(needToFetch) {
-    await delay(5000);
-    if(isOnline) {
-      try {
-        //const token = await getToken();
-        const task = await getTask();
-        console.log(task)
-        const postData = JSON.stringify(task); 
-        console.log(postData);
-    
-        const res = await fetch("http://localhost:5555/api/zips", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        headers:{
-          "Content-Type" : "application/json"
-        }, 
-        credentials: "omit",
-        body: `${postData}`
-      });
-      console.log(res)
-      if (res && res.ok) {
-        needToFetch = false;
-        await deleteTask();
-      }
-     
-    } 
-    catch(err) {
-  
-    }
-    if(needToFetch) {
-     return uploadData();
-    }
-    
-    }  
-  }
-}
-
-
-function onMessage({ data }) {
-	if (data.statusUpdate) {
-		({ isOnline, isLoggedIn, token } = data.statusUpdate);
-		console.log(`Service Worker (v${version}) status update, isOnline: ${isOnline}, isLoggedIn${isLoggedIn}`);
-    token = data.statusUpdate.token;
-	}
-}
-
-
-
 async function onInstall(evt) {
 	console.log(`Service Worker (${version}) installed... `);
 	self.skipWaiting();
 }
 
 function onActivate(evt) {
-  //await clearCaches(); // wenn neuer SW in Kontrolle, alten cache leeren
-	evt.waitUntil(handleActivation()); 			//Browser informieren noch nicht alle Prozesse zu beenden bis alles gecached ist
+	evt.waitUntil(handleActivation()); 
 
 }
 

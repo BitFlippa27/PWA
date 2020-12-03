@@ -81,7 +81,7 @@ export const loadLocalData = () => async (dispatch) => {
 
 
 export const insertData = (formData) => async (dispatch) => {
-  //var token = localStorage.getItem("token");
+  var token = localStorage.getItem("token");
   //console.log(token);
   //await saveToken(token);
   
@@ -105,13 +105,16 @@ export const insertData = (formData) => async (dispatch) => {
   }
   
   try {
+    await addTask(formData);
+    
     const postData = JSON.stringify(formData); 
     await fetch("http://localhost:5555/api/zips", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
       headers:{
-        "Content-Type" : "application/json"
+        "Content-Type" : "application/json",
+        "X-Auth-Token" : `${token}`
       }, 
       credentials: "omit",
       body: `${postData}`
@@ -122,10 +125,11 @@ export const insertData = (formData) => async (dispatch) => {
     });
 
   } catch (err) {
+    
     console.error(err);
   }
 
-  await storeTaskSendSignal(formData);
+  //await storeTaskSendSignal(formData);
   
 }
     

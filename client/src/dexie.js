@@ -1,6 +1,6 @@
 import Dexie from "dexie";
 import { v4 as uuidv4 } from 'uuid';
-var taskId;
+
 
 export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
@@ -36,6 +36,7 @@ export async function addData(formData) {
 }
 
 export async function addTask(task) {
+  var taskId = uuidv4();
   try {
     await dexie.tasks.add(task);
   }
@@ -57,6 +58,17 @@ export async function getTask() {
   }
 }
 
+
+export async function deleteTask() {
+  try {
+    const token = await dexie.tasks.clear(); // ändern
+
+    return token;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
 
 export async function getAllData() {
   try {
@@ -103,16 +115,7 @@ export async function getToken() {
 }
 
 
-export async function deleteTask() {
-  try {
-    const token = await dexie.tasks.clear(); // ändern
 
-    return token;
-  } 
-  catch (err) {
-    console.error(err);
-  }
-}
 
 
 

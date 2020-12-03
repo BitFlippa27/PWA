@@ -7,7 +7,6 @@ import App from './App';
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = ("token" in localStorage) ? true : false;  
-var token = localStorage.getItem("token");
 var swRegistration;
 var svworker;
 var usingSW = ("serviceWorker" in navigator);
@@ -82,13 +81,9 @@ function onSWMessage(evt) {
 
 function sendStatusUpdate(target) {
   const token = localStorage.getItem("token");
-  sendSWMessage({statusUpdate: { isOnline, isLoggedIn, token }}, target);
+  sendSWMessage({statusUpdate: { isOnline, isLoggedIn }}, target);
 }
 
-function sendToken(target) {
-  sendSWMessage({statusUpdate: { token }}, target);
-
-}
 
 async function sendSWMessage(msg, target) {
   if (target) {

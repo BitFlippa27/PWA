@@ -131,7 +131,7 @@ export const login = ( email, password ) => async dispatch => {
     }
   }
 
-  const fetchBody = JSON.stringify({ email, password });
+  const formData = JSON.stringify({ email, password });
 
   try {
     //var res = await axios.post("/api/auth", body, config);
@@ -140,10 +140,10 @@ export const login = ( email, password ) => async dispatch => {
       mode: "cors",
       cache: "no-cache",
       headers:  {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       credentials: "omit",
-      body: fetchBody
+      body: `${formData}`
       });
     
     var token = await res.json();

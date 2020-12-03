@@ -68,6 +68,7 @@ export default App;
     scrollbar, 
     pagination, 
     Isolation(Clean Code, JSLINT),
-    IndexedDB funktionen auslagern
+    dexie queue mit ids,
+    catchHandler, defaulthandler -> offline Page
 }
 */

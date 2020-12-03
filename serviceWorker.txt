@@ -360,3 +360,55 @@ async function uploadData() {
     console.error(err);
   }
 }
+
+
+const bgSyncPlugin = new BackgroundSyncPlugin('toSend', {
+  maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
+});
+
+registerRoute(
+  "http://localhost:5555/api/zips",
+  new NetworkOnly({
+    plugins: [bgSyncPlugin]
+  }),
+  'POST'
+);
+*/
+/*
+async function dataUploadHandler({ request, event }) {
+  try {
+    
+    var reqCloned = await fetch(request.clone());
+    return reqCloned;
+  }
+  catch(err) {
+    const queue = new Queue('newDataQueue');
+    queue.pushRequest({ request: event.request });
+    //fetchUntilSucceeds(reqCloned);
+  }
+}
+
+async function fetchUntilSucceeds(request) {
+  var needToFetch = true;
+
+  if (needToFetch) {
+    await delay(50000);
+    if(isOnline) {
+      try {
+        const res = await fetch(request);
+        if(res) {
+          needToFetch = false;
+        }
+      } 
+      catch (error) {}
+    }
+    if (needToFetch) {
+      return fetchUntilSucceeds(request);
+    }
+  }
+  
+
+}
+
+registerRoute("http://localhost:5555/api/zips", dataUploadHandler, "POST");
+*/
