@@ -32,11 +32,13 @@ if(navigator.onLine === false) {
 
 const App = () => {
   return (
+    
     <Provider store={store}>
       <Router>
         <Fragment>
           <Route exact path="/" component={Homepage} />
           <Navbar />
+          <section className="container">
           <Alert />
             <Switch>
               <Route exact path="/pictures" component={Pictures} />
@@ -44,9 +46,11 @@ const App = () => {
               <Route exact path="/login" component={Login} />
               <PrivateRoute exact path="/data" component={Data} />
             </Switch>
+            </section>
         </Fragment>
       </Router>
     </Provider>
+  
    
   );
 };

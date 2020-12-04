@@ -17,7 +17,7 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData, loadServerData 
   const rows = allData;
   console.log(rows);
 
-  return loading && user === null ? (
+  return user === null ? (
     <Loader />
   ) : (
     <Fragment>

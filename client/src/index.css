@@ -69,16 +69,34 @@ img {
 
 /* Utilities */
 
+.container {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+  padding: 0 2rem;
+  margin-top: 6rem;
+  margin-bottom: 3rem;
+}
+
 .container-data {
   height: 100%;
   width: 90%;
   margin: auto;
-  margin-top: 8rem;
+  margin-top: 3rem;
   display: flex;
   flex-direction: column;
   
 }
 
+.container-alert {
+  height: 10%;
+  width: 90%;
+  margin: auto;
+  padding-bottom: 10rem;
+  display: flex;
+  flex-direction: column;
+  
+}
 .container-pics {
   height: 100%;
   width: 90%;
@@ -93,7 +111,7 @@ img {
   height: 100%;
   width: 80%;
   margin: auto;
-  margin-top: 13rem;
+  margin-top: 8rem;
   display: flex;
   flex-direction: column;
   align-items: center;

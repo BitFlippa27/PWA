@@ -92,7 +92,7 @@ export const insertData = (formData) => async (dispatch) => {
       type: LOCALDATA_INSERT_SUCCESS,
       payload: formData
     });
-    dispatch(setAlert("Datensatz hinzugefügt", "success"));
+    dispatch(setAlert("Datensatz lokal hinzugefügt", "success"));
 
   } catch (err) {
     dispatch({
@@ -127,20 +127,15 @@ export const insertData = (formData) => async (dispatch) => {
   } catch (err) {
     
     console.error(err);
+    
   }
 
+  
+  
   //await storeTaskSendSignal(formData);
   
 }
-    
-    
-    
-    
-
-   
-    
-
-
+/*    
 async function registerSync() {
   
   try {
@@ -161,4 +156,4 @@ async function storeTaskSendSignal(task) {
     console.error(err);
   }
 }
-
+*/

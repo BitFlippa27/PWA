@@ -1,4 +1,4 @@
-  import axios from "axios";
+import axios from "axios";
 import { setAlert } from "./alert";
 import jwt_decode from "jwt-decode";
 import {
@@ -201,7 +201,6 @@ export const loadAllUsers = () => async dispatch => {
       var res = await axios.get("api/users");
       var allUsers = res.data;
       await dexie.users.bulkAdd(allUsers);
-
       dispatch({
         type: ALL_USER_LOADED_SUCCESS,
         payload: allUsers
@@ -221,11 +220,7 @@ export const loadAllUsers = () => async dispatch => {
     });
   }
 }
-
-
-
 ------------------------------------------------------------------------------
-
     
     var currentUser = await dexie.currentUser.get("email", async () => {
       try {

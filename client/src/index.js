@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import store from "./store";
+import { setAlert } from './actions/alert';
 
 
 
@@ -77,6 +79,13 @@ function onSWMessage(evt) {
     sendStatusUpdate(evt.ports && evt.ports[0]);
 
   }
+  if (data.upload === true) {
+    store.dispatch(setAlert("Server wieder online ! Daten hochgeladen !", "success"));
+  }
+  else if(data.upload === false){
+    store.dispatch(setAlert("Upload zum Server fehlgeschlagen ! ", "danger"));
+    store.dispatch(setAlert("Sobald Server wieder online, wird Datensatz hochgeladen", "danger"));
+  }
 }
 
 function sendStatusUpdate(target) {
@@ -96,7 +105,6 @@ async function sendSWMessage(msg, target) {
     navigator.serviceWorker.controller.postMessage(msg);
   }
 }
-
 
 
 
