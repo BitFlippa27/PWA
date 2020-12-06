@@ -113,9 +113,7 @@ async function main()
   } 
   catch (err) {
     console.error(err)
-  }
-  
-
+  }  
 }
 
 
@@ -139,6 +137,7 @@ function onMessage({ data }) {
     
 	}
 }
+
 
 function onSync(evt) {
   console.log("onSync")

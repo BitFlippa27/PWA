@@ -65,9 +65,6 @@ async function initServiceWorker() {
   });
   //auf SW Nachrichten hören
   navigator.serviceWorker.addEventListener("message", onSWMessage);
-
-  
-  
 }
 
 
@@ -75,7 +72,7 @@ function onSWMessage(evt) {
   var { data } = evt;
   if (data.requestStatusUpdate) {
     console.log(`Received status update request from service worker, responding...`);
-     //SW kommuniziert mit mehreren Seiten/Tabs somit Nachrichten an einen Message channel mit Ports wo SW hört
+     //SW kommuniziert mit mehreren Seiten/Tabs somit Nachrichten an einen Message channel mit Ports wo SW lauscht
     sendStatusUpdate(evt.ports && evt.ports[0]);
 
   }
@@ -87,6 +84,7 @@ function onSWMessage(evt) {
     store.dispatch(setAlert("Sobald Server wieder online, wird Datensatz hochgeladen", "danger"));
   }
 }
+
 
 function sendStatusUpdate(target) {
   const token = localStorage.getItem("token");

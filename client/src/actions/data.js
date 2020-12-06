@@ -129,8 +129,6 @@ export const insertData = (formData) => async (dispatch) => {
     console.error(err);
     
   }
-
-  
   
   //await storeTaskSendSignal(formData);
   

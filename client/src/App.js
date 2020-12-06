@@ -11,8 +11,6 @@ import Pictures from "./components/Pictures";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import { loadUser, loadUserOffline } from "./actions/auth";
 //import { loadLocalData } from "./actions/data";
-
-//Redux
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
 
@@ -32,7 +30,6 @@ if(navigator.onLine === false) {
 
 const App = () => {
   return (
-    
     <Provider store={store}>
       <Router>
         <Fragment>
