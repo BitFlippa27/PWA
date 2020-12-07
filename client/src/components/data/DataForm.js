@@ -42,7 +42,7 @@ const DataForm = ({ insertData }) => {
               className="form-control"
               type="text"
               name="zip"
-              placeholder="Postleitzahl"
+              placeholder="PLZ"
               value={zip}
               onChange={(e) => onChange(e)}
             ></input>
