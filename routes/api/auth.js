@@ -70,7 +70,12 @@ router.post("/", inputChecks, async(req,res) => {
             { expiresIn: 360000 },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token })
+                res.json({ 
+                    token,
+                    userId: user.id,
+                    timestamp: Date.now().toLocaleString("de-DE")
+                });
+                
              }
             );
     }

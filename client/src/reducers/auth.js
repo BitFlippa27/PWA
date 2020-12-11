@@ -1,7 +1,6 @@
 import { REGISTER_SUCCESS,
     REGISTER_FAILED,
     USER_LOADED,
-    USER_ID_SAVED,
     USER_LOADED_FAILED,
     ALL_USER_LOADED_SUCCESS,
     ALL_USER_LOADED_FAILED,
@@ -15,7 +14,6 @@ const initialState = {
     isAuthenticated: null,
     loading: true,
     user: null,
-    userID: null,
     allUsers: [],
     errors: {}
 }
@@ -30,13 +28,6 @@ export default function(state = initialState, action) {
                 isAuthenticated: true,
                 user: payload,
                 loading: false
-            }
-        case USER_ID_SAVED:
-            localStorage.setItem("UserID", payload);
-            return {
-                ...state,
-                loading: false,
-                userID: payload
             }
         case ALL_USER_LOADED_SUCCESS:
             return {
@@ -62,7 +53,6 @@ export default function(state = initialState, action) {
             }
         case LOGOUT:
             localStorage.removeItem("token");
-            localStorage.removeItem("UserID");
             return {
                 ...state,
                 token: null,
@@ -72,17 +62,15 @@ export default function(state = initialState, action) {
             }
         case USER_LOADED_FAILED:
             localStorage.removeItem("token");
-            localStorage.removeItem("UserID");
             return {
                 ...state,
                 token: null,
                 isAuthenticated: false,
-                loading: false,
+                loading: true,
                 errors: payload
             }
         case LOGIN_FAILED:
             localStorage.removeItem("token");
-            localStorage.removeItem("UserID");
             return {
                 ...state,
                 token: null,
@@ -92,7 +80,6 @@ export default function(state = initialState, action) {
             }
         case REGISTER_FAILED:
             localStorage.removeItem("token");
-            localStorage.removeItem("UserID");
             return {
                 ...state,
                 token: null,

@@ -17,14 +17,10 @@ import store from "./store";
 
 
 if(navigator.onLine === true) {
-  if (localStorage.token) {
-    store.dispatch(loadUser());
-  }
+  store.dispatch(loadUser());
 }
 if(navigator.onLine === false) {
-  if (localStorage.token) {
-    store.dispatch(loadUserOffline());
-  } 
+  store.dispatch(loadUserOffline());
 }
 
 

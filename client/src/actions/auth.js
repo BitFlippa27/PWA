@@ -16,72 +16,57 @@ import {
 
 //Load User
 export const loadUser = () =>  async dispatch => {
-  const token = localStorage.getItem("token");
-    try {
-      //const res = await axios.get("/api/auth");
-      const res = await fetch("http://localhost:5555/api/auth", {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        headers:  {
-          "Content-Type" : "application/json",
-          "X-Auth-Token" :  `${token}` 
-        },
-        credentials: "omit"
-      });
+  if("token" in localStorage) {
+    const token = localStorage.getItem("token");
+      try {
+        //const res = await axios.get("/api/auth");
+        const res = await fetch("http://localhost:5555/api/auth", {
+          method: "GET",
+          mode: "cors",
+          cache: "no-cache",
+          headers:  {
+            "Content-Type" : "application/json",
+            "X-Auth-Token" :  `${token}` 
+          },
+          credentials: "omit"
+        });
 
-      const user = await res.json();
-      dispatch({
-        type: USER_LOADED,
-        payload: user
-      });
-    }
-
-    catch(err) {
-      console.error(err);
-      dispatch({
-        type: USER_LOADED_FAILED
-      });
-    }     
-}
-
-export const loadUserOffline = () =>  async dispatch => {
-  //aktueller Token, wir wissen nicht ob es der Token ist der vom Server ausgestellt wurde
-  const token = localStorage.getItem("token"); 
-  //UserID vom Token der direkt nach dem Login vom Server herausgegeben wurde
-  const userID = localStorage.getItem("UserID");
-
-    try {
-      const decoded = await jwt_decode(token);
-      const user = decoded.user;
-      const currentUserID = user.id;
-      //Wenn die UserIds nicht gleich sind bedeutet das, der Token wurde kompromitiert bzw. ausgetauscht
-      if(userID === currentUserID) {
+        const user = await res.json();
         dispatch({
           type: USER_LOADED,
           payload: user
         });
       }
+      catch(err) {
+        console.error(err);
+      }     
     }
-    catch(err) {
-      
+    else {
       dispatch({
         type: USER_LOADED_FAILED
       });
+      dispatch({ type: LOGOUT });
+    }
+}
 
+export const loadUserOffline = () =>  async dispatch => {
+  if("token" in localStorage) {
+    try {
       dispatch({
-        type: LOGOUT
+        type: USER_LOADED
       });
+    }
+    catch(err) {
       console.error(err);
     }     
-    
-
-    
-
+  }
+  else {
+    alert("Authentizierungsfehler, Melden Sie sich an sobald Sie Online sind.");
+    dispatch({ type: USER_LOADED_FAILED });
+    dispatch({ type: LOGOUT });
+  }
 }
     
-     
-
 //Register User
 export const register = ({ name, email, password}) => async dispatch => {
   const config = {
@@ -166,20 +151,6 @@ export const login = ( email, password ) => async dispatch => {
     dispatch({
       type: LOGIN_FAILED
     });
-  }
-  try {
-    
-    console.log(token)
-    const decoded = await jwt_decode(token.token);
-    const id = decoded.user.id;
-
-    dispatch({
-      type: USER_ID_SAVED,
-      payload: id
-    });
-  } 
-  catch (err) {
-    console.error(err);
   }
   
 };
