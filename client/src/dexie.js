@@ -44,8 +44,20 @@ export async function addTask(task) {
     console.error(err);
   }
 }
-
-
+/*
+export async function addObjectID(mongoID) {
+  
+  try {
+    
+    const lastItem = await dexie.tasks.last();
+    const ke = await lastItem.id;
+    console.log(key);
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+*/
 export async function getTask() {
   try {
     const task = await dexie.tasks.get(1);

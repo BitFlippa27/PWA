@@ -17,6 +17,8 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData, loadServerData 
   const rows = allData;
   console.log(rows);
 
+  
+
   return user === null ? (
     <Loader />
   ) : (

@@ -108,7 +108,7 @@ export const insertData = (formData) => async (dispatch) => {
     await addTask(formData);
     
     const postData = JSON.stringify(formData); 
-    await fetch("http://localhost:5555/api/zips", {
+    const res = await fetch("http://localhost:5555/api/zips", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -119,7 +119,8 @@ export const insertData = (formData) => async (dispatch) => {
       credentials: "omit",
       body: `${postData}`
     });
-
+    const response = await res.json();
+    console.log(response);
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });

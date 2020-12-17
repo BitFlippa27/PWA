@@ -6,7 +6,6 @@
 // service worker, and the Workbox build step will be skipped.
 //importScripts("dexie.js");
 import { setCacheNameDetails } from 'workbox-core';
-import { BackgroundSyncPlugin, Queue } from 'workbox-background-sync';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
@@ -50,9 +49,11 @@ registerRoute(
 
 async function dataUploadHandler({ request }) {
   
-  try {   
-    const res = await fetch(request);
-
+  try {
+    const res = await fetch(request);  
+    const id = await res.json()._id;
+    
+    addMongoID(id);
     return res;
   }
   catch(err) {
@@ -90,6 +91,8 @@ async function fetchData(req) {
         if (res && res.ok) {
           needToFetch = false;
           await sendMessage({ upload: true});
+          
+          //await addObjectID();
           await deleteTask();
 
           return res;

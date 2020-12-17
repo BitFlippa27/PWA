@@ -25,7 +25,7 @@ const DataForm = ({ insertData }) => {
     <Fragment>
       <tr className="formcells">
         <th>
-          <form className="form " onSubmit={(e) => onSubmit(e)}>
+          <form className="form ">
             <input
               className="form-control"
               type="text"
@@ -37,7 +37,7 @@ const DataForm = ({ insertData }) => {
           </form>
         </th>
         <th>
-          <form className="form " onSubmit={(e) => onSubmit(e)}>
+          <form className="form ">
             <input
               className="form-control"
               type="text"
@@ -49,7 +49,7 @@ const DataForm = ({ insertData }) => {
           </form>
         </th>
         <th>
-          <form className="form " onSubmit={(e) => onSubmit(e)}>
+          <form className="form ">
             <input
               className="form-control"
               type="text"
