@@ -13,7 +13,7 @@ const DataItem = ({ data: { _id, city, zip, pop }, index }) => {
           <button className="actions">
             <i className="fas fa-pencil-alt" />{" "}
           </button>
-          <button className="actions" onClick={() => removeData(index)}>
+          <button className="actions" onClick={() => (index)}>
             <i className="fas fa-trash-alt" />{" "}
           </button>
         </th>

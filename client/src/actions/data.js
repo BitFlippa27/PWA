@@ -10,7 +10,7 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { addData, addAllData, getAllData, addTask, getToken, saveToken } from "../dexie";
+import { dexie, addData, addAllData, getAllData, addTask, addMongoID, getToken, saveToken, addObjectID } from "../dexie";
 
 //var isEqual = require("lodash.isequal");
 
@@ -55,7 +55,7 @@ export const loadServerData = () => async (dispatch) => {
 export const loadLocalData = () => async (dispatch) => {
   try {
     const dexieData = await getAllData();
-    if(dexieData.length === 0 || dexieData === undefined) {
+    if(dexieData.length === 0 || dexieData === undefined ) {
       dispatch(loadServerData());
     }
     //const count =  await dexie.cities.count();
@@ -86,7 +86,7 @@ export const insertData = (formData) => async (dispatch) => {
   //await saveToken(token);
   
   try {
-    await addData(formData);
+    var keyPath = await addData(formData);
 
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,
@@ -106,7 +106,6 @@ export const insertData = (formData) => async (dispatch) => {
   
   try {
     await addTask(formData);
-    
     const postData = JSON.stringify(formData); 
     const res = await fetch("http://localhost:5555/api/zips", {
       method: "POST",
@@ -120,7 +119,10 @@ export const insertData = (formData) => async (dispatch) => {
       body: `${postData}`
     });
     const response = await res.json();
+    const mongoID = response._id;
+    await addMongoID(mongoID, keyPath);
     console.log(response);
+
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });

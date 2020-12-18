@@ -1,11 +1,10 @@
 import Dexie from "dexie";
 import { v4 as uuidv4 } from 'uuid';
 
-
 export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
-    cities: "++id",
-    tasks: "++id",
+    cities: "++id, _id",
+    tasks: "++id, _id",
     users: "_id",
     currentUser: "_id"
 });
@@ -20,44 +19,48 @@ async function openDB() {
 
 openDB();
 
+
 export async function addData(formData) {
   const { city, zip, pop } = formData;
 
   try {
-    await dexie.cities.add({
+    let id = await dexie.cities.add({
       city: city,
       zip: zip,
       pop: pop
     });
+
+    return id;
   }
   catch(err) {
     console.error(err);
   }
 }
+
 
 export async function addTask(task) {
   var taskId = uuidv4();
   try {
     await dexie.tasks.add(task);
+    
   }
   catch(err) {
     console.error(err);
   }
 }
-/*
-export async function addObjectID(mongoID) {
+
+
+export async function addMongoID(mongoID, keyPath) {
   
   try {
-    
-    const lastItem = await dexie.tasks.last();
-    const ke = await lastItem.id;
-    console.log(key);
+    await dexie.cities.update(keyPath, {_id: mongoID});
   }
   catch(err) {
     console.error(err);
   }
 }
-*/
+
+
 export async function getTask() {
   try {
     const task = await dexie.tasks.get(1);
@@ -82,6 +85,7 @@ export async function deleteTask() {
   }
 }
 
+
 export async function getAllData() {
   try {
     const allData = await dexie.table("cities").toArray();
@@ -93,6 +97,7 @@ export async function getAllData() {
   }
 }
 
+
 export async function addAllData(allData) {
   try {
     await dexie.cities.bulkAdd(allData);
@@ -101,6 +106,7 @@ export async function addAllData(allData) {
     console.error(err);
   }
 }
+
 
 export async function saveToken(token) {
   console.log(token)
@@ -113,6 +119,7 @@ export async function saveToken(token) {
     console.error(err);
   }
 }
+
 
 export async function getToken() {
   try {

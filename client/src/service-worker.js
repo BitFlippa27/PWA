@@ -51,9 +51,7 @@ async function dataUploadHandler({ request }) {
   
   try {
     const res = await fetch(request);  
-    const id = await res.json()._id;
     
-    addMongoID(id);
     return res;
   }
   catch(err) {
