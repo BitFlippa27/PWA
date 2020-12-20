@@ -28,8 +28,10 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
     if(password !== password2){
       setAlert("Passwörter stimmen nicht überein", "danger");
     }
+    if(!formData)
+      return;
     else{
-      register({ name, email, password});
+      await register({ name, email, password});
     }
   }
   if(isAuthenticated) {

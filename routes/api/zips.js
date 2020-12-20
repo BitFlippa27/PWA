@@ -3,6 +3,7 @@ var cors = require('cors');
 const router = express.Router();
 const { check, validationResult } = require("express-validator");
 const auth =  require("../../middleware/auth");
+const checkObjectID = require("../../middleware/objectid");
 const Zips = require("../../models/Zips");
 const User = require("../../models/User");
 const inputCheck = [
@@ -13,8 +14,8 @@ const inputCheck = [
 
 
 //@route POST api/zips
-//@access private
-router.post("/", async (req, res) => {  //auth nicht vergessen
+//@access Privat
+router.post("/",auth, async (req, res) => {  //auth nicht vergessen
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
 
@@ -40,9 +41,9 @@ router.post("/", async (req, res) => {  //auth nicht vergessen
     }
 
 });
-//get all data
+//Alle Daten von MongoDB holen
 //@route GET api/zips
-//@access private
+//@access Privat
   router.get("/",auth, async (req, res) => {   //auth nicht vergessen !
     try{
 
@@ -56,10 +57,33 @@ router.post("/", async (req, res) => {  //auth nicht vergessen
 
 });
 
+// @route    DELETE api/zips/:id
+// @desc     Datensatz löschen
+// @access   Privat
+router.delete('/:id',[auth, checkObjectID("id")], async (req, res) => {
+    console.log(req.params.id);
+    try {
+      const dataSet = await Zips.findById(req.params.id);
+  
+      if (!dataSet) {
+        return res.status(404).json({ msg: 'Datensatz nicht gefunden' });
+      }
+  
+      await dataSet.remove();
+  
+      res.json({ msg: 'Dataset removed' });
+    } catch (err) {
+      console.error(err.message);
+  
+      res.status(500).send('Server Error');
+    }
+  });
+
+
 //@route GET api/zips
 //@access public
 //delete key
-
+/*
 router.delete("/", async (req, res) => {
     try {
 
@@ -78,6 +102,6 @@ router.delete("/", async (req, res) => {
         console.error(err);
     }
 });
-
+*/
 
 module.exports = router;

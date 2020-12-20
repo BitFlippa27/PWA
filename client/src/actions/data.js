@@ -155,7 +155,7 @@ export const removeData = (id) => async dispatch => {
   }
   
   try {
-    
+    const objectID = JSON.stringify(id);
     const res = await fetch(`http://localhost:5555/api/zips/${id}`, {
       method: "DELETE",
       mode: "cors",
@@ -164,12 +164,16 @@ export const removeData = (id) => async dispatch => {
         "Content-Type" : "application/json",
         "X-Auth-Token" : `${token}`
       }, 
-      credentials: "omit"
+      credentials: "omit",
     });
-    dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
+    if(res.ok)
+      dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
+    else {
+      dispatch({ type: SERVERDATA_REMOVED_FAILED });
+    }
   }
   catch(err) {
-    dispatch({ type: SERVERDATA_REMOVED_FAILED });
+    
     console.error(err);
   }
 }

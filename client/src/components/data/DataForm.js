@@ -16,8 +16,9 @@ const DataForm = ({ insertData }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!formData) return;
-    insertData(formData);
+    if (!formData) 
+    return;
+    await insertData(formData);
     setFormData({ city: "", zip: "", pop: "" });
   };
 

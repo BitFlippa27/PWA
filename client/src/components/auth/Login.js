@@ -19,7 +19,9 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    login(email, password);
+    if (!formData) 
+      return;
+    await login(email, password);
     checkIn();
   };
 
