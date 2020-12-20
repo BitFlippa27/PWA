@@ -1,20 +1,21 @@
 import React, { Fragment } from "react";
-import Proptypes from "prop-types";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { removeData } from "../../actions/data";
 
-const DataItem = ({ data: { _id, city, zip, pop }, index }) => {
+const DataItem = ({ data: { _id, city, zip, pop }, removeData }) => {
   return (
     <Fragment>
-      <tr key={index}>
+      <tr key={_id}>
         <th scope="col">{city}</th>
         <th scope="col">{zip}</th>
         <th scope="col">{pop}</th>
         <th scope="col">
-          <button className="actions">
+          <button className="actions"  >
             <i className="fas fa-pencil-alt" />{" "}
           </button>
-          <button className="actions" onClick={() => (index)}>
-            <i className="fas fa-trash-alt" />{" "}
+          <button className="actions" type="button" onClick={ () => removeData(_id)}  >
+            <i className="fas fa-trash-alt"  />{" "}
           </button>
         </th>
       </tr>
@@ -25,7 +26,8 @@ const DataItem = ({ data: { _id, city, zip, pop }, index }) => {
 
 
 DataItem.propTypes = {
-  data: Proptypes.object.isRequired,
+  data: PropTypes.object.isRequired,
+  removeData: PropTypes.func.isRequired
 };
 
-export default connect(null, {})(DataItem);
+export default connect(null, { removeData })(DataItem);

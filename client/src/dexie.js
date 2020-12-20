@@ -74,6 +74,17 @@ export async function getTask() {
 }
 
 
+
+export async function removeEntry(id) {
+  try {
+    await dexie.cities.where("_id").equals(id).delete(); 
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
 export async function deleteTask() {
   try {
     const token = await dexie.tasks.clear(); // ändern

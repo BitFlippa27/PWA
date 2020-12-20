@@ -6,11 +6,15 @@ import {
   LOCALDATA_INSERT_SUCCESS,
   LOCALDATA_INSERT_FAILED,
   SERVER_DATAUPLOAD_SUCCESS,
-  SERVER_DATAUPLOAD_FAILED
+  SERVER_DATAUPLOAD_FAILED,
+  LOCALDATA_REMOVED_SUCCESS,
+  LOCALDATA_REMOVED_FAILED,
+  SERVERDATA_REMOVED_SUCCESS,
+  SERVERDATA_REMOVED_FAILED
 
 } from "./types";
 import { setAlert } from "./alert";
-import { dexie, addData, addAllData, getAllData, addTask, addMongoID, getToken, saveToken, addObjectID } from "../dexie";
+import { dexie, addData, addAllData, getAllData, addTask, addMongoID, removeEntry, getToken, saveToken, addObjectID } from "../dexie";
 
 //var isEqual = require("lodash.isequal");
 
@@ -128,7 +132,9 @@ export const insertData = (formData) => async (dispatch) => {
     });
 
   } catch (err) {
-    
+    dispatch({
+      type: SERVER_DATAUPLOAD_FAILED
+    });
     console.error(err);
     
   }
@@ -136,25 +142,34 @@ export const insertData = (formData) => async (dispatch) => {
   //await storeTaskSendSignal(formData);
   
 }
-/*    
-async function registerSync() {
+
+export const removeData = (id) => async dispatch => {
+  var token = localStorage.getItem("token");
+  try {
+    await removeEntry(id);
+    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
+  } 
+  catch (err) {
+    dispatch({ type: LOCALDATA_REMOVED_FAILED });
+    console.error(err);
+  }
   
   try {
-    const registration = await navigator.serviceWorker.ready;
-    await registration.sync.register("toSend");
+    
+    const res = await fetch(`http://localhost:5555/api/zips/${id}`, {
+      method: "DELETE",
+      mode: "cors",
+      cache: "no-cache",
+      headers:{
+        "Content-Type" : "application/json",
+        "X-Auth-Token" : `${token}`
+      }, 
+      credentials: "omit"
+    });
+    dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
   }
   catch(err) {
+    dispatch({ type: SERVERDATA_REMOVED_FAILED });
     console.error(err);
   }
 }
-
-async function storeTaskSendSignal(task) {
-  try {
-    await addTask(task);
-    await registerSync();
-  }
-  catch(err) {
-    console.error(err);
-  }
-}
-*/

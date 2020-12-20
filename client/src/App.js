@@ -68,7 +68,8 @@ export default App;
     Isolation(Clean Code, JSLINT),
     dexie queue mit ids,
     catchHandler, defaulthandler -> offline Page
-    Alle console.error() raus, eigene Error pop ups
+    Alle console.error() raus, eigene Error pop ups,
+    Teamfinder === clearErrors, setPostLoading
     
 }
 */

@@ -6,7 +6,11 @@ import {
   LOCALDATA_INSERT_SUCCESS,
   LOCALDATA_INSERT_FAILED,
   SERVER_DATAUPLOAD_SUCCESS,
-  SERVER_DATAUPLOAD_FAILED
+  SERVER_DATAUPLOAD_FAILED,
+  LOCALDATA_REMOVED_SUCCESS,
+  LOCALDATA_REMOVED_FAILED,
+  SERVERDATA_REMOVED_SUCCESS,
+  SERVERDATA_REMOVED_FAILED
 } from "../actions/types";
 
 const initialState = {
@@ -17,7 +21,7 @@ const initialState = {
   error: {}
 };
 
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   const { type, payload } = action;
   //TODO: Abfrage ob Datensatz schon existiert
   switch (type) {
@@ -34,15 +38,21 @@ export default function (state = initialState, action) {
         ...state,
         allData: [...state.allData, payload],
         lastEntries: [...state.lastEntries, payload],
-        loading: false,
+        loading: false
       };
-    case LOCALDATA_INSERT_SUCCESS:
-      return { ...state, error: payload, loading: false };
     case LOCALDATA_INSERT_FAILED:
       return { ...state, error: payload, loading: false };
     case SERVER_DATAUPLOAD_SUCCESS:
       return { ...state, loading: false };
     case SERVER_DATAUPLOAD_FAILED:
+      return { ...state, error: payload, loading: false };
+    case LOCALDATA_REMOVED_SUCCESS:
+      return { ...state, allData: state.allData.filter( city => city._id !== payload), loading: false };
+    case LOCALDATA_REMOVED_FAILED:
+      return { ...state, error: payload, loading: false };
+    case SERVERDATA_REMOVED_SUCCESS:
+      return { ...state, loading: false };
+    case SERVERDATA_REMOVED_FAILED:
       return { ...state, error: payload, loading: false };
 
     default:

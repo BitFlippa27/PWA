@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { insertData } from "../../actions/data";
+import { insertData, removeData } from "../../actions/data";
 
 const DataForm = ({ insertData }) => {
   const [formData, setFormData] = useState({

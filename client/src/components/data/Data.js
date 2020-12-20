@@ -8,7 +8,7 @@ import { loadLocalData, loadServerData } from "../../actions/data";
 
 //TODO: Button für loadServerData
 
-const Data = ({ auth: { user, loading }, allData, loadLocalData, loadServerData }) => {
+const Data = ({ auth: { user, loading }, allData, loadLocalData }) => {
   useEffect(() => {
       loadLocalData();
     }
@@ -46,8 +46,8 @@ const Data = ({ auth: { user, loading }, allData, loadLocalData, loadServerData 
               </tr>
             </thead>
             <tbody>
-              {rows.slice(rows.length - 5, rows.length).map((row, index) => (
-                <DataItem key={index} index={index} data={row} />
+              {rows.slice(rows.length - 5, rows.length).map((row) => (
+                <DataItem key={row._id} index={row._id} data={row} />
               ))}
 
               <DataForm />
