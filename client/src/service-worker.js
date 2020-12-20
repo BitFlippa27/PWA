@@ -10,7 +10,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import { getToken, getTask, deleteTask, addTask } from './dexie';
+import { getToken, getTask, removeTask, addTask, removeEntry, getIdToRemove } from './dexie';
 
 
 const version = 8;
@@ -46,6 +46,11 @@ registerRoute(
   dataUploadHandler, "POST"
 );
 
+registerRoute(
+  "http://localhost:5555/api/zips/:id", 
+  dataRemoveHandler, "DELETE"
+);
+
 
 async function dataUploadHandler({ request }) {
   
@@ -56,12 +61,25 @@ async function dataUploadHandler({ request }) {
   }
   catch(err) {
     await sendMessage({ upload: false});
-    await fetchData(request);
+    await uploadData(request);
+  }
+}
+
+async function dataRemoveHandler({ request }) {
+  
+  try {
+    const res = await fetch(request);  
+    
+    return res;
+  }
+  catch(err) {
+    await sendMessage({ upload: false});
+    await removeData(request);
   }
 }
 
 
-async function fetchData(req) {
+async function uploadData(req) {
   var needToFetch = true;
   const task = await getTask();
   const postBody = JSON.stringify(task);
@@ -84,14 +102,12 @@ async function fetchData(req) {
     if(isOnline) {
       try {
         
-        const res = await fetch("http://localhost:5555/api/zips", fetchOptions);
+        const res = await fetch("http://localhost:5555/api/zips", fetchOptions );
         
         if (res && res.ok) {
           needToFetch = false;
           await sendMessage({ upload: true});
-          
-          //await addObjectID();
-          await deleteTask();
+          await removeTask();
 
           return res;
         }
@@ -106,6 +122,49 @@ async function fetchData(req) {
   } 
 }
 
+
+async function removeData(req) {
+  var needToFetch = true;
+  token = req.headers.get("X-Auth-Token");
+  const task = await addTask();
+  const id = await getIdToRemove();
+  
+
+  const fetchOptions = {
+    method: "DELETE",
+    mode: "cors",
+    cache: "no-cache",
+    headers:{
+      "Content-Type" : "application/json",
+      "X-Auth-Token" : `${token}`
+    }, 
+    credentials: "omit"
+  }
+  
+  if(needToFetch) {
+    await delay(5000);
+    if(isOnline) {
+      try {
+        
+        const res = await fetch(`http://localhost:5555/api/zips/${id}`, fetchOptions );
+        
+        if (res && res.ok) {
+          needToFetch = false;
+          await sendMessage({ upload: true});
+          await removeTask();
+
+          return res;
+        }
+      }
+      catch (err) {
+        console.error(err);
+      }
+      if (needToFetch) {
+        return fetchData(req);
+      }
+    }
+  } 
+}
 
 async function main() 
 {

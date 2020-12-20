@@ -74,6 +74,30 @@ export async function getTask() {
 }
 
 
+export async function addIdToRemove(id) {
+  try {
+    await dexie.tasks.add({_id: id })
+  
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
+export async function getIdToRemove() {
+  try {
+    const task = await dexie.tasks.get(1)._id;
+    console.log(task);
+  
+    return task;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
 
 export async function removeEntry(id) {
   try {
@@ -85,7 +109,7 @@ export async function removeEntry(id) {
 }
 
 
-export async function deleteTask() {
+export async function removeTask() {
   try {
     const token = await dexie.tasks.clear(); // ändern
 

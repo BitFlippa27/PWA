@@ -14,7 +14,7 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { dexie, addData, addAllData, getAllData, addTask, addMongoID, removeEntry, getToken, saveToken, addObjectID } from "../dexie";
+import { dexie, addData, addAllData, getAllData, addTask, addMongoID, removeEntry, getToken, saveToken, addObjectID, addIdToRemove } from "../dexie";
 
 //var isEqual = require("lodash.isequal");
 
@@ -90,25 +90,6 @@ export const insertData = (formData) => async (dispatch) => {
   //await saveToken(token);
   
   try {
-    var keyPath = await addData(formData);
-
-    dispatch({
-      type: LOCALDATA_INSERT_SUCCESS,
-      payload: formData
-    });
-    dispatch(setAlert("Datensatz lokal hinzugefügt", "success"));
-
-  } catch (err) {
-    dispatch({
-      type: LOCALDATA_INSERT_FAILED,
-      payload: {
-        msg: err.response.statusText,
-        status: err.response.status
-      },
-    });
-  }
-  
-  try {
     await addTask(formData);
     const postData = JSON.stringify(formData); 
     const res = await fetch("http://localhost:5555/api/zips", {
@@ -122,20 +103,29 @@ export const insertData = (formData) => async (dispatch) => {
       credentials: "omit",
       body: `${postData}`
     });
-    const response = await res.json();
-    const mongoID = response._id;
-    await addMongoID(mongoID, keyPath);
-    console.log(response);
-
+    
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
 
-  } catch (err) {
+    var keyPath = await addData(formData);
     dispatch({
-      type: SERVER_DATAUPLOAD_FAILED
+      type: LOCALDATA_INSERT_SUCCESS,
+      payload: formData
     });
-    console.error(err);
+    dispatch(setAlert("Datensatz lokal hinzugefügt", "success"));
+
+    const response = await res.json();
+    const mongoID = response._id;
+    await addMongoID(mongoID, keyPath);
+    console.log(response);
+    }
+
+    catch (err) {
+      dispatch({
+        type: SERVER_DATAUPLOAD_FAILED
+      });
+      console.error(err);
     
   }
   
@@ -146,16 +136,13 @@ export const insertData = (formData) => async (dispatch) => {
 export const removeData = (id) => async dispatch => {
   var token = localStorage.getItem("token");
   try {
-    await removeEntry(id);
-    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
+    await addIdToRemove(id);
   } 
   catch (err) {
-    dispatch({ type: LOCALDATA_REMOVED_FAILED });
     console.error(err);
   }
   
   try {
-    const objectID = JSON.stringify(id);
     const res = await fetch(`http://localhost:5555/api/zips/${id}`, {
       method: "DELETE",
       mode: "cors",
@@ -166,14 +153,22 @@ export const removeData = (id) => async dispatch => {
       }, 
       credentials: "omit",
     });
-    if(res.ok)
+    
       dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
-    else {
+  
       dispatch({ type: SERVERDATA_REMOVED_FAILED });
-    }
   }
   catch(err) {
     
+    console.error(err);
+  }
+
+  try {
+    await removeData(id);
+
+    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
+  }
+  catch(err) {
     console.error(err);
   }
 }
