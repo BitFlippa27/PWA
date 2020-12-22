@@ -10,7 +10,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import { getToken, getTask, removeTask, addTask, removeEntry, getIdToRemove } from './dexie';
+import { getToken, getTask, removeTask, addTask, removeEntry, getIdToRemove, addIdToRemove } from './dexie';
 
 
 const version = 8;
@@ -47,7 +47,7 @@ registerRoute(
 );
 
 registerRoute(
-  "http://localhost:5555/api/zips/:id", 
+  /http:\/\/localhost:5555\/api\/zips\/.*/, 
   dataRemoveHandler, "DELETE"
 );
 
@@ -107,7 +107,6 @@ async function uploadData(req) {
         if (res && res.ok) {
           needToFetch = false;
           await sendMessage({ upload: true});
-          await removeTask();
 
           return res;
         }
@@ -126,9 +125,8 @@ async function uploadData(req) {
 async function removeData(req) {
   var needToFetch = true;
   token = req.headers.get("X-Auth-Token");
-  const task = await addTask();
-  const id = await getIdToRemove();
-  
+  const mongoID =  await addIdToRemove();
+ 
 
   const fetchOptions = {
     method: "DELETE",
@@ -140,29 +138,27 @@ async function removeData(req) {
     }, 
     credentials: "omit"
   }
-  
+  //hier eigene Funktion "safeRequest"
   if(needToFetch) {
     await delay(5000);
-    if(isOnline) {
       try {
         
-        const res = await fetch(`http://localhost:5555/api/zips/${id}`, fetchOptions );
+        const res = await fetch(`http://localhost:5555/api/zips/${mongoID}`, fetchOptions );
         
         if (res && res.ok) {
           needToFetch = false;
           await sendMessage({ upload: true});
-          await removeTask();
 
           return res;
         }
       }
       catch (err) {
         console.error(err);
+        return removeData(req);
       }
       if (needToFetch) {
-        return fetchData(req);
+        return removeData(req);
       }
-    }
   } 
 }
 

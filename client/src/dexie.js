@@ -1,6 +1,8 @@
 import Dexie from "dexie";
 import { v4 as uuidv4 } from 'uuid';
 
+var queue = [];
+
 export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
     cities: "++id, _id",
@@ -74,10 +76,12 @@ export async function getTask() {
 }
 
 
-export async function addIdToRemove(id) {
+export async function addIdToRemove(mongoID) {
   try {
-    await dexie.tasks.add({_id: id })
-  
+    await dexie.tasks.add({_id: mongoID });
+    queue.push(mongoID);
+
+    return mongoID;
   } 
   catch (err) {
     console.error(err);
@@ -85,12 +89,9 @@ export async function addIdToRemove(id) {
 }
 
 
-export async function getIdToRemove() {
+export async function removeEntry(mongoID) {
   try {
-    const task = await dexie.tasks.get(1)._id;
-    console.log(task);
-  
-    return task;
+    await dexie.cities.where("_id").equals(mongoID).delete(); 
   } 
   catch (err) {
     console.error(err);
@@ -98,22 +99,10 @@ export async function getIdToRemove() {
 }
 
 
-
-export async function removeEntry(id) {
+export async function removeTask(mongoID) {
   try {
-    await dexie.cities.where("_id").equals(id).delete(); 
-  } 
-  catch (err) {
-    console.error(err);
-  }
-}
-
-
-export async function removeTask() {
-  try {
-    const token = await dexie.tasks.clear(); // ändern
-
-    return token;
+    await dexie.tasks.where("_id").equals(mongoID).delete();
+    queue.shift();
   } 
   catch (err) {
     console.error(err);

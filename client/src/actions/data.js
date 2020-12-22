@@ -14,7 +14,7 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { dexie, addData, addAllData, getAllData, addTask, addMongoID, removeEntry, getToken, saveToken, addObjectID, addIdToRemove } from "../dexie";
+import { dexie, addData, addAllData, getAllData, addTask, addMongoID, removeEntry, getToken, saveToken, addObjectID, addIdToRemove, removeTask } from "../dexie";
 
 //var isEqual = require("lodash.isequal");
 
@@ -92,7 +92,7 @@ export const insertData = (formData) => async (dispatch) => {
   try {
     await addTask(formData);
     const postData = JSON.stringify(formData); 
-    const res = await fetch("http://localhost:5555/api/zips", {
+   const res = await fetch("http://localhost:5555/api/zips", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -104,6 +104,8 @@ export const insertData = (formData) => async (dispatch) => {
       body: `${postData}`
     });
     
+    await removeTask(); //TODO
+
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
@@ -137,13 +139,14 @@ export const removeData = (id) => async dispatch => {
   var token = localStorage.getItem("token");
   try {
     await addIdToRemove(id);
+    //await addTask(id);
   } 
   catch (err) {
     console.error(err);
   }
   
   try {
-    const res = await fetch(`http://localhost:5555/api/zips/${id}`, {
+    await fetch(`http://localhost:5555/api/zips/${id}`, {
       method: "DELETE",
       mode: "cors",
       cache: "no-cache",
@@ -153,22 +156,24 @@ export const removeData = (id) => async dispatch => {
       }, 
       credentials: "omit",
     });
+
     
-      dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
-  
-      dispatch({ type: SERVERDATA_REMOVED_FAILED });
+
+    dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
   }
   catch(err) {
-    
     console.error(err);
+    dispatch({ type: SERVERDATA_REMOVED_FAILED });
   }
 
   try {
-    await removeData(id);
+    await removeEntry(id);
+    await removeTask();
 
     dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
   }
   catch(err) {
     console.error(err);
+    dispatch({ type: LOCALDATA_REMOVED_FAILED,  payload: id });
   }
 }
