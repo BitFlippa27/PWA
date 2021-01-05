@@ -10,13 +10,14 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import { getToken, getTask, removeTask, addTask, removeEntry, getIdToRemove, addIdToRemove } from './dexie';
+import {  getTask, getMongoID } from './dexie';
 
 
 const version = 8;
 var isLoggedIn = false;
 var isOnline = true;
 var token;
+var requestQueue = [];
 
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
@@ -99,7 +100,6 @@ async function uploadData(req) {
   
   if(needToFetch) {
     await delay(5000);
-    if(isOnline) {
       try {
         
         const res = await fetch("http://localhost:5555/api/zips", fetchOptions );
@@ -117,7 +117,6 @@ async function uploadData(req) {
       if (needToFetch) {
         return fetchData(req);
       }
-    }
   } 
 }
 
@@ -125,9 +124,8 @@ async function uploadData(req) {
 async function removeData(req) {
   var needToFetch = true;
   token = req.headers.get("X-Auth-Token");
-  const mongoID =  await addIdToRemove();
+  const mongoID = await getMongoID();
  
-
   const fetchOptions = {
     method: "DELETE",
     mode: "cors",

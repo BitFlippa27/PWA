@@ -67,7 +67,8 @@ export default App;
     pagination, 
     Isolation(Clean Code, JSLINT),
     dexie queue mit ids,
-    catchHandler, defaulthandler -> offline Page
+    catchHandler, defaulthandler -> offline Page 
+      Offline Anmeldung
     Alle console.error() raus, eigene Error pop ups,
     Teamfinder === clearErrors, setPostLoading
     

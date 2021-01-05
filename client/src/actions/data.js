@@ -90,60 +90,54 @@ export const insertData = (formData) => async (dispatch) => {
   //await saveToken(token);
   
   try {
-    await addTask(formData);
     const postData = JSON.stringify(formData); 
-   const res = await fetch("http://localhost:5555/api/zips", {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      headers:{
-        "Content-Type" : "application/json",
-        "X-Auth-Token" : `${token}`
-      }, 
-      credentials: "omit",
-      body: `${postData}`
-    });
+    const res = await fetch("http://localhost:5555/api/zips", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers:{
+          "Content-Type" : "application/json",
+          "X-Auth-Token" : `${token}`
+        }, 
+        credentials: "omit",
+        body: `${postData}`
+      });
     
-    await removeTask(); //TODO
+    
 
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
 
     var keyPath = await addData(formData);
+    
+
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,
       payload: formData
     });
-    dispatch(setAlert("Datensatz lokal hinzugefügt", "success"));
+    dispatch(setAlert("Datensatz hinzugefügt", "success"));
 
+    //füge MongoID zu Dexie Datensatz hinzu
     const response = await res.json();
     const mongoID = response._id;
     await addMongoID(mongoID, keyPath);
+    await removeTask(mongoID); 
     console.log(response);
     }
 
     catch (err) {
+      await addTask(formData);
       dispatch({
         type: SERVER_DATAUPLOAD_FAILED
       });
       console.error(err);
     
-  }
-  
-  //await storeTaskSendSignal(formData);
-  
+  }  
 }
 
 export const removeData = (id) => async dispatch => {
   var token = localStorage.getItem("token");
-  try {
-    await addIdToRemove(id);
-    //await addTask(id);
-  } 
-  catch (err) {
-    console.error(err);
-  }
   
   try {
     await fetch(`http://localhost:5555/api/zips/${id}`, {
@@ -156,24 +150,25 @@ export const removeData = (id) => async dispatch => {
       }, 
       credentials: "omit",
     });
-
     
-
     dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
+
+    await removeEntry(id);
+    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
+
+    await removeTask(id);
+
   }
   catch(err) {
     console.error(err);
+    await addIdToRemove(id);
     dispatch({ type: SERVERDATA_REMOVED_FAILED });
   }
 
-  try {
-    await removeEntry(id);
-    await removeTask();
 
-    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
-  }
-  catch(err) {
-    console.error(err);
-    dispatch({ type: LOCALDATA_REMOVED_FAILED,  payload: id });
-  }
+    
+    
+    
+
+  
 }

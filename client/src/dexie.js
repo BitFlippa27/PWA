@@ -1,7 +1,7 @@
 import Dexie from "dexie";
 import { v4 as uuidv4 } from 'uuid';
 
-var queue = [];
+var taskQueue = [];
 
 export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
@@ -62,6 +62,11 @@ export async function addMongoID(mongoID, keyPath) {
   }
 }
 
+export async function getMongoID() {
+  return taskQueue[0];
+}
+
+
 
 export async function getTask() {
   try {
@@ -79,7 +84,7 @@ export async function getTask() {
 export async function addIdToRemove(mongoID) {
   try {
     await dexie.tasks.add({_id: mongoID });
-    queue.push(mongoID);
+    taskQueue.push(mongoID);
 
     return mongoID;
   } 
@@ -92,6 +97,7 @@ export async function addIdToRemove(mongoID) {
 export async function removeEntry(mongoID) {
   try {
     await dexie.cities.where("_id").equals(mongoID).delete(); 
+    taskQueue.shift();
   } 
   catch (err) {
     console.error(err);
@@ -99,10 +105,10 @@ export async function removeEntry(mongoID) {
 }
 
 
-export async function removeTask(mongoID) {
+export async function removeTask(id) {
   try {
-    await dexie.tasks.where("_id").equals(mongoID).delete();
-    queue.shift();
+    await dexie.tasks.where("_id").equals(id).delete();
+    taskQueue.shift();
   } 
   catch (err) {
     console.error(err);
