@@ -49,7 +49,7 @@ export const loadServerData = () => async (dispatch) => {
     payload: {
       msg: err.response.statusText,
       status: err.response.status,
-    },
+    }
   });
   
   }
@@ -78,7 +78,7 @@ export const loadLocalData = () => async (dispatch) => {
       payload: {
         msg: err.response.statusText,
         status: err.response.status,
-      },
+      }
     });
   }
 }
@@ -88,7 +88,20 @@ export const insertData = (formData) => async (dispatch) => {
   var token = localStorage.getItem("token");
   //console.log(token);
   //await saveToken(token);
+  try {
+    var keyPath = await addData(formData);
+    dispatch(setAlert("Datensatz hinzugefügt", "success"));
   
+    dispatch({
+      type: LOCALDATA_INSERT_SUCCESS,
+      payload: formData
+  
+    });
+  } 
+  catch (err) {
+   console.error(err)
+  }
+
   try {
     const postData = JSON.stringify(formData); 
     const res = await fetch("http://localhost:5555/api/zips", {
@@ -103,20 +116,11 @@ export const insertData = (formData) => async (dispatch) => {
         body: `${postData}`
       });
     
-    
-
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
 
-    var keyPath = await addData(formData);
     
-
-    dispatch({
-      type: LOCALDATA_INSERT_SUCCESS,
-      payload: formData
-    });
-    dispatch(setAlert("Datensatz hinzugefügt", "success"));
 
     //füge MongoID zu Dexie Datensatz hinzu
     const response = await res.json();
@@ -138,7 +142,14 @@ export const insertData = (formData) => async (dispatch) => {
 
 export const removeData = (id) => async dispatch => {
   var token = localStorage.getItem("token");
-  
+  try {
+    await removeEntry(id);
+    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
+  } 
+  catch (err) {
+    console.error(err);
+  }
+
   try {
     await fetch(`http://localhost:5555/api/zips/${id}`, {
       method: "DELETE",
@@ -148,17 +159,14 @@ export const removeData = (id) => async dispatch => {
         "Content-Type" : "application/json",
         "X-Auth-Token" : `${token}`
       }, 
-      credentials: "omit",
+      credentials: "omit"
     });
-    
+
     dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
 
-    await removeEntry(id);
-    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
-
     await removeTask(id);
-
   }
+
   catch(err) {
     console.error(err);
     await addIdToRemove(id);

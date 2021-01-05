@@ -55,6 +55,7 @@ export default App;
 
 /*Techdebt = {
     wenn auf Button clear Table und dann neuladen der Table => stale
+    wenn Table nicht geladen werden kann -> Refresh Aufforderung
     Input Validation Submit inserted data, 
     Offline Authentifikation(pubKey),
     Wenn DB leer login failed,
