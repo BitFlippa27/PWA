@@ -6,7 +6,7 @@ var taskQueue = [];
 export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
     cities: "++id, _id",
-    tasks: "++id, _id",
+    requests: "++id, _id",
     users: "_id",
     currentUser: "_id"
 });
@@ -40,10 +40,9 @@ export async function addData(formData) {
 }
 
 
-export async function addTask(task) {
-  var taskId = uuidv4();
+export async function addRequest(req) {
   try {
-    await dexie.tasks.add(task);
+    await dexie.requests.add(req);
     
   }
   catch(err) {
@@ -68,12 +67,25 @@ export async function getMongoID() {
 
 
 
-export async function getTask() {
+export async function getRequest() {
   try {
-    const task = await dexie.tasks.get(1);
-    console.log(task);
+    const request = await dexie.requests.get(1);
+    console.log(request);
   
-    return task;
+    return request;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
+export async function getAllRequests() {
+  try {
+    const request = await dexie.requests.toArray();
+    console.log("request Array", request);
+  
+    return request;
   } 
   catch (err) {
     console.error(err);
@@ -83,7 +95,7 @@ export async function getTask() {
 
 export async function addIdToRemove(mongoID) {
   try {
-    await dexie.tasks.add({_id: mongoID });
+    await dexie.requests.add({_id: mongoID });
     taskQueue.push(mongoID);
 
     return mongoID;
@@ -105,9 +117,9 @@ export async function removeEntry(mongoID) {
 }
 
 
-export async function removeTask(id) {
+export async function removeRequest() {
   try {
-    await dexie.tasks.where("_id").equals(id).delete();
+    await dexie.requests.get(1).delete();
     taskQueue.shift();
   } 
   catch (err) {
@@ -118,7 +130,7 @@ export async function removeTask(id) {
 
 export async function getAllData() {
   try {
-    const allData = await dexie.table("cities").toArray();
+    const allData = await dexie.cities.toArray();
 
     return allData;
   } 

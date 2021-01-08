@@ -10,14 +10,15 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import {  getTask, getMongoID } from './dexie';
+import {  getRequest, removeRequest, getAllRequests, getMongoID } from './dexie';
+import { pushRequest } from "./queue";
 
 
 const version = 8;
 var isLoggedIn = false;
 var isOnline = true;
 var token;
-var requestQueue = [];
+
 
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
@@ -57,12 +58,14 @@ async function dataUploadHandler({ request }) {
   
   try {
     const res = await fetch(request);  
+    //console.log("plain", request);
     
     return res;
   }
   catch(err) {
     await sendMessage({ upload: false});
-    await uploadData(request);
+    await pushRequest(request);
+    await uploadData();
   }
 }
 
@@ -80,10 +83,19 @@ async function dataRemoveHandler({ request }) {
 }
 
 
-async function uploadData(req) {
+async function uploadData() {
   var needToFetch = true;
-  const task = await getTask();
-  const postBody = JSON.stringify(task);
+  const requests = await getAllRequests();
+  //todo loop every request and check role and time
+
+
+
+
+  console.log("object", requests[0]);
+  console.log("reqData", requests[0].reqData);
+  const request = requests[0].reqData;
+  
+  const postBody = JSON.stringify(request);
   token = req.headers.get("X-Auth-Token");
 
   const fetchOptions = {
@@ -107,15 +119,17 @@ async function uploadData(req) {
         if (res && res.ok) {
           needToFetch = false;
           await sendMessage({ upload: true});
+          await removeRequest();
 
           return res;
         }
       }
       catch (err) {
         console.error(err);
+        return uploadData();
       }
       if (needToFetch) {
-        return fetchData(req);
+        return uploadData();
       }
   } 
 }

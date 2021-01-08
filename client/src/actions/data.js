@@ -14,7 +14,7 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { dexie, addData, addAllData, getAllData, addTask, addMongoID, removeEntry, getToken, saveToken, addObjectID, addIdToRemove, removeTask } from "../dexie";
+import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove } from "../dexie";
 
 //var isEqual = require("lodash.isequal");
 
@@ -89,13 +89,13 @@ export const insertData = (formData) => async (dispatch) => {
   //console.log(token);
   //await saveToken(token);
   try {
+    //Rückgabewert ist primary key (keyPath)
     var keyPath = await addData(formData);
     dispatch(setAlert("Datensatz hinzugefügt", "success"));
   
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,
       payload: formData
-  
     });
   } 
   catch (err) {
@@ -120,18 +120,15 @@ export const insertData = (formData) => async (dispatch) => {
       type: SERVER_DATAUPLOAD_SUCCESS
     });
 
-    
-
     //füge MongoID zu Dexie Datensatz hinzu
     const response = await res.json();
     const mongoID = response._id;
     await addMongoID(mongoID, keyPath);
-    await removeTask(mongoID); 
     console.log(response);
     }
 
     catch (err) {
-      await addTask(formData);
+      //await addTask(formData);
       dispatch({
         type: SERVER_DATAUPLOAD_FAILED
       });
@@ -164,7 +161,7 @@ export const removeData = (id) => async dispatch => {
 
     dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
 
-    await removeTask(id);
+    
   }
 
   catch(err) {
