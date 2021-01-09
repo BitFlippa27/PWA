@@ -55,22 +55,24 @@ registerRoute(
 
 
 async function dataUploadHandler({ request }) {
-  
   try {
+    var req = request.clone();
     const res = await fetch(request);  
     //console.log("plain", request);
-    
+
     return res;
+    
   }
   catch(err) {
     await sendMessage({ upload: false});
-    await pushRequest(request);
-    await uploadData();
+    const id = await pushRequest(req);
+    await uploadData(id);
+    
+   
   }
 }
 
 async function dataRemoveHandler({ request }) {
-  
   try {
     const res = await fetch(request);  
     
@@ -83,20 +85,26 @@ async function dataRemoveHandler({ request }) {
 }
 
 
-async function uploadData() {
+async function uploadData(id) {
   var needToFetch = true;
   const requests = await getAllRequests();
   //todo loop every request and check role and time
 
 
+  const requestObject = requests[0].request;
+  
+  const request = new Request(requestObject.url, requestObject)
+  const req = await request.clone();
+
 
 
   console.log("object", requests[0]);
-  console.log("reqData", requests[0].reqData);
-  const request = requests[0].reqData;
+  console.log("reqData", requests[0].request);
   
+  
+  /*
   const postBody = JSON.stringify(request);
-  token = req.headers.get("X-Auth-Token");
+  token = request.headers.get("X-Auth-Token");
 
   const fetchOptions = {
     method: "POST",
@@ -109,17 +117,18 @@ async function uploadData() {
     credentials: "omit",
     body: `${postBody}`
   }
-  
+  */
   if(needToFetch) {
     await delay(5000);
       try {
         
-        const res = await fetch("http://localhost:5555/api/zips", fetchOptions );
+        const res = await fetch(req);
         
         if (res && res.ok) {
           needToFetch = false;
           await sendMessage({ upload: true});
-          await removeRequest();
+          console.log("sw", id);
+          await removeRequest(id);
 
           return res;
         }

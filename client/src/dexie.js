@@ -40,10 +40,14 @@ export async function addData(formData) {
 }
 
 
-export async function addRequest(req) {
+export async function addRequest(entry) {
+  const { reqData, timestamp } = entry;
   try {
-    await dexie.requests.add(req);
-    
+    let id = await dexie.requests.add({
+      request: reqData,
+      timestamp: timestamp
+    });
+   return id;
   }
   catch(err) {
     console.error(err);
@@ -117,9 +121,10 @@ export async function removeEntry(mongoID) {
 }
 
 
-export async function removeRequest() {
+export async function removeRequest(id) {
+  console.log("dexie", id);
   try {
-    await dexie.requests.get(1).delete();
+    await dexie.requests.where("id").equals(id).delete();
     taskQueue.shift();
   } 
   catch (err) {
