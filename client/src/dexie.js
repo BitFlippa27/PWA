@@ -84,7 +84,7 @@ export async function getRequest() {
 }
 
 
-export async function getAllRequests() {
+export async function getAllRequestObjects() {
   try {
     const request = await dexie.requests.toArray();
     console.log("request Array", request);
@@ -121,7 +121,7 @@ export async function removeEntry(mongoID) {
 }
 
 
-export async function removeRequest(id) {
+export async function removeRequestObject(id) {
   console.log("dexie", id);
   try {
     await dexie.requests.where("id").equals(id).delete();

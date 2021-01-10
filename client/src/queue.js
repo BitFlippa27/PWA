@@ -41,12 +41,8 @@ export async function pushRequest(request) {
         timestamp: Date.now()
     };
     console.log("entry", entry);
-
-
-    const id = await addRequest(entry);
-    console.log("queue", id);
-
-    return id;
+    await addRequest(entry);
+ 
 }
 
 

@@ -10,8 +10,9 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import {  getRequest, removeRequest, getAllRequests, getMongoID } from './dexie';
+import {  getRequest, removeRequestObject, getAllRequestObjects, getMongoID } from './dexie';
 import { pushRequest } from "./queue";
+const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 
 
 const version = 8;
@@ -61,14 +62,11 @@ async function dataUploadHandler({ request }) {
     //console.log("plain", request);
 
     return res;
-    
   }
   catch(err) {
     await sendMessage({ upload: false});
-    const id = await pushRequest(req);
-    await uploadData(id);
-    
-   
+    await pushRequest(req);
+    await uploadData();
   }
 }
 
@@ -85,64 +83,52 @@ async function dataRemoveHandler({ request }) {
 }
 
 
-async function uploadData(id) {
-  var needToFetch = true;
-  const requests = await getAllRequests();
-  //todo loop every request and check role and time
-
-
-  const requestObject = requests[0].request;
-  
-  const request = new Request(requestObject.url, requestObject)
-  const req = await request.clone();
-
-
-
-  console.log("object", requests[0]);
-  console.log("reqData", requests[0].request);
-  
-  
-  /*
-  const postBody = JSON.stringify(request);
-  token = request.headers.get("X-Auth-Token");
-
-  const fetchOptions = {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    headers:{
-      "Content-Type" : "application/json",
-      "X-Auth-Token" : `${token}`
-    }, 
-    credentials: "omit",
-    body: `${postBody}`
+async function uploadData() {
+  const allRequestObjects = await getAllRequestObjects();
+  for (const requestObject of allRequestObjects) {
+    if(requestObject) {
+      console.log("sw id",requestObject.id);
+      const request = new Request(requestObject.request.url, requestObject.request);
+      const req = request.clone();
+      try {
+        await delay(5000);
+        const res =  await fetch(req);
+        if (res && res.ok) {
+          await sendMessage({ upload: true});
+          await removeRequestObject(requestObject.id);
+          
+        }
+      } 
+      catch (error) {
+        return uploadData();
+      }
+      
+     
+    }
   }
-  */
-  if(needToFetch) {
+  
+}
+
+async function fetchData(request) {
+
     await delay(5000);
       try {
-        
-        const res = await fetch(req);
+        const res = await fetch(request);
         
         if (res && res.ok) {
-          needToFetch = false;
           await sendMessage({ upload: true});
-          console.log("sw", id);
-          await removeRequest(id);
-
+          
           return res;
         }
       }
       catch (err) {
         console.error(err);
-        return uploadData();
+        return fetchData(request);
       }
       if (needToFetch) {
-        return uploadData();
+        return fetchData(request);
       }
-  } 
 }
-
 
 async function removeData(req) {
   var needToFetch = true;
