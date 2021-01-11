@@ -15,6 +15,7 @@ import {
 } from "./types";
 import { setAlert } from "./alert";
 import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove } from "../dexie";
+import { fromPairs } from "lodash";
 
 //var isEqual = require("lodash.isequal");
 
@@ -92,7 +93,7 @@ export const insertData = (formData) => async (dispatch) => {
     //Rückgabewert ist primary key (keyPath)
     var keyPath = await addData(formData);
     dispatch(setAlert("Datensatz hinzugefügt", "success"));
-  
+    
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,
       payload: formData
@@ -103,8 +104,10 @@ export const insertData = (formData) => async (dispatch) => {
   }
 
   try {
+    formData.keyPath = keyPath;
+    console.log("formdata", formData);
     const postData = JSON.stringify(formData); 
-    const res = await fetch("http://localhost:5555/api/zips", {
+    await fetch("http://localhost:5555/api/zips", {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -116,15 +119,14 @@ export const insertData = (formData) => async (dispatch) => {
         body: `${postData}`
       });
     
+    
+
     dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
 
     //füge MongoID zu Dexie Datensatz hinzu
-    const response = await res.json();
-    const mongoID = response._id;
-    await addMongoID(mongoID, keyPath);
-    console.log(response);
+    
     }
 
     catch (err) {

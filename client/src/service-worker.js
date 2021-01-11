@@ -19,7 +19,7 @@ const version = 8;
 var isLoggedIn = false;
 var isOnline = true;
 var token;
-
+var keyPath;
 
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
@@ -58,6 +58,7 @@ registerRoute(
 async function dataUploadHandler({ request }) {
   try {
     var req = request.clone();
+    var req2 = req.clone();
     const res = await fetch(request);  
     //console.log("plain", request);
 
@@ -65,9 +66,14 @@ async function dataUploadHandler({ request }) {
   }
   catch(err) {
     await sendMessage({ upload: false});
+    const requestBody = await req2.json();
+    keyPath = requestBody.keyPath;
+    console.log("req.json()",keyPath);
     await pushRequest(req);
-    await uploadData();
-  }
+    const res = await uploadData();
+
+    return res;
+  } 
 }
 
 async function dataRemoveHandler({ request }) {
@@ -86,49 +92,37 @@ async function dataRemoveHandler({ request }) {
 async function uploadData() {
   const allRequestObjects = await getAllRequestObjects();
   for (const requestObject of allRequestObjects) {
-    if(requestObject) {
       console.log("sw id",requestObject.id);
       const request = new Request(requestObject.request.url, requestObject.request);
       const req = request.clone();
       try {
         await delay(5000);
-        const res =  await fetch(req);
+
+        var res =  await fetch(req);
         if (res && res.ok) {
           await sendMessage({ upload: true});
           await removeRequestObject(requestObject.id);
-          
+
+          res = res.clone();
+          const data = await res.json();
+          const mongoID = data._id;
+          await addMongoID(mongoID, keyPath);
+          console.log("data", data);
+          console.log("data.keypath",keyPath);
+
+          const allRequestObjects = await getAllRequestObjects();
+          if(allRequestObjects.length === 0) {
+            return res;
+          }
         }
       } 
       catch (error) {
         return uploadData();
       }
-      
-     
-    }
+    
   }
-  
 }
 
-async function fetchData(request) {
-
-    await delay(5000);
-      try {
-        const res = await fetch(request);
-        
-        if (res && res.ok) {
-          await sendMessage({ upload: true});
-          
-          return res;
-        }
-      }
-      catch (err) {
-        console.error(err);
-        return fetchData(request);
-      }
-      if (needToFetch) {
-        return fetchData(request);
-      }
-}
 
 async function removeData(req) {
   var needToFetch = true;

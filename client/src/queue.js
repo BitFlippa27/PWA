@@ -14,15 +14,15 @@ const requestProperties = [
 ];
 
 export async function pushRequest(request) {
-    console.log("request",request);
+   
 
     const requestData = {
         url: request.url,
         headers: {}
     };
     
-    requestData.body = await request.arrayBuffer();
-    console.log("body", requestData.body )
+    requestData.body = await request.clone().arrayBuffer();
+    
 
     for (const [key, value] of request.headers.entries()) {
         requestData.headers[key] = value;
@@ -40,9 +40,9 @@ export async function pushRequest(request) {
         reqData: requestObject,
         timestamp: Date.now()
     };
-    console.log("entry", entry);
+   
     await addRequest(entry);
- 
+
 }
 
 
