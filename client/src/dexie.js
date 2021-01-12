@@ -56,7 +56,7 @@ export async function addRequest(entry) {
 
 
 export async function addMongoID(mongoID, keyPath) {
-  
+  console.log("addMongoID", mongoID, keyPath)
   try {
     await dexie.cities.update(keyPath, {_id: mongoID});
   }

@@ -104,10 +104,9 @@ export const insertData = (formData) => async (dispatch) => {
   }
 
   try {
-    formData.keyPath = keyPath;
     console.log("formdata", formData);
     const postData = JSON.stringify(formData); 
-    await fetch("http://localhost:5555/api/zips", {
+    const res = await fetch("http://localhost:5555/api/zips", {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -119,11 +118,14 @@ export const insertData = (formData) => async (dispatch) => {
         body: `${postData}`
       });
     
-    
-
-    dispatch({
+      dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
+
+      const data = await res.json();
+      const mongoID = data._id;
+      console.log(mongoID);
+      await addMongoID(mongoID, keyPath);
 
     //füge MongoID zu Dexie Datensatz hinzu
     
