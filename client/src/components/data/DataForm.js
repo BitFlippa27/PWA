@@ -17,9 +17,9 @@ const DataForm = ({ insertData }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!formData) 
-    return;
-    await insertData(formData);
+      return;
     setFormData({ city: "", zip: "", pop: "" });
+    await insertData(formData);
   };
 
   return (
@@ -34,6 +34,7 @@ const DataForm = ({ insertData }) => {
               placeholder="Stadt"
               value={city}
               onChange={(e) => onChange(e)}
+              required
             ></input>
           </form>
         </th>
@@ -41,11 +42,12 @@ const DataForm = ({ insertData }) => {
           <form className="form ">
             <input
               className="form-control"
-              type="text"
+              type="number"
               name="zip"
               placeholder="PLZ"
               value={zip}
               onChange={(e) => onChange(e)}
+              required
             ></input>
           </form>
         </th>
@@ -53,11 +55,12 @@ const DataForm = ({ insertData }) => {
           <form className="form ">
             <input
               className="form-control"
-              type="text"
+              type="number"
               name="pop"
               placeholder="Bevölkerung"
               value={pop}
               onChange={(e) => onChange(e)}
+              required
             ></input>
           </form>
         </th>

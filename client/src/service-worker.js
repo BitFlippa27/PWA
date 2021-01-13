@@ -11,7 +11,7 @@ import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
 import {  getRequest, removeRequestObject, getAllRequestObjects, getMongoID } from './dexie';
-import { pushRequest } from "./queue";
+import { pushRequest, toObject, toRequest } from "./queue";
 const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 
 
@@ -19,7 +19,8 @@ const version = 8;
 var isLoggedIn = false;
 var isOnline = true;
 var token;
-var keyPath;
+var queue = [];
+var refetch = true;
 
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
@@ -86,33 +87,40 @@ async function dataRemoveHandler({ request }) {
 
 
 async function uploadData() {
-  const allRequestObjects = await getAllRequestObjects();
+  const allRequestObjects =  await getAllRequestObjects();
   for (const requestObject of allRequestObjects) {
       console.log("sw id",requestObject.id);
-      const request = new Request(requestObject.request.url, requestObject.request);
-      const req = request.clone();
-      try {
-        await delay(5000);
+      //check time check prio check expiry
+      queue.unshift(requestObject);
+    }
+    const res = await fetchData();
 
+    return res;
+}
+
+
+async function fetchData() {
+  do {
+    let requestObject = queue.shift();
+    console.log("RequestObject",requestObject.request);
+    let request = new Request(requestObject.request.url, requestObject.request);
+    let req = request.clone();
+    try { 
+        await delay(5000);
+      
         var res = await fetch(req);
         if (res && res.ok) {
           await sendMessage({ upload: true});
           await removeRequestObject(requestObject.id);
-
-          
-          const allRequestObjects = await getAllRequestObjects();
-          if(allRequestObjects.length === 0) {
-            return res;
-          }
         }
-      } 
-      catch (error) {
-        return await uploadData();
       }
-    
-  }
-}
+      catch (error) {
+        queue.unshift(requestObject);
+      }
+    } while (queue.length !== 0);
 
+    return res;
+  }
 
 async function removeData(req) {
   var needToFetch = true;

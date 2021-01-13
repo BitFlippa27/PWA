@@ -34,7 +34,7 @@ export async function pushRequest(request) {
         }
     }
 
-    const requestObject = cloneToObject(requestData);
+    const requestObject = toObject(requestData);
 
     const entry = {
         reqData: requestObject,
@@ -46,7 +46,7 @@ export async function pushRequest(request) {
 }
 
 
-function cloneToObject(requestData) {
+function toObject(requestData) {
     const requestObject = Object.assign({}, requestData);
     requestObject.headers =  Object.assign({}, requestData.headers);
         if (requestObject.body) {
