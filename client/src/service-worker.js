@@ -7,10 +7,10 @@
 //importScripts("dexie.js");
 import { setCacheNameDetails } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
-import { precacheAndRoute } from 'workbox-precaching';
+import { precacheAndRoute, matchPrecache } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import {  getRequest, removeRequestObject, getAllRequestObjects, getMongoID } from './dexie';
+import {  getRequest, removeRequestObject, getAllRequestObjects, getMongoID, getKeyPath } from './dexie';
 import { pushRequest, toObject, toRequest } from "./queue";
 const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 
@@ -21,6 +21,7 @@ var isOnline = true;
 var token;
 var queue = [];
 var refetch = true;
+var count = 0;
 
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
@@ -45,6 +46,12 @@ registerRoute(
   );
 
 
+ registerRoute(
+   "http://localhost:5555/api/auth",
+   loginHandler, "POST"
+ );
+
+
 registerRoute(
   "http://localhost:5555/api/zips", 
   dataUploadHandler, "POST"
@@ -56,10 +63,22 @@ registerRoute(
 );
 
 
+async function loginHandler({ request }) {
+  try {
+    let res = await fetch(request);  
+    return res;
+  } 
+  catch (error) {
+    let res = await matchPrecache("/offline");
+    return res;
+  }
+}
+
+
 async function dataUploadHandler({ request }) {
   try {
     var req = request.clone();
-    const res = await fetch(request);  
+    let res = await fetch(request);  
     //console.log("plain", request);
 
     return res;
@@ -67,11 +86,12 @@ async function dataUploadHandler({ request }) {
   catch(err) {
     await sendMessage({ upload: false});
     await pushRequest(req);
-    const res = await uploadData();
-
+    let res = await checkData();
+    console.log("dataUploadHandler", res);
     return res;
   } 
 }
+
 
 async function dataRemoveHandler({ request }) {
   try {
@@ -86,14 +106,15 @@ async function dataRemoveHandler({ request }) {
 }
 
 
-async function uploadData() {
-  const allRequestObjects =  await getAllRequestObjects();
-  for (const requestObject of allRequestObjects) {
+async function checkData() {
+  let allRequestObjects =  await getAllRequestObjects();
+  for (let requestObject of allRequestObjects) {
       console.log("sw id",requestObject.id);
-      //check time check prio check expiry
+      //check time check prio check expiry check dirty
       queue.unshift(requestObject);
     }
-    const res = await fetchData();
+    let res = await fetchData();
+    console.log("checkData",res);
 
     return res;
 }
@@ -107,19 +128,30 @@ async function fetchData() {
     let req = request.clone();
     try { 
         await delay(5000);
-      
+
         var res = await fetch(req);
+        console.log("fetchData", res);
+        var clonedRes = res.clone();
         if (res && res.ok) {
           await sendMessage({ upload: true});
-          await removeRequestObject(requestObject.id);
+          await removeRequestObject(requestObject.id);         
+          let data = await clonedRes.json();    
+          console.log(data)
+          let mongoID = data._id;
+          let keyPath = data.id;
+          console.log(data._id);
+          await addMongoID(mongoID, keyPath);
         }
       }
       catch (error) {
         queue.unshift(requestObject);
+        //register push or sync event
+        return res;
       }
     } while (queue.length !== 0);
 
     return res;
+      
   }
 
 async function removeData(req) {

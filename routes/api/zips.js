@@ -27,7 +27,8 @@ router.post("/",auth, async (req, res) => {  //auth nicht vergessen
         const newDataSet = new Zips({
             city: req.body.city,
             zip: req.body.zip,
-            pop: req.body.pop
+            pop: req.body.pop,
+            id: req.body.id
         });
 
 

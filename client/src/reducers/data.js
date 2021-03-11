@@ -34,18 +34,13 @@ export default function(state = initialState, action) {
     case CLIENT_DATALOAD_FAILED:
       return { ...state, error: payload, loading: false };
     case LOCALDATA_INSERT_SUCCESS:
-      return {
-        ...state,
-        allData: [...state.allData, payload],
-        lastEntries: [...state.lastEntries, payload],
-        loading: false
-      };
+      return { ...state, allData: [...state.allData, payload], loading: false };
     case LOCALDATA_INSERT_FAILED:
       return { ...state, error: payload, loading: false };
     case SERVER_DATAUPLOAD_SUCCESS:
       return { ...state, loading: false };
     case SERVER_DATAUPLOAD_FAILED:
-      return { ...state, error: payload, loading: false };
+      return { ...state, loading: false };
     case LOCALDATA_REMOVED_SUCCESS:
       return { ...state, allData: state.allData.filter( city => city._id !== payload), loading: false };
     case LOCALDATA_REMOVED_FAILED:

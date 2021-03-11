@@ -14,13 +14,13 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove } from "../dexie";
+import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects } from "../dexie";
 import { fromPairs } from "lodash";
 
 //var isEqual = require("lodash.isequal");
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
-export const loadServerData = () => async (dispatch) => {
+export const loadAllServerData = () => async (dispatch) => {
   const token = localStorage.getItem("token");
   
   try {
@@ -57,11 +57,11 @@ export const loadServerData = () => async (dispatch) => {
 }
 
 
-export const loadLocalData = () => async (dispatch) => {
+export const loadAllLocalData = () => async (dispatch) => {
   try {
     const dexieData = await getAllData();
     if(dexieData.length === 0 || dexieData === undefined ) {
-      dispatch(loadServerData());
+      dispatch(loadAllServerData());
     }
     //const count =  await dexie.cities.count();
     //console.log(count);
@@ -86,27 +86,29 @@ export const loadLocalData = () => async (dispatch) => {
 
 
 export const insertData = (formData) => async (dispatch) => {
+  var data = formData;
   var token = localStorage.getItem("token");
   //console.log(token);
   //await saveToken(token);
   try {
     //Rückgabewert ist primary key (keyPath)
-    var keyPath = await addData(formData);
+    let keyPath = await addData(data);
     dispatch(setAlert("Datensatz hinzugefügt", "success"));
     
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,
-      payload: formData
+      payload: data
     });
+    data.id = keyPath;
   } 
   catch (err) {
    console.error(err)
   }
 
   try {
-    console.log("formdata", formData);
-    const postData = JSON.stringify(formData); 
-    const res = await fetch("http://localhost:5555/api/zips", {
+
+    const postData = JSON.stringify(data); 
+    let res = await fetch("http://localhost:5555/api/zips", {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -117,17 +119,15 @@ export const insertData = (formData) => async (dispatch) => {
         credentials: "omit",
         body: `${postData}`
       });
-    
+      
+      
+      let clonedRes = res.clone();
+      data = await clonedRes.json();
+      console.log(data);
+
       dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS
     });
-
-      const data = await res.json();
-      const mongoID = data._id;
-      console.log(mongoID);
-      await addMongoID(mongoID, keyPath);
-
-    //füge MongoID zu Dexie Datensatz hinzu
     
     }
 

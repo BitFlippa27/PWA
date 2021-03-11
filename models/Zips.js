@@ -10,6 +10,9 @@ const ZipsSchema = new Schema({
     },
     pop: {
       type: Number
+    },
+    id: {
+        type: Number
     }
 
 });

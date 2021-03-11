@@ -32,6 +32,8 @@ export async function addData(formData) {
       pop: pop
     });
 
+    
+
     return id;
   }
   catch(err) {
@@ -47,6 +49,8 @@ export async function addRequest(entry) {
       request: reqData,
       timestamp: timestamp
     });
+
+
    return id;
   }
   catch(err) {
@@ -56,8 +60,9 @@ export async function addRequest(entry) {
 
 
 export async function addMongoID(mongoID, keyPath) {
-  console.log("addMongoID", mongoID, keyPath)
+  
   try {
+    
     await dexie.cities.update(keyPath, {_id: mongoID});
   }
   catch(err) {
@@ -82,6 +87,22 @@ export async function getRequest() {
     console.error(err);
   }
 }
+
+export async function getKeyPath(mongoID) {
+  try {
+    const dataSet = await dexie.cities.get({_id: mongoID});
+    console.log(dataSet);
+    const keyPath = dataSet.id; 
+    console.log(dataSet.id);
+
+    return keyPath;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
 
 
 export async function getAllRequestObjects() {

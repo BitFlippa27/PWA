@@ -9,6 +9,7 @@ import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import Pictures from "./components/Pictures";
 import PrivateRoute from "./components/routes/PrivateRoute";
+import Offline from "./components/auth/Offline";
 import { loadUser, loadUserOffline } from "./actions/auth";
 //import { loadLocalData } from "./actions/data";
 import { Provider } from "react-redux"; //connects React to Redux
@@ -37,6 +38,7 @@ const App = () => {
               <Route exact path="/pictures" component={Pictures} />
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
+              <Route exact path="/offline" component={Offline} />
               <PrivateRoute exact path="/data" component={Data} />
             </Switch>
             </section>
@@ -56,7 +58,7 @@ export default App;
 /*Techdebt = {
     wenn auf Button clear Table und dann neuladen der Table => stale
     wenn Table nicht geladen werden kann -> Refresh Aufforderung
-    Input Validation Submit inserted data, 
+    leerer Datensatz submit, 
     Offline Authentifikation(pubKey),
     Wenn DB leer login failed,
     Zellen als Input, 
@@ -72,6 +74,7 @@ export default App;
       Offline Anmeldung
     Alle console.error() raus, eigene Error pop ups,
     Teamfinder === clearErrors, setPostLoading
+    Dataupload Nachricht nicht in SW sondern in action dispatch
     
 }
 */

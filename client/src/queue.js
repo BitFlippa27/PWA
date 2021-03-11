@@ -22,6 +22,7 @@ export async function pushRequest(request) {
     };
     
     requestData.body = await request.clone().arrayBuffer();
+    console.log(requestData.body)
     
 
     for (const [key, value] of request.headers.entries()) {

@@ -4,6 +4,7 @@ const config = require("config");
 module.exports = function(req, res, next) {
     //Token vom header holen
     const token = req.header("x-auth-token");
+    console.log("token", token);
     //private Route und kein Token vorhanden
     if(!token) {
         console.log("Kein Token im Header")
