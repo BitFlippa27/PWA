@@ -42,7 +42,7 @@ export default function(state = initialState, action) {
     case SERVER_DATAUPLOAD_FAILED:
       return { ...state, loading: false };
     case LOCALDATA_REMOVED_SUCCESS:
-      return { ...state, allData: state.allData.filter( city => city._id !== payload), loading: false };
+      return { ...state, allData: state.allData.filter( data => data.id !== payload), loading: false };
     case LOCALDATA_REMOVED_FAILED:
       return { ...state, error: payload, loading: false };
     case SERVERDATA_REMOVED_SUCCESS:

@@ -141,18 +141,19 @@ export const insertData = (formData) => async (dispatch) => {
   }  
 }
 
-export const removeData = (id) => async dispatch => {
+export const removeData = (keyPath, mongoID) => async dispatch => {
   var token = localStorage.getItem("token");
   try {
-    await removeEntry(id);
-    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: id });
+    await removeEntry(keyPath);
+    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: keyPath });
   } 
   catch (err) {
     console.error(err);
   }
 
   try {
-    await fetch(`http://localhost:5555/api/zips/${id}`, {
+    if(mongoID) { //bedeutet Datensatz wurde Offline hinzugefügt und Offline gelöscht (keine MongoID vorhanden)
+      await fetch(`http://localhost:5555/api/zips/${mongoID}`, {
       method: "DELETE",
       mode: "cors",
       cache: "no-cache",
@@ -164,13 +165,13 @@ export const removeData = (id) => async dispatch => {
     });
 
     dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
-
-    
+    }
+  
   }
 
   catch(err) {
     console.error(err);
-    await addIdToRemove(id);
+    await addIdToRemove(mongoID);
     dispatch({ type: SERVERDATA_REMOVED_FAILED });
   }
 

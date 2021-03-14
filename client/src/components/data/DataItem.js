@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { removeData } from "../../actions/data";
 
-const DataItem = ({ data: { _id, city, zip, pop }, removeData }) => {
+const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
   return (
     <Fragment>
-      <tr key={_id}>
+      <tr key={id}>
         <th scope="col">{city}</th>
         <th scope="col">{zip}</th>
         <th scope="col">{pop}</th>
@@ -14,7 +14,7 @@ const DataItem = ({ data: { _id, city, zip, pop }, removeData }) => {
           <button className="actions"  >
             <i className="fas fa-pencil-alt" />{" "}
           </button>
-          <button className="actions" type="button" onClick={ () => removeData(_id)}  >
+          <button className="actions" type="button" onClick={ () => removeData(id, _id)}  >
             <i className="fas fa-trash-alt"  />{" "}
           </button>
         </th>

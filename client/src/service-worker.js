@@ -66,6 +66,7 @@ registerRoute(
 async function loginHandler({ request }) {
   try {
     let res = await fetch(request);  
+
     return res;
   } 
   catch (error) {
@@ -104,7 +105,11 @@ async function dataRemoveHandler({ request }) {
     await removeData(request);
   }
 }
-
+/*
+async function dataFetchHandler({ request }) {
+  fetchAllData();
+}
+*/
 
 async function checkData() {
   let allRequestObjects =  await getAllRequestObjects();
