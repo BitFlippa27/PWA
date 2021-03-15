@@ -38,7 +38,7 @@ export default function(state = initialState, action) {
     case LOCALDATA_INSERT_FAILED:
       return { ...state, error: payload, loading: false };
     case SERVER_DATAUPLOAD_SUCCESS:
-      return { ...state, loading: false };
+      return { ...state,allData: state.allData.map(data => data.id === payload.id ? { ...data, _id: payload._id} : data ), loading: false };
     case SERVER_DATAUPLOAD_FAILED:
       return { ...state, loading: false };
     case LOCALDATA_REMOVED_SUCCESS:

@@ -31,9 +31,7 @@ export async function addData(formData) {
       zip: zip,
       pop: pop
     });
-
     
-
     return id;
   }
   catch(err) {
@@ -131,9 +129,9 @@ export async function addIdToRemove(mongoID) {
 }
 
 
-export async function removeEntry(mongoID) {
+export async function removeEntry(keyPath) {
   try {
-    await dexie.cities.where("_id").equals(mongoID).delete(); 
+    await dexie.cities.where("id").equals(keyPath).delete(); 
     taskQueue.shift();
   } 
   catch (err) {

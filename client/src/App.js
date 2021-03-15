@@ -56,6 +56,8 @@ export default App;
 
 
 /*Techdebt = {
+    catchHandler, defaulthandler -> offline Page dann LoginPage
+    Offline Anmeldung
     wenn auf Button clear Table und dann neuladen der Table => stale
     wenn Table nicht geladen werden kann -> Refresh Aufforderung
     leerer Datensatz submit, 
@@ -70,8 +72,7 @@ export default App;
     pagination, 
     Isolation(Clean Code, JSLINT),
     dexie queue mit ids,
-    catchHandler, defaulthandler -> offline Page 
-      Offline Anmeldung
+
     Alle console.error() raus, eigene Error pop ups,
     Teamfinder === clearErrors, setPostLoading
     Dataupload Nachricht nicht in SW sondern in action dispatch

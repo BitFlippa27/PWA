@@ -14,7 +14,7 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects } from "../dexie";
+import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects, dexie } from "../dexie";
 import { fromPairs } from "lodash";
 
 //var isEqual = require("lodash.isequal");
@@ -36,10 +36,11 @@ export const loadAllServerData = () => async (dispatch) => {
     });
     const serverData = await res.json();
     await addAllData(serverData);
+    const dexieData = await getAllData();
 
     dispatch({
       type: SERVER_DATALOAD_SUCCESS,
-      payload: serverData
+      payload: dexieData
     });
   
 } catch (err) {
@@ -60,15 +61,18 @@ export const loadAllServerData = () => async (dispatch) => {
 export const loadAllLocalData = () => async (dispatch) => {
   try {
     const dexieData = await getAllData();
+    if(dexieData !== 0 || dexieData !== undefined ) {
+      dispatch({
+        type: CLIENT_DATALOAD_SUCCESS,
+        payload: dexieData
+      });
+    }
     if(dexieData.length === 0 || dexieData === undefined ) {
       dispatch(loadAllServerData());
     }
     //const count =  await dexie.cities.count();
     //console.log(count);
-    dispatch({
-      type: CLIENT_DATALOAD_SUCCESS,
-      payload: dexieData
-    });
+    
   }
     
  catch (err) {
@@ -92,14 +96,16 @@ export const insertData = (formData) => async (dispatch) => {
   //await saveToken(token);
   try {
     //Rückgabewert ist primary key (keyPath)
-    let keyPath = await addData(data);
-    dispatch(setAlert("Datensatz hinzugefügt", "success"));
-    
+    const keyPath = await addData(data);
+    data.id = keyPath;
+
     dispatch({
       type: LOCALDATA_INSERT_SUCCESS,
       payload: data
     });
-    data.id = keyPath;
+
+    dispatch(setAlert("Datensatz hinzugefügt", "success"));
+    
   } 
   catch (err) {
    console.error(err)
@@ -126,7 +132,8 @@ export const insertData = (formData) => async (dispatch) => {
       console.log(data);
 
       dispatch({
-      type: SERVER_DATAUPLOAD_SUCCESS
+      type: SERVER_DATAUPLOAD_SUCCESS,
+      payload: data
     });
     
     }
@@ -144,8 +151,12 @@ export const insertData = (formData) => async (dispatch) => {
 export const removeData = (keyPath, mongoID) => async dispatch => {
   var token = localStorage.getItem("token");
   try {
+    console.log(keyPath);
     await removeEntry(keyPath);
-    dispatch({ type: LOCALDATA_REMOVED_SUCCESS,  payload: keyPath });
+    dispatch({ 
+      type: LOCALDATA_REMOVED_SUCCESS,
+      payload: keyPath
+    });
   } 
   catch (err) {
     console.error(err);

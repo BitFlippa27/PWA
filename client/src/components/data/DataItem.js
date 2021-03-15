@@ -15,6 +15,7 @@ const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
             <i className="fas fa-pencil-alt" />{" "}
           </button>
           <button className="actions" type="button" onClick={ () => removeData(id, _id)}  >
+            <i>{console.log(id)}</i>
             <i className="fas fa-trash-alt"  />{" "}
           </button>
         </th>

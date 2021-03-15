@@ -12,14 +12,14 @@ const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
   useEffect(() => {
     loadAllLocalData();
     }
-  ,[]);
+  ,[loadAllLocalData]);
 
   const rows = allData;
   console.log(rows);
 
   
 
-  return user === null ? (
+  return user === null || allData.length < 27000 ? (
     <Loader />
   ) : (
     <Fragment>
@@ -46,8 +46,8 @@ const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
               </tr>
             </thead>
             <tbody>
-              {rows.slice(rows.length - 5, rows.length).map((row) => (
-                <DataItem key={row._id}  data={row} />
+              {rows.slice(rows.length - 5, rows.length).map( row => (
+                <DataItem key={row.id}  data={row} />
               ))}
 
               <DataForm />
