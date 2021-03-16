@@ -46,7 +46,7 @@ const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
               </tr>
             </thead>
             <tbody>
-              {rows.slice(rows.length - 5, rows.length).map( row => (
+              {rows.slice(rows.length - 5, rows.length).map( (row) => (
                 <DataItem key={row.id}  data={row} />
               ))}
 

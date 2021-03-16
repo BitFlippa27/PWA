@@ -13,7 +13,7 @@ const requestProperties = [
     'keepalive',
 ];
 
-export async function pushRequest(request) {
+export async function pushRequest(request, operation) {
    
 
     const requestData = {
@@ -39,7 +39,8 @@ export async function pushRequest(request) {
 
     const entry = {
         reqData: requestObject,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        operation: operation
     };
    
     await addRequest(entry);

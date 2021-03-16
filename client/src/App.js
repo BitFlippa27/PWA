@@ -56,6 +56,7 @@ export default App;
 
 
 /*Techdebt = {
+  Sie sind wieder online offline  bei  schlechter Verbindung zu oft angezeigt
     catchHandler, defaulthandler -> offline Page dann LoginPage
     Offline Anmeldung
     wenn auf Button clear Table und dann neuladen der Table => stale

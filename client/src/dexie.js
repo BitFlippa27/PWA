@@ -41,11 +41,12 @@ export async function addData(formData) {
 
 
 export async function addRequest(entry) {
-  const { reqData, timestamp } = entry;
+  const { reqData, timestamp, operation } = entry;
   try {
     let id = await dexie.requests.add({
       request: reqData,
-      timestamp: timestamp
+      timestamp: timestamp,
+      operation: operation
     });
 
 
@@ -69,7 +70,9 @@ export async function addMongoID(mongoID, keyPath) {
 }
 
 export async function getMongoID() {
-  return taskQueue[0];
+  const mongoID = taskQueue.shift();
+
+  return mongoID;
 }
 
 
@@ -105,10 +108,10 @@ export async function getKeyPath(mongoID) {
 
 export async function getAllRequestObjects() {
   try {
-    const request = await dexie.requests.toArray();
-    console.log("request Array", request);
+    const requests = await dexie.requests.toArray();
+    console.log("request Array", requests);
   
-    return request;
+    return requests;
   } 
   catch (err) {
     console.error(err);
@@ -118,10 +121,9 @@ export async function getAllRequestObjects() {
 
 export async function addIdToRemove(mongoID) {
   try {
-    await dexie.requests.add({_id: mongoID });
-    taskQueue.push(mongoID);
+    //await dexie.requests.add({_id: mongoID });
+    taskQueue.unshift(mongoID);
 
-    return mongoID;
   } 
   catch (err) {
     console.error(err);

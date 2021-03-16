@@ -29,11 +29,13 @@ if (usingSW) {
 window.addEventListener("online", function online(){
   isOnline = true;
   sendStatusUpdate(); //ohne Parameter, nimmt also automatisch aktiven SW
+  store.dispatch(setAlert("Sie sind wieder Online !", "success"));
 });
 
 window.addEventListener("offline", function offline() {
   isOnline = false;
   sendStatusUpdate();
+  store.dispatch(setAlert("Sie sind Offline !", "danger"));
 });
 
 function isSiteOnline() {
@@ -74,14 +76,13 @@ function onSWMessage(evt) {
     console.log(`Received status update request from service worker, responding...`);
      //SW kommuniziert mit mehreren Seiten/Tabs somit Nachrichten an einen Message channel mit Ports wo SW lauscht
     sendStatusUpdate(evt.ports && evt.ports[0]);
-
   }
   if (data.upload === true) {
     store.dispatch(setAlert("Server wieder online ! Daten hochgeladen !", "success"));
   }
   else if(data.upload === false){
-    store.dispatch(setAlert("Upload zum Server fehlgeschlagen ! ", "danger"));
-    store.dispatch(setAlert("Sobald Server wieder online, wird Datensatz hochgeladen", "danger"));
+    store.dispatch(setAlert("Sie sind offline ", "danger"));
+    store.dispatch(setAlert("Sobald Sie wieder Online sind, wird Datensatz hochgeladen", "danger"));
   }
 }
 

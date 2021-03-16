@@ -112,7 +112,6 @@ export const insertData = (formData) => async (dispatch) => {
   }
 
   try {
-
     const postData = JSON.stringify(data); 
     let res = await fetch("http://localhost:5555/api/zips", {
         method: "POST",
@@ -134,10 +133,8 @@ export const insertData = (formData) => async (dispatch) => {
       dispatch({
       type: SERVER_DATAUPLOAD_SUCCESS,
       payload: data
-    });
-    
+     });
     }
-
     catch (err) {
       //await addTask(formData);
       dispatch({
@@ -153,6 +150,7 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
   try {
     console.log(keyPath);
     await removeEntry(keyPath);
+    
     dispatch({ 
       type: LOCALDATA_REMOVED_SUCCESS,
       payload: keyPath
@@ -161,9 +159,11 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
   catch (err) {
     console.error(err);
   }
-
+  
   try {
     if(mongoID) { //bedeutet Datensatz wurde Offline hinzugefügt und Offline gelöscht (keine MongoID vorhanden)
+      await addIdToRemove(mongoID);
+
       await fetch(`http://localhost:5555/api/zips/${mongoID}`, {
       method: "DELETE",
       mode: "cors",
@@ -177,19 +177,8 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
 
     dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
     }
-  
   }
-
   catch(err) {
     console.error(err);
-    await addIdToRemove(mongoID);
-    dispatch({ type: SERVERDATA_REMOVED_FAILED });
   }
-
-
-    
-    
-    
-
-  
 }

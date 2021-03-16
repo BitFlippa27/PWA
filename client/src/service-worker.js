@@ -10,7 +10,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, matchPrecache } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
-import {  getRequest, removeRequestObject, getAllRequestObjects, getMongoID, getKeyPath } from './dexie';
+import {  getRequest, removeRequestObject, getAllRequestObjects,addMongoID, getMongoID, getKeyPath, addIdToRemove } from './dexie';
 import { pushRequest, toObject, toRequest } from "./queue";
 const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 
@@ -45,22 +45,22 @@ registerRoute(
   new StaleWhileRevalidate({cacheName: "goodSync-3rdParty"})
   );
 
-
  registerRoute(
    "http://localhost:5555/api/auth",
    loginHandler, "POST"
  );
 
+ registerRoute(
+  /http:\/\/localhost:5555\/api\/zips\/.*/, 
+  dataRemoveHandler, "DELETE"
+);
 
 registerRoute(
   "http://localhost:5555/api/zips", 
   dataUploadHandler, "POST"
 );
 
-registerRoute(
-  /http:\/\/localhost:5555\/api\/zips\/.*/, 
-  dataRemoveHandler, "DELETE"
-);
+
 
 
 async function loginHandler({ request }) {
@@ -86,12 +86,22 @@ async function dataUploadHandler({ request }) {
     var req = request.clone();
     if(isOnline) {
       let res = await fetch(request);
+      if(res && res.ok) {
+        return res;
+      }
+      //hierdurch fangen wir ab wenn Server Down aber CLient Online
+      else {
+        await sendMessage({ upload: false});
+        await pushRequest(req, "upload");
+        let res = await checkData();
+        console.log("dataUploadHandler", res); 
 
-      return res;
+        return res;
+      }
     }
     else {
       await sendMessage({ upload: false});
-      await pushRequest(req);
+      await pushRequest(req, "upload");
       let res = await checkData();
       console.log("dataUploadHandler", res);
 
@@ -106,13 +116,29 @@ async function dataUploadHandler({ request }) {
 
 async function dataRemoveHandler({ request }) {
   try {
-    const res = await fetch(request);  
-    if(res && res.ok) {
-      return res;
+    var req = request.clone();
+    if(isOnline) {
+      const res = await fetch(request);  
+      if(res && res.ok) {
+        return res;
+      }
+      //hierdurch fangen wir ab wenn Server Down aber CLient Online
+      else {
+        await sendMessage({ upload: false});
+        await pushRequest(req, "remove");
+        let res = await checkData();
+        console.log("dataRemoveHandler", res); 
+
+        return res;
+      }
     }
     else {
-      await sendMessage({ upload: false});
-      await removeData(request);  
+        await sendMessage({ upload: false});
+        await pushRequest(req, "remove");
+        let res = await checkData();
+        console.log("dataRemoveHandler", res);
+
+        return res;
     }
   }
   catch(err) {
@@ -132,88 +158,69 @@ async function checkData() {
       //check time check prio check expiry check dirty
       queue.unshift(requestObject);
     }
-    let res = await fetchData();
+    let res = await replayFetch();
     console.log("checkData",res);
 
     return res;
 }
 
 
-async function fetchData() {
+async function replayFetch() {
   do {
-    let requestObject = queue.shift();
+    var requestObject = queue.shift();
     console.log("RequestObject",requestObject.request);
     let request = new Request(requestObject.request.url, requestObject.request);
-    let req = request.clone();
+    var req = request.clone();
     try { 
         await delay(5000);
+        
+        if(requestObject.operation === "upload") {
+          var res = await fetch(req);
+          console.log("replayFetch upload", res);
+          let clonedRes = res.clone();
 
-        var res = await fetch(req);
-        console.log("fetchData", res);
-        var clonedRes = res.clone();
-        if (res && res.ok) {
-          await sendMessage({ upload: true});
-          await removeRequestObject(requestObject.id);         
-          let data = await clonedRes.json();    
-          console.log(data)
-          let mongoID = data._id;
-          let keyPath = data.id;
-          console.log(data._id);
-          await addMongoID(mongoID, keyPath);
+          if (res && res.ok) {
+            await sendMessage({ upload: true});
+            await removeRequestObject(requestObject.id);         
+            let data = await clonedRes.json();    
+            console.log(data)
+            let mongoID = data._id;
+            let keyPath = data.id;
+            console.log(data._id);
+            await addMongoID(mongoID, keyPath);
         }
         else {
           queue.unshift(requestObject);
           //register push or sync event
         }
-      }
+         }
+        if(requestObject.operation === "remove") {
+          const mongoID = await getMongoID();
+          //hier eigene Funktion "safeRequest"
+          var res = await fetch(req);
+          console.log("replayFetch remove", res);
+          if(res && res.ok) {
+            await sendMessage({ upload: true});
+            await removeRequestObject(requestObject.id); 
+          }
+          else {
+            queue.unshift(requestObject);
+            await addIdToRemove(mongoID);
+            //register push or sync event
+          }
+        }
+    }
       catch (err) {
         console.error(err);
       }
+
     } while (queue.length !== 0);
 
     return res;
       
   }
-
-async function removeData(req) {
-  var needToFetch = true;
-  token = req.headers.get("X-Auth-Token");
-  const mongoID = await getMongoID();
- 
-  const fetchOptions = {
-    method: "DELETE",
-    mode: "cors",
-    cache: "no-cache",
-    headers:{
-      "Content-Type" : "application/json",
-      "X-Auth-Token" : `${token}`
-    }, 
-    credentials: "omit"
-  }
-  //hier eigene Funktion "safeRequest"
-  if(needToFetch) {
-    await delay(5000);
-      try {
         
-        const res = await fetch(`http://localhost:5555/api/zips/${mongoID}`, fetchOptions );
-        
-        if (res && res.ok) {
-          needToFetch = false;
-          await sendMessage({ upload: true});
-
-          return res;
-        }
-      }
-      catch (err) {
-        console.error(err);
-        return removeData(req);
-      }
-      if (needToFetch) {
-        return removeData(req);
-      }
-  } 
-}
-
+  
 async function main() 
 {
   try {
