@@ -66,12 +66,17 @@ registerRoute(
 async function loginHandler({ request }) {
   try {
     let res = await fetch(request);  
+    if(res && res.ok) {
+      return res;
+    }
+    else {
+      let res = await matchPrecache("/offline");
 
-    return res;
+      return res;
+    }
   } 
-  catch (error) {
-    let res = await matchPrecache("/offline");
-    return res;
+  catch (err) {
+    console.error(err);
   }
 }
 
@@ -79,17 +84,22 @@ async function loginHandler({ request }) {
 async function dataUploadHandler({ request }) {
   try {
     var req = request.clone();
-    let res = await fetch(request);  
-    //console.log("plain", request);
+    if(isOnline) {
+      let res = await fetch(request);
 
-    return res;
+      return res;
+    }
+    else {
+      await sendMessage({ upload: false});
+      await pushRequest(req);
+      let res = await checkData();
+      console.log("dataUploadHandler", res);
+
+      return res;
+    }
   }
   catch(err) {
-    await sendMessage({ upload: false});
-    await pushRequest(req);
-    let res = await checkData();
-    console.log("dataUploadHandler", res);
-    return res;
+    console.error(err);
   } 
 }
 
@@ -97,12 +107,16 @@ async function dataUploadHandler({ request }) {
 async function dataRemoveHandler({ request }) {
   try {
     const res = await fetch(request);  
-    
-    return res;
+    if(res && res.ok) {
+      return res;
+    }
+    else {
+      await sendMessage({ upload: false});
+      await removeData(request);  
+    }
   }
   catch(err) {
-    await sendMessage({ upload: false});
-    await removeData(request);
+    console.error(err);
   }
 }
 /*
@@ -147,11 +161,13 @@ async function fetchData() {
           console.log(data._id);
           await addMongoID(mongoID, keyPath);
         }
+        else {
+          queue.unshift(requestObject);
+          //register push or sync event
+        }
       }
-      catch (error) {
-        queue.unshift(requestObject);
-        //register push or sync event
-        return res;
+      catch (err) {
+        console.error(err);
       }
     } while (queue.length !== 0);
 
