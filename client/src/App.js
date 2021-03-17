@@ -11,7 +11,6 @@ import Pictures from "./components/Pictures";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import Offline from "./components/auth/Offline";
 import { loadUser, loadUserOffline } from "./actions/auth";
-//import { loadLocalData } from "./actions/data";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
 
