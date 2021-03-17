@@ -1,6 +1,5 @@
 import axios from "axios";
 import { setAlert } from "./alert";
-import jwt_decode from "jwt-decode";
 import {
     REGISTER_SUCCESS,
     REGISTER_FAILED,
