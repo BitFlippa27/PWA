@@ -9,10 +9,7 @@ const CitySchema = new Schema({
         type: Number
     },
     pop: {
-      type: Number
-    },
-    id: {
-        type: Number
+       type: Number
     }
 
 });
