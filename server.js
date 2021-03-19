@@ -1,19 +1,54 @@
-const express = require("express");
-const cors = require("cors");
-const app = express();
+const express = require('express');
+const { ApolloServer, gql } = require('apollo-server-express');
+//import { resolvers }  from "./resolvers";
+//import { typeDefs } from "./typeDefs";
+//const { typeDefs, resolvers } = require('./schema');
+const resolvers = require("./resolvers");
+const typeDefs = require("./typeDefs");
 const connectDB = require("./config/db");
 
 
-app.get("/", (req, res) => res.send("Server läuft!"));
-app.use(cors());
-connectDB();
+const cities = [
+  {
+    city: 'TORONTO',
+    pop: 234234,
+    zip: 23655
+  },
+  {
+    city: 'CALGARY',
+    pop: 123,
+    zip: 43
+  },
+];
 
-const PORT = process.env.PORT || 5555;
-app.listen(PORT, () => console.log(`Server gestartet auf Port ${PORT}`));
 
-//BodyParser Middleware um auf req.body zuzugreifen
-app.use(express.json({ extended : false}));
+const startServer = async () => {
+  try {
+    const app = express();
 
-app.use("/api/users", require("./routes/api/users"));
-app.use("/api/auth", require("./routes/api/auth"));
-app.use("/api/zips", require("./routes/api/zips"));
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+    });
+
+    server.applyMiddleware({ app });
+    
+    await connectDB();
+
+    app.use((req, res) => {
+      res.status(200);
+      res.send('Hello!');
+      res.end();
+    });
+
+    app.listen({ port: 4000 }, () =>
+      console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+startServer();
+
+

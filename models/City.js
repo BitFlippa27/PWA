@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const ZipsSchema = new Schema({
+const CitySchema = new Schema({
     city: {
         type: String
     },
@@ -9,12 +9,9 @@ const ZipsSchema = new Schema({
         type: Number
     },
     pop: {
-      type: Number
-    },
-    id: {
-        type: Number
+       type: Number
     }
 
 });
 
-module.exports = Main = mongoose.model("zips", ZipsSchema);
+module.exports = City = mongoose.model("zips", CitySchema);
