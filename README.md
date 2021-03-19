@@ -1,4 +1,4 @@
-# Progressive Web App mit React, Node, MongoDB, Dexie und Workbox
+# Progressive Web App mit React, Node, GraphQL, MongoDB, Dexie und Workbox
 ## Installation
 1. Im Wurzelverzeichnis /PWA alle Node Pakete installieren  
 ```bash
