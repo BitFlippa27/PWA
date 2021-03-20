@@ -15,9 +15,6 @@ import {
 } from "./types";
 import { setAlert } from "./alert";
 import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects, dexie } from "../dexie";
-import { fromPairs } from "lodash";
-
-//var isEqual = require("lodash.isequal");
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadAllServerData = () => async (dispatch) => {
