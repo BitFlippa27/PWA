@@ -4,7 +4,7 @@ const { ApolloServer, gql } = require('apollo-server-express');
 //import { typeDefs } from "./typeDefs";
 //const { typeDefs, resolvers } = require('./schema');
 const resolvers = require("./resolvers");
-const typeDefs = require("./typeDefs");
+const typeDefs = require("./schema");
 const connectDB = require("./config/db");
 
 

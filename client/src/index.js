@@ -4,8 +4,24 @@ import './index.css';
 import App from './App';
 import store from "./store";
 import { setAlert } from './actions/alert';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { gql } from "@apollo/client";
 
+const client = new ApolloClient({
+  uri: 'http://localhost:4000',
+  cache: new InMemoryCache(),
+ });
 
+ export const CITIES = gql `
+  query GetAllCities {
+    getCities {
+      city
+      pop
+      zip
+      id 
+    }
+  }
+ `;
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = ("token" in localStorage) ? true : false;  
@@ -13,9 +29,13 @@ var swRegistration;
 var svworker;
 var usingSW = ("serviceWorker" in navigator);
 
+
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
