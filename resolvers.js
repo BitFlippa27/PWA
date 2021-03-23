@@ -2,8 +2,8 @@ const City = require("./models/City");
 
 const resolvers = {
     Query: {
-      getAllCities: () => City.find({}),
-      city: () => () => City.findById(id)
+      getAllCities: () => City.find(),
+      getCity: (_, {id}) => City.findById(id)
     },
     Mutation: {
       createCity: async (_, {city, pop, zip}) => {
