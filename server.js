@@ -8,20 +8,6 @@ const typeDefs = require("./schema");
 const connectDB = require("./config/db");
 
 
-const cities = [
-  {
-    city: 'TORONTO',
-    pop: 234234,
-    zip: 23655
-  },
-  {
-    city: 'CALGARY',
-    pop: 123,
-    zip: 43
-  },
-];
-
-
 const startServer = async () => {
   try {
     const app = express();
@@ -42,7 +28,7 @@ const startServer = async () => {
     });
 
     app.listen({ port: 4000 }, () =>
-      console.log(`🚀 Server ready at http://localhost:5555${server.graphqlPath}`)
+      console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
     );
   } catch (err) {
     console.error(err);
