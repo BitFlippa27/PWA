@@ -41,10 +41,10 @@ const resolvers = {
         catch (err) {
           console.error(err);
         }
-      },/*
+      },
       async updateCity(_, { id, input  } ){
         try {
-          let city = await City.findByIdAndUpdate(id, input, () => );
+          let city = await City.findByIdAndUpdate(id, input);
 
           return city;
 
@@ -55,7 +55,7 @@ const resolvers = {
 
 
       }
-      */
+      
     },
     
   };

@@ -8,20 +8,31 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { gql } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000',
+  uri: 'http://localhost:3000',
   cache: new InMemoryCache(),
  });
 
  export const CITIES = gql `
   query GetAllCities {
-    getCities {
+    getAllCities {
       city
       pop
-      zip
       id 
     }
   }
  `;
+
+client.query({
+  query: gql `
+  query GetAllCities {
+    getAllCities {
+      city
+      pop
+      id 
+    }
+  }
+ `
+}).then(result => console.log("GraphQL",result));
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = ("token" in localStorage) ? true : false;  
@@ -41,7 +52,7 @@ ReactDOM.render(
 );
 
 
-
+/*
 if (usingSW) {
   initServiceWorker().catch(console.error);
 }
@@ -124,6 +135,6 @@ async function sendSWMessage(msg, target) {
     navigator.serviceWorker.controller.postMessage(msg);
   }
 }
-
+*/
 
 

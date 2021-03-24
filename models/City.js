@@ -5,9 +5,6 @@ const CitySchema = new Schema({
     city: {
         type: String
     },
-    zip: {
-        type: Number
-    },
     pop: {
        type: Number
     }
