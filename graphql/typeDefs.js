@@ -1,4 +1,5 @@
-const { gql } = require('apollo-server-express');
+const gql = require("graphql-tag");
+
 
 module.exports = gql`
   type Query {
@@ -9,19 +10,21 @@ module.exports = gql`
   type City {
     id: ID!
     city: String
-    pop: Int 
+    pop: Int,
+    createdAt: String!
   }
+
+  input CityInput {
+    city: String
+    pop: Int
+  }
+
   type User {
     id: ID!
     email: String!
     token: String!
     name: String!
     createdAt: String!
-  }
-
-  input CityInput {
-    city: String
-    pop: Int!
   }
 
   input RegisterInput {
@@ -32,10 +35,11 @@ module.exports = gql`
   }
 
   type Mutation {
-    login(email: String!, password: String!): User!
     register(registerInput: RegisterInput): User!
-    createCity(input: CityInput!): City!
-    removeCity(id: ID!): City!
+    login(email: String!, password: String!): User!
+    createCity(city: String!, pop: Int!): City!
+    deleteCity(id: ID!): String
     updateCity(id: ID!, input: CityInput!): City!
   }
 `;
+
