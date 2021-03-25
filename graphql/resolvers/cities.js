@@ -1,6 +1,6 @@
-const City = require("./models/City");
+const City = require("../../models/City");
 
-const resolvers = {
+module.exports = {
     Query: {
        async getAllCities(){
         try {
@@ -9,7 +9,7 @@ const resolvers = {
           return allCities;
         } 
         catch (err) {
-          console.error(err);
+          throw new Error(err);
         }
       },
       async getCity(_, { id }){
@@ -19,7 +19,7 @@ const resolvers = {
           return city;
         } 
         catch (err) {
-          console.error(err);  
+          throw new Error(err); 
         }
       },
       
@@ -39,7 +39,7 @@ const resolvers = {
           return city;
         } 
         catch (err) {
-          console.error(err);
+          throw new Error(err);
         }
       },
       async updateCity(_, { id, input  } ){
@@ -50,7 +50,7 @@ const resolvers = {
 
         } 
         catch (err) {
-          console.error
+          throw new Error(err);
         }
 
 
@@ -59,5 +59,3 @@ const resolvers = {
     },
     
   };
-
-  module.exports = resolvers;
