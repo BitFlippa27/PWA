@@ -10,8 +10,9 @@ module.exports = gql`
   type City {
     id: ID!
     city: String
-    pop: Int,
+    pop: Int
     createdAt: String!
+    username: String
   }
 
   input CityInput {
@@ -40,6 +41,11 @@ module.exports = gql`
     createCity(city: String!, pop: Int!): City!
     deleteCity(id: ID!): String
     updateCity(id: ID!, input: CityInput!): City!
+  }
+
+  type Subscription {
+    newCity: City!
+    cityUpdate: City!
   }
 `;
 
