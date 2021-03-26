@@ -1,9 +1,10 @@
 const express = require('express');
-const { ApolloServer } = require('apollo-server');
+const { ApolloServer, PubSub } = require('apollo-server');
 const resolvers = require("./graphql/resolvers");
 const typeDefs = require("./graphql/typeDefs");
 const connectDB = require("./config/mongoDB");
 
+const pubsub = new PubSub();
 
 const startServer = async () => {
   try {
@@ -11,7 +12,7 @@ const startServer = async () => {
     const server = new ApolloServer({
       typeDefs,
       resolvers,
-      context: ({ req }) => ({ req })
+      context: ({ req }) => ({ req, pubsub })
     });
 
     await connectDB();

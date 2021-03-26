@@ -41,6 +41,10 @@ module.exports =  {
       });
        const newcity = await newCity.save();
 
+       context.pubsub.publish("NEW_CITY", {
+         newCity: newcity
+       });
+
       return newcity;
     },
     async deleteCity(_, { id }, context){
@@ -60,12 +64,24 @@ module.exports =  {
       try {
         let city = await City.findByIdAndUpdate(id, input);
 
-        return city;
+        context.pubsub.publish("CITY_UPDATE", {
+          cityUpdate: city
+        });
+
+        return city; //fix: return new city not old
       } 
       catch (err) {
         throw new Error(err);
       }
     }
   },
+  Subscription: {
+    newCity: {
+      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("NEW_CITY")
+    },
+    cityUpdate: {
+      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("CITY_UPDATE")
+    },
+  }
 };
 
