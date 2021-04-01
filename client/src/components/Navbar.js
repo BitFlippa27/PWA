@@ -16,7 +16,7 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
         </Link>
       </li>
       <li>
-        <a onClick={()=>{ logout(); checkOut();}}href="/login">
+        <a onClick={()=>{ logout(); }} href="/login">
           <i className="fas fa-sign-out-alt" />{' '}
           <span className="hide-sm">Ausloggen</span>  {/* responsive, just show icon on mobile devices */}
         </a>

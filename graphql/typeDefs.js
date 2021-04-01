@@ -25,7 +25,7 @@ module.exports = gql`
     email: String!
     token: String!
     name: String!
-    createdAt: String!
+    registerDate: String!
   }
 
   input RegisterInput {
