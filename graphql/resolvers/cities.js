@@ -32,6 +32,10 @@ module.exports =  {
       const user = checkAuth(context);
       console.log(user);
 
+      if (city.trim() === "" || !pop){
+        throw new Error("Fields must not be empty");
+      }
+
       const newCity = new City({
         city,
         pop,
@@ -61,6 +65,11 @@ module.exports =  {
     },
     async updateCity(_, { id, input }, context ){
       const user = checkAuth(context);
+      
+      if (!input){
+        throw new Error("Fields must not be empty");
+      }
+
       try {
         let city = await City.findByIdAndUpdate(id, input);
 

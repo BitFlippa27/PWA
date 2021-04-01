@@ -1,6 +1,8 @@
 import React, { Fragment, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { useQuery } from "@apollo/client";
+import gql from "graphql-tag";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
@@ -8,18 +10,14 @@ import { loadAllLocalData, loadAllServerData } from "../../actions/data";
 
 //TODO: Button für loadServerData
 
-const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
-  useEffect(() => {
-    loadAllLocalData();
-    }
-  ,[loadAllLocalData]);
-
-  const rows = allData;
-  console.log(rows);
+const Data = ({ auth: { user }, allData, loadAllLocalData }) => {
+  const { loading, data } = useQuery(FETCH_CITIES_QUERY);
 
   
 
-  return user === null || allData.length < 27000 ? (
+  
+
+  return user === null || data.length < 27000 ? (
     <Loader />
   ) : (
     <Fragment>
@@ -33,20 +31,20 @@ const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
           <table className="table table-bordered">
             <thead>
               <tr>
-                <th key={rows.city} scope="col">
+                <th key={data.city} scope="col">
                   Stadt
                 </th>
-                <th key={rows.zip} scope="col">
+                <th key={data.zip} scope="col">
                   ZIP
                 </th>
-                <th key={rows.pop} scope="col">
+                <th key={data.pop} scope="col">
                   Bevölkerung
                 </th>
                 <th scope="col">Aktion </th>
               </tr>
             </thead>
             <tbody>
-              {rows.slice(rows.length - 5, rows.length).map( (row) => (
+              {data.slice(data.length - 5, data.length).map( (row) => (
                 <DataItem key={row.id}  data={row} />
               ))}
 
@@ -58,6 +56,18 @@ const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
     </Fragment>
   );
 };
+
+const FETCH_CITIES_QUERY = gql `
+  {
+    getCitties {
+      id
+      city 
+      pop
+      createdAt
+      username
+    }
+  }
+`
 
 Data.propTypes = {
   auth: PropTypes.object.isRequired,

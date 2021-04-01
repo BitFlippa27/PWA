@@ -4,35 +4,10 @@ import './index.css';
 import App from './App';
 import store from "./store";
 import { setAlert } from './actions/alert';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { gql } from "@apollo/client";
+import ApolloProvider from "./ApolloProvider";
 
-const client = new ApolloClient({
-  uri: 'http://localhost:3000',
-  cache: new InMemoryCache(),
- });
-
- export const CITIES = gql `
-  query GetAllCities {
-    getAllCities {
-      city
-      pop
-      id 
-    }
-  }
- `;
-
-client.query({
-  query: gql `
-  query GetAllCities {
-    getAllCities {
-      city
-      pop
-      id 
-    }
-  }
- `
-}).then(result => console.log("GraphQL",result));
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 var isLoggedIn = ("token" in localStorage) ? true : false;  
@@ -42,14 +17,7 @@ var usingSW = ("serviceWorker" in navigator);
 
 
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+ReactDOM.render(ApolloProvider,document.getElementById('root'));
 
 
 /*

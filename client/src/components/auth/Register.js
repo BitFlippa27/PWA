@@ -1,44 +1,59 @@
 import React, { Fragment, useState } from 'react'
 import { connect } from "react-redux";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
 import { Link, Redirect } from "react-router-dom";
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
-
 import PropTypes from 'prop-types';
-
-
-
+import Loader from "../Loader";
 
 const Register = ({ setAlert, register, isAuthenticated }) => {
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name:"",
     email:"",
     password: "",
-    password2: ""
+    confirmPassword: ""
   });
 
-  const {name, email, password, password2} = formData;
+  const {name, email, password, confirmPassword} = formData;
 
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value});
   }
 
+  const [addUser, { loading }] = useMutation(REGISTER_USER, {
+    update(proxy, result){
+      console.log(result)
+    },
+    onError(err){
+      console.log(err.graphQLErrors[0].extensions.exception.errors)
+      setErrors(err.graphQLErrors[0].extensions.exception.errors);
+     
+    },
+    variables: formData
+  })
+
   const onSubmit = async e => {
     e.preventDefault();
-    if(password !== password2){
+    if(password !== confirmPassword){
       setAlert("Passwörter stimmen nicht überein", "danger");
+      return;
     }
     if(!formData)
       return;
     else{
-      await register({ name, email, password});
+      await addUser();
     }
   }
   if(isAuthenticated) {
     return <Redirect to="/login" />;
   }
 
-  return (
+  
+
+  return loading ? ( <Loader/> ) : (
     <Fragment>
      <section className="container-home">
 
@@ -79,8 +94,8 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
           <input 
             type="password"
             placeholder="Passwort bestätigen"
-            name="password2"
-            value={password2}
+            name="confirmPassword"
+            value={confirmPassword}
             onChange={e => onChange(e)}
 
           />
@@ -95,6 +110,26 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
 
   );
 }
+
+const REGISTER_USER = gql `
+  mutation register(
+    $name: String!
+    $email: String!
+    $password: String!
+    $confirmPassword: String!
+  ) {
+    register(
+      registerInput: {
+        name: $name
+        email: $email
+        password: $password
+        confirmPassword: $confirmPassword 
+      }
+    ){
+      id email name token
+    }
+  }
+`
 
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
