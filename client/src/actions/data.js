@@ -14,7 +14,7 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects, dexie } from "../dexie";
+import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects, dexie, getRequest, removeRequestObject } from "../dexie";
 import { fromPairs } from "lodash";
 
 //var isEqual = require("lodash.isequal");
@@ -176,6 +176,10 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
     });
 
     dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
+    }
+    else {
+      const toRemove = await getRequest();
+      await removeRequestObject(toRemove.id);
     }
   }
   catch(err) {

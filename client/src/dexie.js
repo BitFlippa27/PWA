@@ -79,7 +79,7 @@ export async function getMongoID() {
 
 export async function getRequest() {
   try {
-    const request = await dexie.requests.get(1);
+    const request = await dexie.requests.orderBy("id").first();
     console.log(request);
   
     return request;

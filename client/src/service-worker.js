@@ -95,7 +95,7 @@ async function dataUploadHandler({ request }) {
     else {
       await sendMessage({ upload: false});
       await pushRequest(req, "upload");
-      let res = await checkData();
+      let res = await replayFetch();
       console.log("dataUploadHandler", res);
 
       return res;
@@ -119,7 +119,7 @@ async function dataRemoveHandler({ request }) {
       else {
         await sendMessage({ upload: false});
         await pushRequest(req, "remove");
-        let res = await checkData();
+        let res = await replayFetch();
         console.log("dataRemoveHandler", res); 
 
         return res;
@@ -128,7 +128,7 @@ async function dataRemoveHandler({ request }) {
     else {
         await sendMessage({ upload: false});
         await pushRequest(req, "remove");
-        let res = await checkData();
+        let res = await replayFetch();
         console.log("dataRemoveHandler", res);
 
         return res;
@@ -159,8 +159,8 @@ async function checkData() {
 
 
 async function replayFetch() {
-  do {
-    var requestObject = queue.shift();
+  var requestObject;
+  while(requestObject = await getRequest()){
     console.log("RequestObject",requestObject.request);
     let request = new Request(requestObject.request.url, requestObject.request);
     var req = request.clone();
@@ -197,6 +197,7 @@ async function replayFetch() {
             await removeRequestObject(requestObject.id); 
           }
           else {
+            console.log("else")
             queue.unshift(requestObject);
             await addIdToRemove(mongoID);
             //register push or sync event
@@ -206,9 +207,7 @@ async function replayFetch() {
       catch (err) {
         console.error(err);
       }
-
-    } while (queue.length !== 0);
-
+    }
     return res;
       
   }
