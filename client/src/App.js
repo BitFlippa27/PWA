@@ -8,20 +8,10 @@ import Navbar from "./components/Navbar";
 import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import Pictures from "./components/Pictures";
-import PrivateRoute from "./components/routes/PrivateRoute";
 import Offline from "./components/auth/Offline";
 import { loadUser, loadUserOffline } from "./actions/auth";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
-
-
-
-if(navigator.onLine === true) {
-  store.dispatch(loadUser());
-}
-if(navigator.onLine === false) {
-  store.dispatch(loadUserOffline());
-}
 
 
 const App = () => {
@@ -38,7 +28,7 @@ const App = () => {
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/offline" component={Offline} />
-              <PrivateRoute exact path="/data" component={Data} />
+              <Route exact path="/data" component={Data} />
             </Switch>
             </section>
         </Fragment>

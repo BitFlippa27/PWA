@@ -1,12 +1,17 @@
 import React, { Fragment, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useActions } from "react-redux";
 import PropTypes from "prop-types";
 import { login } from "../../actions/auth";
-import { checkIn } from "../../actions/attendance";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
+import { setAlert } from "../../actions/alert";
+import { result } from "lodash";
 
 
-const Login = ({ login, isAuthenticated, checkIn }) => {
+
+const Login = ({ setAlert }) => {
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,22 +22,37 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData) 
-      return;
-    await login(email, password);
-    checkIn();
-  };
+  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
+    update(_, result){
+      console.log(result)
+    },
+    onError(err){
+      console.log(err);
+      //setErrors(err.graphQLErrors[0].extensions.exception.errors);
+    },
+    variables: formData
+  });
 
-  if (isAuthenticated) {
-    return <Redirect to="/data" />;
+  const onSubmit = async e => {
+    try {
+      e.preventDefault();
+      if(!formData)
+        return;
+      else{
+        await loginUser();
+        return <Redirect to="/data" />;
+      }
+    }
+    catch (err) {
+      console.error(err);
+    }
   }
+
 
   return (
     <Fragment>
       <section className="container-home">
-        <h1 className="large text-primary">Anmelden</h1>
+        <h1 className="large text-info">Anmelden</h1>
         <p className="lead">
           <i className="fas fa-user"></i> Loggen Sie sich in ihr Konto ein
         </p>
@@ -68,14 +88,17 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
   );
 };
 
-Login.propTypes = {
-  login: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool,
-  checkIn: PropTypes.func.isRequired,
-};
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-});
+const LOGIN_USER = gql`
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      id
+      email
+      name
+      token
+    }
+  }
+`;
 
-export default connect(mapStateToProps, { login, checkIn })(Login);
+
+export default Login;
