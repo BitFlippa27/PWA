@@ -32,7 +32,7 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
   return (
     <Fragment>
       <section className="container-home">
-        <h1 className="large text-primary">Anmelden</h1>
+        <h1 className="large text-info">Anmelden</h1>
         <p className="lead">
           <i className="fas fa-user"></i> Loggen Sie sich in ihr Konto ein
         </p>

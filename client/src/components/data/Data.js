@@ -19,12 +19,12 @@ const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
 
   
 
-  return user === null || allData.length < 27000 ? (
+  return user === null || loading || allData.length < 27000 ? (
     <Loader />
   ) : (
     <Fragment>
       <section className="container-data">
-      <h1 className="large text-primary"> Alle Daten </h1>
+      <h1 className="large text-info"> Alle Daten </h1>
       <p className="lead">
         <i className="fas fa-user"></i> Willkommen {user && user.name}
       </p>

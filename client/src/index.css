@@ -1,7 +1,7 @@
 /* Global Styles */
 :root {
   --primary-color: #17a2b8;
-  --dark-color: #343a40;
+  --dark-color: #121212;
   --light-color: #f4f4f4;
   --danger-color: #dc3545;
   --success-color: #28a745;
@@ -17,7 +17,7 @@ body {
   font-family: "Ubuntu";
   font-size: 1rem;
   line-height: 1.6;
-  background-color: #fff;
+  background-color: #121212;
   color: #333;
 }
 .table-bordered tbody {
@@ -41,8 +41,11 @@ ul {
 
 img {
   width: 100%;
+  color: black;
 }
-
+.loader {
+  color: black;
+}
 .pictures {
   border: 1px solid #ddd; /* Gray border */
   border-radius: 4px; /* Rounded border */
@@ -123,26 +126,26 @@ img {
   font-size: 4rem;
   line-height: 1.2;
   margin-bottom: 1rem;
+  color: var(--light-color);
 }
 
 .large {
   font-size: 3rem;
   line-height: 1.2;
   margin-bottom: 1rem;
+
 }
 
 .lead {
   font-size: 1.5rem;
   margin-bottom: 1rem;
+  color: white;
 }
 
 .text-center {
   text-align: center;
 }
 
-.text-primary {
-  color: var(--primary-color);
-}
 
 .text-dark {
   color: var(--dark-color);
@@ -336,6 +339,7 @@ img {
   font-size: 1.2rem;
   border: 1px solid #ccc;
   border-radius: 10px;
+  
 }
 
 .form input[type="submit"],

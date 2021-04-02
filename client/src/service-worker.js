@@ -161,7 +161,7 @@ async function checkData() {
 async function replayFetch() {
   var requestObject;
   while(requestObject = await getRequest()){
-    console.log("RequestObject",requestObject.request);
+    console.log("while");
     let request = new Request(requestObject.request.url, requestObject.request);
     var req = request.clone();
     try { 
@@ -169,20 +169,21 @@ async function replayFetch() {
         
         if(requestObject.operation === "upload") {
           var res = await fetch(req);
-          console.log("replayFetch upload", res);
+          console.log("upload", res);
           let clonedRes = res.clone();
 
           if (res && res.ok) {
             await sendMessage({ upload: true});
             await removeRequestObject(requestObject.id);         
             let data = await clonedRes.json();    
-            console.log(data)
+            console.log("res ok");
             let mongoID = data._id;
             let keyPath = data.id;
             console.log(data._id);
             await addMongoID(mongoID, keyPath);
         }
         else {
+          console.log("unshift")
           queue.unshift(requestObject);
           //register push or sync event
         }
@@ -191,13 +192,13 @@ async function replayFetch() {
           const mongoID = await getMongoID();
           //hier eigene Funktion "safeRequest"
           var res = await fetch(req);
-          console.log("replayFetch remove", res);
+          console.log(" remove", res);
           if(res && res.ok) {
             await sendMessage({ upload: true});
             await removeRequestObject(requestObject.id); 
           }
           else {
-            console.log("else")
+            console.log("unshift")
             queue.unshift(requestObject);
             await addIdToRemove(mongoID);
             //register push or sync event

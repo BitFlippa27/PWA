@@ -37,7 +37,7 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
 
 
   return (
-    <nav className="navbar bg-dark">
+    <nav className="navbar ">
       <h2>
         <Link to="/">
           <i className="fas fa-code" /> GoodSync

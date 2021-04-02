@@ -5,6 +5,7 @@ const Loader = () => {
   return (
     <Fragment>
       <img
+        className="loader"
         src={loaderGif}
         style={{ width: '200px', margin: 'auto', display: 'block' }}
         alt='Lädt...'
