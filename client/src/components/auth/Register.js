@@ -8,7 +8,7 @@ import { register } from "../../actions/auth";
 import PropTypes from 'prop-types';
 import Loader from "../Loader";
 
-const Register = ({ setAlert, register, isAuthenticated }) => {
+const Register = () => {
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name:"",
@@ -24,8 +24,9 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
   }
 
   const [addUser, { loading }] = useMutation(REGISTER_USER, {
-    update(proxy, result){
+    update(_, result){
       console.log(result)
+      setAlert("Account erstellt", "success");
     },
     onError(err){
       console.log(err.graphQLErrors[0].extensions.exception.errors)
@@ -33,31 +34,34 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
      
     },
     variables: formData
-  })
+  });
 
   const onSubmit = async e => {
-    e.preventDefault();
-    if(password !== confirmPassword){
-      setAlert("Passwörter stimmen nicht überein", "danger");
-      return;
+    try {
+      e.preventDefault();
+      if(password !== confirmPassword){
+        setAlert("Passwörter stimmen nicht überein", "danger");
+        return;
+      }
+      if(!formData)
+        return;
+      else{
+        await addUser();
+        return <Redirect to="/data" />;
+      }
     }
-    if(!formData)
-      return;
-    else{
-      await addUser();
+    catch (err) {
+      throw new Error(err);
     }
   }
-  if(isAuthenticated) {
-    return <Redirect to="/login" />;
-  }
+   
 
-  
 
   return loading ? ( <Loader/> ) : (
     <Fragment>
      <section className="container-home">
 
-      <h1 className="large text-primary">Registrierung</h1>
+      <h1 className="large text-info">Registrierung</h1>
       <p className="lead"><i className="fas fa-user"></i> Erstellen Sie ihr Konto</p>
       <form className="form" onSubmit={e => onSubmit(e)}>
         <div className="form-group">
@@ -111,7 +115,7 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
   );
 }
 
-const REGISTER_USER = gql `
+const REGISTER_USER = gql`
   mutation register(
     $name: String!
     $email: String!
@@ -129,16 +133,9 @@ const REGISTER_USER = gql `
       id email name token
     }
   }
-`
+`;
 
-Register.propTypes = {
-  setAlert: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool
-}
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated
-})
 
-export default connect(mapStateToProps, { setAlert, register })(Register);
+
+export default Register;
