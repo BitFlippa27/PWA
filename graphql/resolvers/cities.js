@@ -5,7 +5,7 @@ module.exports =  {
   Query: {
     async getAllCities(){
       try {
-        const allCities = await City.find();
+        const allCities = await City.find().sort({ createdAt: -1 });
 
         return allCities;
       } 

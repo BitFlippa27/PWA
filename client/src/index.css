@@ -20,6 +20,9 @@ body {
   background-color: #121212;
   color: #333;
 }
+h5{
+  color: white
+}
 .table-bordered tbody {
   height: 600px;
   overflow-y: scroll;
@@ -347,6 +350,11 @@ button {
   font: inherit;
 }
 
+
+.data-input {
+  padding-bottom: 4rem;
+}
+
 .table th,
 .table td {
   padding: 1rem;
@@ -354,14 +362,14 @@ button {
 }
 
 .table th {
-  background: var(--light-color);
+  color: white;
 }
-.table-th {
-  border-bottom: solid;
-  border-left: solid;
-  border-right: solid;
-  border-top: solid;
+
+.table-responsive {
+  border-radius:10px;
 }
+
+
 
 /* Navbar */
 .navbar {
@@ -374,7 +382,8 @@ button {
   width: 100%;
   top: 0;
   border-bottom: solid 1px var(--primary-color);
-  opacity: 0.9;
+  
+  background-color: #121212;
 }
 
 .navbar ul {
@@ -403,7 +412,6 @@ button {
 }
 
 .homepage-inner {
-  color: #fff;
   height: 100%;
   width: 80%;
   margin: auto;
