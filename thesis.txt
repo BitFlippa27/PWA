@@ -219,11 +219,12 @@ Es werden Lösungen präsentiert wie auch bei mangelnder oder gar fehlender Konn
 
 \section{Datensynchronisation und Datenhaltung} 
 \begin{itemize}
-    \item Problemstellung der Sync, offline, zeitweise offline, online
+\item Wie lange sind wir Offline ? Was sind die Anforderungen der APP
+    \item Problemstellung der Sync, offline, zeitweise offline, online Offline-Strategien
     \item Wie werden Daten gesynced (Priorisierung über Eingabezeitpunkt oder Rollen oder beides
     \item Technologien für den Demonsrator
     \item IndexedDB und MongoDB
-    \item Offline-Strategien
+    
     \item ServiceWorker - Konzept - Umsetzung --> Ziel SW: Entlastung Client, Schnellere App
 \end{itemize}
 
@@ -281,6 +282,10 @@ Online
     \item Client fügt Datensatz hinzu
 \end{itemize}
 \subsubsection{Offline Strategien}
+\begin{itemize}
+    \item Je nach Use Case andere Strategie
+    
+\end{itemize}
 \subsection{Server}
 \subsection{Cloud}
 \subsection{Sicherheit}
@@ -298,14 +303,18 @@ Online
 \end{itemize}
 
 \section {Evaluation}
+
+
+\section{Dikussion}
+Grenzen ? Möglichkeiten ?
 \begin{itemize}
     \item backgorund-sync API
     \item background-fetch API
     \item Browsersupports beispiel Apple (Game streaming services)
-    
+    \item Web Push Notification in Kombi mit GraphQL ?
+    \item Wie lange sind wir Offline ?
+    \item Was sind die Anforderungen der App
 \end{itemize}
-\section{Dikussion}
-
 \section{Fazit}
 
 
