@@ -24,28 +24,26 @@ const Data = () => {
       <p className="lead">
         <i className="fas fa-user"></i> Willkommen 
       </p>
-      <h5 className="text-primary">Neuen Datensatz hinzufügen</h5>
-
-
+      <h5 className="text-primary">Neuer Datensatz</h5>
       <div className="data-input">
         <tbody>
           <DataForm />
         </tbody>
       </div>
-     
-
 
       <div className="table-responsive">
           <table className="table table-striped table-dark">
             <thead>
               <tr>
-                <th className="col-xs-3" scope="col">
-                  Stadt
+                <th  scope="col">
+                  <strong>Stadt</strong>
                 </th>
                 <th scope="col">
-                  Bevölkerung
+                  <strong>Bevölkerung</strong>
                 </th>
-                <th scope="col">Aktion </th>
+                <th scope="col">
+                  <strong>Aktion</strong> 
+                </th>
               </tr>
             </thead>
             <tbody>

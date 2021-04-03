@@ -322,6 +322,7 @@ img {
 /* Forms */
 .form .form-group {
   margin: 1.2rem 0;
+  
 }
 
 .form .form-text {
@@ -347,18 +348,23 @@ img {
 
 .form input[type="submit"],
 button {
-  font: inherit;
+  font: inherit; 
 }
 
 
 .data-input {
-  padding-bottom: 4rem;
+  padding-bottom: 3rem;
+}
+
+.data-input2 {
+  padding-right: 0.5rem;
 }
 
 .table th,
 .table td {
-  padding: 1rem;
+  padding: 0.5rem;
   text-align: left;
+  font-size: 12px;
 }
 
 .table th {
@@ -369,8 +375,9 @@ button {
   border-radius:10px;
 }
 
-
-
+strong {
+  font-size: 15px;
+}
 /* Navbar */
 .navbar {
   display: flex;
