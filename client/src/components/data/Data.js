@@ -1,23 +1,32 @@
 import React, { Fragment, useEffect, useState } from "react";
+import { Link, Redirect } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
+import { useSelector } from "react-redux";
+
+
 
 
 
 //TODO: Button für loadServerData
 
 const Data = () => {
+  var user = useSelector((state) => state.auth.user);
+  var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const { loading, data} = useQuery(FETCH_CITIES_QUERY);
   if(data) {
     console.log(data)
     var { getAllCities } = data;
   }
-  
-  return loading ? <Loader/> : (
+
+  if(!isAuthenticated)
+    return <Redirect to="/login"/>;
+
+  return loading || !user ? <Loader/> : (
     <Fragment>
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>

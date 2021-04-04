@@ -17,35 +17,9 @@ import {
 export const loadUser = () =>  async dispatch => {
   if("token" in localStorage) {
     const token = localStorage.getItem("token");
-      try {
-        //const res = await axios.get("/api/auth");
-        const res = await fetch("http://localhost:5555/api/auth", {
-          method: "GET",
-          mode: "cors",
-          cache: "no-cache",
-          headers:  {
-            "Content-Type" : "application/json",
-            "X-Auth-Token" :  `${token}` 
-          },
-          credentials: "omit"
-        });
 
-        const user = await res.json();
-        dispatch({
-          type: USER_LOADED,
-          payload: user
-        });
-      }
-      catch(err) {
-        console.error(err);
-      }     
-    }
-    else {
-      dispatch({
-        type: USER_LOADED_FAILED
-      });
-      dispatch({ type: LOGOUT });
-    }
+  }
+    
 }
 
 export const loadUserOffline = () =>  async dispatch => {
@@ -62,7 +36,6 @@ export const loadUserOffline = () =>  async dispatch => {
   else {
     alert("Authentizierungsfehler, Melden Sie sich an sobald Sie Online sind.");
     dispatch({ type: USER_LOADED_FAILED });
-    dispatch({ type: LOGOUT });
   }
 }
     
@@ -161,7 +134,12 @@ export const logout = () => async (dispatch) => {
 };
 
 
+export const loginUserAction = (userData) => ({type: "LOGIN_SUCCESS",
+  payload: userData})
+  
 
+    
+ 
   
 /*
 export const loadAllUsers = () => async dispatch => {

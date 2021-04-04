@@ -1,21 +1,25 @@
 import React, { Fragment, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { connect, useActions } from "react-redux";
-import PropTypes from "prop-types";
-import { login } from "../../actions/auth";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { loginUserAction } from "../../actions/auth";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { setAlert } from "../../actions/alert";
 import { result } from "lodash";
+import Data from "../data/Data";
+import  store  from "../../store";
 
 
 
 const Login = ({ setAlert }) => {
+  
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const { email, password } = formData;
 
@@ -23,12 +27,15 @@ const Login = ({ setAlert }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    update(_, result){
-      console.log(result)
+    update(_, { data: { login: userData}}){
+      console.log(userData)
+     if (userData)
+      store.dispatch(loginUserAction(userData))
     },
     onError(err){
       console.log(err);
       //setErrors(err.graphQLErrors[0].extensions.exception.errors);
+      
     },
     variables: formData
   });
@@ -40,7 +47,6 @@ const Login = ({ setAlert }) => {
         return;
       else{
         await loginUser();
-        return <Redirect to="/data" />;
       }
     }
     catch (err) {
@@ -48,8 +54,9 @@ const Login = ({ setAlert }) => {
     }
   }
 
+  
 
-  return (
+  return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
       <section className="container-home">
         <h1 className="large text-info">Anmelden</h1>
@@ -94,7 +101,6 @@ const LOGIN_USER = gql`
     login(email: $email, password: $password) {
       id
       email
-      name
       token
     }
   }
