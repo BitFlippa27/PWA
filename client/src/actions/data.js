@@ -181,6 +181,5 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
 }
 
 export const addCityAction = (formData) => async dispatch => {
-  const { city, pop } = formData;
-
+  const { city, pop } = formData
 }

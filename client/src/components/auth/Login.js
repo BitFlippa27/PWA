@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { loginUserAction } from "../../actions/auth";
 import gql from "graphql-tag";
@@ -7,6 +7,7 @@ import { useMutation } from "@apollo/client";
 import { setAlert } from "../../actions/alert";
 import { result } from "lodash";
 import Data from "../data/Data";
+import  store  from "../../store";
 
 
 
@@ -17,7 +18,7 @@ const Login = ({ setAlert }) => {
     email: "",
     password: "",
   });
-  const login = useDispatch((userData) => loginUserAction(userData));
+  
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const { email, password } = formData;
@@ -28,12 +29,13 @@ const Login = ({ setAlert }) => {
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, { data: { login: userData}}){
       console.log(userData)
-     //setAlert("Erfolgreich eingeloggt", "success");
-     login(userData);
+     if (userData)
+      store.dispatch(loginUserAction(userData))
     },
     onError(err){
       console.log(err);
       //setErrors(err.graphQLErrors[0].extensions.exception.errors);
+      
     },
     variables: formData
   });
@@ -54,7 +56,7 @@ const Login = ({ setAlert }) => {
 
   
 
-  return (
+  return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
       <section className="container-home">
         <h1 className="large text-info">Anmelden</h1>
@@ -99,7 +101,6 @@ const LOGIN_USER = gql`
     login(email: $email, password: $password) {
       id
       email
-      name
       token
     }
   }

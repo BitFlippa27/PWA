@@ -14,6 +14,7 @@ import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
 
 
+
 const App = () => {
   return (
     <Provider store={store}>
