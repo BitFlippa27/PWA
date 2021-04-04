@@ -179,3 +179,8 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
     console.error(err);
   }
 }
+
+export const addCityAction = (formData) => async dispatch => {
+  const { city, pop } = formData;
+
+}

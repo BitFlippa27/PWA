@@ -1,29 +1,37 @@
 import React, { useState, Fragment } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { insertData, removeData } from "../../actions/data";
+import { useDispatch } from "react-redux";
+import { addCityAction } from "../../actions/data";
 
-const DataForm = ({ insertData }) => {
+
+const DataForm = ({ insertData, edit }) => {
   const [formData, setFormData] = useState({
     city: "",
     pop: "",
   });
+  const addCity = useDispatch((formData) => addCityAction(formData));
+
   const { city,  pop } = formData;
 
-  const onChange = (e) =>
+  
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    console.log(formData)
+  }
+    
 
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!formData) 
       return;
+    await addCity(formData);
     setFormData({ city: "", pop: "" });
-    await insertData(formData);
+    
   };
 
+  
   return (
     <Fragment>
-      <tr className="formcells">
+      <tr>
         <th className="data-input2">
           <form className="form ">
             <input

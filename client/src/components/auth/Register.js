@@ -25,13 +25,11 @@ const Register = () => {
 
   const [addUser, { loading }] = useMutation(REGISTER_USER, {
     update(_, result){
-      console.log(result)
-      setAlert("Account erstellt", "success");
+  
+      //setAlert("Account erstellt", "success");
     },
     onError(err){
-      console.log(err.graphQLErrors[0].extensions.exception.errors)
-      setErrors(err.graphQLErrors[0].extensions.exception.errors);
-     
+      console.log(err);
     },
     variables: formData
   });
@@ -47,7 +45,7 @@ const Register = () => {
         return;
       else{
         await addUser();
-        return <Redirect to="/data" />;
+  
       }
     }
     catch (err) {

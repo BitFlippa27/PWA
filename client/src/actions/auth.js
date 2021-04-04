@@ -161,7 +161,18 @@ export const logout = () => async (dispatch) => {
 };
 
 
+export const loginUserAction = (userData) => async dispatch => {
+  try {
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: userData
+    });
+  } catch (err) {
+    console.log(err)
+  }
+  
 
+}
   
 /*
 export const loadAllUsers = () => async dispatch => {

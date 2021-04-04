@@ -5,10 +5,30 @@ import { removeData } from "../../actions/data";
 import DataForm from "./DataForm";
 
 const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
+  const [formData, setFormData] = useState({
+    city: "",
+    pop: "",
+  });
 
   const [edit, setEdit] = useState({
     id: null
   });
+
+
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    console.log(formData)
+  }
+    
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData) 
+      return;
+    setFormData({ city: "", pop: "" });
+    setEdit({id: null});
+    //await insertData(formData);
+  };
 
   const editCity = (id) => {
     setEdit({
@@ -16,12 +36,45 @@ const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
     })
   }
 
-  if(edit.id) {
-    return <DataForm/>;
-  }
-  return (
+  
+  return edit.id ? (
+    <tr>
+      <th className="data-input2">
+        <form className="form ">
+          <input
+            className="form-control"
+            type="text"
+            name="city"
+            placeholder="Stadt"
+            value={city}
+            onChange={(e) => onChange(e)}
+            required
+          ></input>
+        </form>
+      </th>
+      <th className="data-input2">
+        <form className="form ">
+          <input
+            className="form-control"
+            type="number"
+            name="pop"
+            placeholder="Bevölkerung"
+            value={pop}
+            onChange={(e) => onChange(e)}
+            required
+          ></input>
+            </form>
+      </th>
+
+    <th>
+      <form className="form " onSubmit={(e) => onSubmit(e)}>
+        <input type="submit" className="btn btn-primary" value="Submit" />
+      </form>
+    </th>
+   </tr>
+  ) : (
     <Fragment>
-      <tr className="formcells">
+      <tr >
         <th  scope="col">
           {city}
         </th>

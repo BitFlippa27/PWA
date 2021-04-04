@@ -1,21 +1,24 @@
 import React, { Fragment, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
-import { connect, useActions } from "react-redux";
-import PropTypes from "prop-types";
-import { login } from "../../actions/auth";
+import { Link } from "react-router-dom";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { loginUserAction } from "../../actions/auth";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { setAlert } from "../../actions/alert";
 import { result } from "lodash";
+import Data from "../data/Data";
 
 
 
 const Login = ({ setAlert }) => {
+  
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const login = useDispatch((userData) => loginUserAction(userData));
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const { email, password } = formData;
 
@@ -23,8 +26,10 @@ const Login = ({ setAlert }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    update(_, result){
-      console.log(result)
+    update(_, { data: { login: userData}}){
+      console.log(userData)
+     //setAlert("Erfolgreich eingeloggt", "success");
+     login(userData);
     },
     onError(err){
       console.log(err);
@@ -40,7 +45,6 @@ const Login = ({ setAlert }) => {
         return;
       else{
         await loginUser();
-        return <Redirect to="/data" />;
       }
     }
     catch (err) {
@@ -48,6 +52,7 @@ const Login = ({ setAlert }) => {
     }
   }
 
+  
 
   return (
     <Fragment>
