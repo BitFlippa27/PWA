@@ -8,7 +8,7 @@ import { setAlert } from "../../actions/alert";
 import { result } from "lodash";
 import Data from "../data/Data";
 import  store  from "../../store";
-
+import { LOGIN_USER } from "../../grapqhql/queries";
 
 
 
@@ -27,20 +27,6 @@ const Login = ({ setAlert }) => {
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    update(_, { data: { login: userData}}){
-      console.log(userData)
-     if (userData)
-      store.dispatch(loginUserAction(userData))
-    },
-    onError(err){
-      console.log(err);
-      //setErrors(err.graphQLErrors[0].extensions.exception.errors);
-      
-    },
-    variables: formData
-  });
-
   const onSubmit = async e => {
     try {
       e.preventDefault();
@@ -55,7 +41,20 @@ const Login = ({ setAlert }) => {
     }
   }
 
-  
+  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
+    update(_, { data: { login: userData}}){
+      console.log(userData)
+     if (userData)
+      store.dispatch(loginUserAction(userData))
+    },
+    onError(err){
+      console.log(err);
+      //setErrors(err.graphQLErrors[0].extensions.exception.errors);
+      
+    },
+    variables: formData
+  });
+
 
   return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
@@ -95,17 +94,6 @@ const Login = ({ setAlert }) => {
     </Fragment>
   );
 };
-
-
-const LOGIN_USER = gql`
-  mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      id
-      email
-      token
-    }
-  }
-`;
 
 
 export default Login;

@@ -36,8 +36,7 @@ const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
     })
   }
 
-  
-  return edit.id ? (
+  const updateInput = (
     <tr>
       <th className="data-input2">
         <form className="form ">
@@ -72,7 +71,10 @@ const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
       </form>
     </th>
    </tr>
-  ) : (
+  )
+  
+    
+    return edit.id ? updateInput : (
     <Fragment>
       <tr >
         <th  scope="col">

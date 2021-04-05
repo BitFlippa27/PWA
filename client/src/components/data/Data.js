@@ -1,12 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
+import { FETCH_CITIES_QUERY } from "../../grapqhql/queries";
 
 
 
@@ -63,42 +63,10 @@ const Data = () => {
             </tbody>
           </table>
         </div>
-      
-       
-      
-         
- 
-      
-
-      
-      
-      
-      
-      
       </section>
     </Fragment>
   );
 };
-const rowSizes = new Array(1000)
-  .fill(true)
-  .map(() => 25 + Math.round(Math.random() * 50));
-
-const getItemSize = index => rowSizes[index];
-const Row = ({ index, style }) => (
-  <div className={index % 2 ? 'ListItemOdd' : 'ListItemEven'} style={style}>
-    Row {index}
-  </div>
-);
-
-const FETCH_CITIES_QUERY = gql`
-  {
-    getAllCities {
-     city 
-     pop
-     id
-    }
-  }
-`;
 
 
 export default Data;
