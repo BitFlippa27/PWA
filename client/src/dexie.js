@@ -23,12 +23,11 @@ openDB();
 
 
 export async function addData(formData) {
-  const { city, zip, pop } = formData;
+  const { city, pop } = formData;
 
   try {
     let id = await dexie.cities.add({
       city: city,
-      zip: zip,
       pop: pop
     });
     

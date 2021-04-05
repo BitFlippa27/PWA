@@ -12,8 +12,7 @@ import { REGISTER_SUCCESS,
 const initialState = {
     token: localStorage.getItem("token"),
     isAuthenticated: null,
-    user: null
-    
+    user: null,
 }
 
 export default function(state = initialState, action) {
@@ -24,8 +23,8 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isAuthenticated: true,
-                user: payload,
-                loading: false
+                token: payload
+                
             }
         case ALL_USER_LOADED_SUCCESS:
             return {

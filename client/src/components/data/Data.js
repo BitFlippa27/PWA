@@ -23,10 +23,11 @@ const Data = () => {
     var { getAllCities } = data;
   }
 
+  
   if(!isAuthenticated)
     return <Redirect to="/login"/>;
 
-  return loading || !user ? <Loader/> : (
+  return loading ? <Loader/> : (
     <Fragment>
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>
@@ -63,7 +64,7 @@ const Data = () => {
           </table>
         </div>
       
-
+       
       
          
  

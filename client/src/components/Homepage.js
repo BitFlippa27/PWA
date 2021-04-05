@@ -2,14 +2,16 @@ import React, { Fragment } from 'react';
 import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from 'prop-types';
+import { useSelector } from "react-redux";
 
 
 
+const Homepage = () => {
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
-const Homepage = ({ isAuthenticated }) => {
   if(isAuthenticated) {
     console.log("Redirect");
-    return <Redirect to="/login" />;
+    return <Redirect to="/data" />;
   }
 
   return (

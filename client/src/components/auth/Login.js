@@ -11,16 +11,17 @@ import  store  from "../../store";
 
 
 
+
 const Login = ({ setAlert }) => {
-  
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
+  
+  
   const { email, password } = formData;
 
   const onChange = (e) =>
