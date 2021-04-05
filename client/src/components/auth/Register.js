@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { Link, Redirect } from "react-router-dom";
@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import Loader from "../Loader";
 
 const Register = () => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name:"",
@@ -55,7 +56,7 @@ const Register = () => {
    
 
 
-  return loading ? ( <Loader/> ) : (
+  return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
      <section className="container-home">
 

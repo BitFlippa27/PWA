@@ -1,14 +1,17 @@
+import { useMutation } from "@apollo/client";
 import React, { useState, Fragment } from "react";
 import { useDispatch } from "react-redux";
 import { addCityAction } from "../../actions/data";
+//import { CREATE_CITY_MUTATION } from "../../grapqhql/queries";
+import gql from "graphql-tag";
 
 
-const DataForm = ({ insertData, edit }) => {
+const DataForm = () => {
   const [formData, setFormData] = useState({
     city: "",
     pop: "",
   });
-  const addCity = useDispatch((formData) => addCityAction(formData));
+  //const addCity = useDispatch((formData) => addCityAction(formData));
 
   const { city,  pop } = formData;
 
@@ -20,14 +23,23 @@ const DataForm = ({ insertData, edit }) => {
     
 
   const onSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData) 
-      return;
-    await addCity(formData);
-    setFormData({ city: "", pop: "" });
-    
+    try {
+      e.preventDefault();
+      if (!formData) 
+        return;
+      //await addCity(formData);
+      else {
+        createCity({variables: formData});
+        setFormData({ city: "", pop: "" });
+      }
+    } 
+    catch (err) {
+      throw new Error(err);
+    }
   };
 
+  const [createCity, { error }] = useMutation(CREATE_CITY_MUTATION);
+  
   
   return (
     <Fragment>
@@ -70,5 +82,17 @@ const DataForm = ({ insertData, edit }) => {
 };
 
 
+const CREATE_CITY_MUTATION = gql`
+  mutation createCity($city: String!, $pop: Int!){
+    createCity(
+      createCityInput: {
+        city: $city
+        pop: $pop
+    }){
+      city
+      pop
+    }
+  }
+`;
 
 export default DataForm;

@@ -11,23 +11,16 @@ import {
     LOGOUT,
     CHECK_OUT
 } from "./types";
+import { useSelector } from "react-redux";
+import jwtDecode from "jwt-decode";
 
 
-//Load User
-export const loadUser = () =>  async dispatch => {
-  if("token" in localStorage) {
-    const token = localStorage.getItem("token");
 
-  }
-    
-}
 
 export const loadUserOffline = () =>  async dispatch => {
   if("token" in localStorage) {
     try {
-      dispatch({
-        type: USER_LOADED
-      });
+     
     }
     catch(err) {
       console.error(err);
@@ -133,10 +126,35 @@ export const logout = () => async (dispatch) => {
   dispatch({ type: LOGOUT});
 };
 
-
 export const loginUserAction = (userData) => ({type: "LOGIN_SUCCESS",
   payload: userData})
   
+//Load User
+export const loadUser = () =>  async dispatch => {
+  const token = localStorage.getItem("token");
+  if(!navigator.onLine){
+    if(token){
+      const decodedToken = jwtDecode(token);
+      if(decodedToken.exp * 1000 < Date.now()){
+        localStorage.removeItem("token");
+        dispatch({type: USER_LOADED_FAILED});
+      }
+      else
+        dispatch({type: USER_LOADED, payload: token});
+      
+      dispatch({type: USER_LOADED, payload: token});
+    }
+    else
+      dispatch({type: USER_LOADED_FAILED});
+  }
+  else 
+    if(token)
+      dispatch({type: USER_LOADED, payload: token});
+    else
+      dispatch({type: USER_LOADED_FAILED, payload: token});
+
+ }
+
 
     
  

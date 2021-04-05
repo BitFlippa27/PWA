@@ -12,8 +12,12 @@ import Offline from "./components/auth/Offline";
 import { loadUser, loadUserOffline } from "./actions/auth";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
+import { useSelector } from "react-redux";
 
+const token = localStorage.getItem("token");
 
+if(token)
+  store.dispatch(loadUser());
 
 const App = () => {
   return (
@@ -35,8 +39,6 @@ const App = () => {
         </Fragment>
       </Router>
     </Provider>
-  
-   
   );
 };
 
