@@ -7,11 +7,6 @@ import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
-
-
-
-
-
 //TODO: Button für loadServerData
 
 const Data = () => {
