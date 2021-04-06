@@ -11,12 +11,6 @@ export const LOGIN_USER = gql`
   }
 `;
 
-export const IS_LOGGED_IN = gql`
-  query IsUserLoggedIn {
-    isLoggedIn @client
-  }
-`;
-
 export const REGISTER_USER = gql`
   mutation register(
     $name: String!
@@ -51,6 +45,7 @@ export const FETCH_CITIES_QUERY = gql`
 export const CREATE_CITY_MUTATION = gql`
   mutation createCity($city: String!, $pop: String!){
     createCity(city: $city, pop: $pop){
+      id
       city
       pop
       createdAt

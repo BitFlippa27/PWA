@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
 import DataForm from "./DataForm";
