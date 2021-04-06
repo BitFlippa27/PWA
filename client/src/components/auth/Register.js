@@ -5,8 +5,7 @@ import { useMutation } from "@apollo/client";
 import { Link, Redirect } from "react-router-dom";
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
-import PropTypes from 'prop-types';
-import Loader from "../Loader";
+import { REGISTER_USER } from "../../graphql/queries";
 
 const Register = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -114,25 +113,7 @@ const Register = () => {
   );
 }
 
-const REGISTER_USER = gql`
-  mutation register(
-    $name: String!
-    $email: String!
-    $password: String!
-    $confirmPassword: String!
-  ) {
-    register(
-      registerInput: {
-        name: $name
-        email: $email
-        password: $password
-        confirmPassword: $confirmPassword 
-      }
-    ){
-      id email name token
-    }
-  }
-`;
+
 
 
 
