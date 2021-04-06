@@ -6,11 +6,9 @@ import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
+
+
 import { FETCH_CITIES_QUERY } from "../../grapqhql/queries";
-
-
-
-
 
 //TODO: Button für loadServerData
 
