@@ -27,20 +27,6 @@ const Login = () => {
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    update(_, { data: { login: userData}}){
-      console.log(userData)
-     if (userData)
-      store.dispatch(loginUserAction(userData))
-    },
-    onError(err){
-      console.log(err);
-      //setErrors(err.graphQLErrors[0].extensions.exception.errors);
-      
-    },
-    variables: formData
-  });
-
   const onSubmit = async e => {
     try {
       e.preventDefault();
@@ -56,7 +42,20 @@ const Login = () => {
     }
   }
 
-  
+  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
+    update(_, { data: { login: userData}}){
+      console.log(userData)
+     if (userData)
+      store.dispatch(loginUserAction(userData))
+    },
+    onError(err){
+      console.log(err);
+      //setErrors(err.graphQLErrors[0].extensions.exception.errors);
+      
+    },
+    variables: formData
+  });
+
 
   return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
@@ -96,8 +95,6 @@ const Login = () => {
     </Fragment>
   );
 };
-
-
 
 
 export default Login;

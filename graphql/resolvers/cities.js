@@ -28,10 +28,10 @@ module.exports =  {
   
 },
   Mutation: {
-    async createCity(_, { city, pop }, context){
+    async createCity(_,  { city, pop }, context){
       const user = checkAuth(context);
+      console.log(createCityInput);
       //console.log(city);
-
       if (city.trim() === "" || !pop){
         throw new Error("Fields must not be empty");
       }
@@ -45,9 +45,7 @@ module.exports =  {
       });
        const newcity = await newCity.save();
 
-       context.pubsub.publish("NEW_CITY", {
-         newCity: newcity
-       });
+       context.pubsub.publish("NEW_CITY", {newCity: newcity});
 
       return newcity;
     },
