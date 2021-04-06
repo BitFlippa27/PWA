@@ -11,6 +11,25 @@ export const LOGIN_USER = gql`
   }
 `;
 
+export const REGISTER_USER = gql`
+  mutation register(
+    $name: String!
+    $email: String!
+    $password: String!
+    $confirmPassword: String!
+  ) {
+    register(
+      registerInput: {
+        name: $name
+        email: $email
+        password: $password
+        confirmPassword: $confirmPassword 
+      }
+    ){
+      id email name token
+    }
+  }
+`;
 
 export const FETCH_CITIES_QUERY = gql`
   {
@@ -26,7 +45,10 @@ export const FETCH_CITIES_QUERY = gql`
 export const CREATE_CITY_MUTATION = gql`
   mutation createCity($city: String!, $pop: String!){
     createCity(city: $city, pop: $pop){
+      id
       city
+      pop
+      createdAt
     }
   }
 `;

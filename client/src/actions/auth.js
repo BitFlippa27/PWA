@@ -148,14 +148,20 @@ export const loadUser = () =>  async dispatch => {
       dispatch({type: USER_LOADED_FAILED});
   }
   else 
-    if(token)
-      dispatch({type: USER_LOADED, payload: token});
+    if(token){
+      const decodedToken = jwtDecode(token);
+      if(decodedToken.exp * 1000 < Date.now()){
+        localStorage.removeItem("token");
+        dispatch({type: USER_LOADED_FAILED});
+    }
+    dispatch({type: USER_LOADED, payload: token});
+  }
     else
       dispatch({type: USER_LOADED_FAILED, payload: token});
 
- }
+ 
 
-
+}
     
  
   

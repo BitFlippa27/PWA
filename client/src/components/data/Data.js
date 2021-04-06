@@ -6,14 +6,10 @@ import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
-
-
-import { FETCH_CITIES_QUERY } from "../../grapqhql/queries";
-
+import { FETCH_CITIES_QUERY } from "../../graphql/queries";
 //TODO: Button für loadServerData
 
 const Data = () => {
-  var user = useSelector((state) => state.auth.user);
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const { loading, data} = useQuery(FETCH_CITIES_QUERY);
   if(data) {
@@ -55,7 +51,7 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {getAllCities.slice(getAllCities.length - 100, getAllCities.length).map( (row) => (
+              {getAllCities.slice(getAllCities.length - 10, getAllCities.length).map( (row) => (
                 <DataItem key={row.id}  data={row} />
               ))}
             </tbody>

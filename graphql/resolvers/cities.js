@@ -5,8 +5,8 @@ module.exports =  {
   Query: {
     async getAllCities(){
       try {
-        const allCities = await City.find().sort({ createdAt: -1 });
-
+        const allCities = await City.find();
+        console.log("getAllCities resolver")
         return allCities;
       } 
       catch (err) {
@@ -30,8 +30,8 @@ module.exports =  {
   Mutation: {
     async createCity(_,  { city, pop }, context){
       const user = checkAuth(context);
-      console.log(createCityInput);
-      //console.log(city);
+      console.log("createCity resolver");
+
       if (city.trim() === "" || !pop){
         throw new Error("Fields must not be empty");
       }
