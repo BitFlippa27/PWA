@@ -28,10 +28,10 @@ module.exports =  {
   
 },
   Mutation: {
-    async createCity(_, {createCityInput: { city, pop }}, context){
+    async createCity(_,  { city, pop }, context){
       const user = checkAuth(context);
       console.log(createCityInput);
-
+      //console.log(city);
       if (city.trim() === "" || !pop){
         throw new Error("Fields must not be empty");
       }
