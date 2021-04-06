@@ -14,11 +14,15 @@ import { loadUser, loadUserOffline } from "./actions/auth";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
 import { useSelector } from "react-redux";
+import  { useQuery } from "@apollo/client";
+import { IS_LOGGED_IN } from "./graphql/queries";
+import { LOGIN_SUCCESS } from "./actions/types";
 
 const token = localStorage.getItem("token");
 
 if(token)
   store.dispatch(loadUser());
+
 
 const App = () => {
   return (
