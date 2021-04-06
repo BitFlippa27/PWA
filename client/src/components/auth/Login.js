@@ -2,17 +2,17 @@ import React, { Fragment, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { loginUserAction } from "../../actions/auth";
-import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { setAlert } from "../../actions/alert";
 import { result } from "lodash";
 import Data from "../data/Data";
 import  store  from "../../store";
+import { LOGIN_USER } from "../../graphql/queries";
 
 
 
 
-const Login = ({ setAlert }) => {
+const Login = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -48,6 +48,7 @@ const Login = ({ setAlert }) => {
         return;
       else{
         await loginUser();
+        store.dispatch(setAlert("Erfolgreich angemeldet !", "success"));
       }
     }
     catch (err) {
@@ -97,15 +98,6 @@ const Login = ({ setAlert }) => {
 };
 
 
-const LOGIN_USER = gql`
-  mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      id
-      email
-      token
-    }
-  }
-`;
 
 
 export default Login;

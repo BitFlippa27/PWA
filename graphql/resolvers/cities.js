@@ -30,7 +30,7 @@ module.exports =  {
   Mutation: {
     async createCity(_, { city, pop }, context){
       const user = checkAuth(context);
-      console.log(user);
+      //console.log(city);
 
       if (city.trim() === "" || !pop){
         throw new Error("Fields must not be empty");

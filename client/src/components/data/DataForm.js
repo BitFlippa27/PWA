@@ -1,14 +1,13 @@
 import React, { useState, Fragment } from "react";
-import { useDispatch } from "react-redux";
-import { addCityAction } from "../../actions/data";
+import { useMutation } from "@apollo/client";
+import { CREATE_CITY_MUTATION } from "../../graphql/queries";
 
 
-const DataForm = ({ insertData, edit }) => {
+const DataForm = () => {
   const [formData, setFormData] = useState({
     city: "",
     pop: "",
   });
-  const addCity = useDispatch((formData) => addCityAction(formData));
 
   const { city,  pop } = formData;
 
@@ -19,11 +18,22 @@ const DataForm = ({ insertData, edit }) => {
   }
     
 
+  const [createCity, { error }] = useMutation(CREATE_CITY_MUTATION, {
+    variables: formData,
+    update(_, result){
+      console.log(result)
+    },
+    onError(err){
+      console.log(err);
+    }
+  });
+
+
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!formData) 
       return;
-    await addCity(formData);
+    createCity();
     setFormData({ city: "", pop: "" });
     
   };
