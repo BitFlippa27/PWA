@@ -1,5 +1,4 @@
 import React, { useState, Fragment } from "react";
-import { useDispatch } from "react-redux";
 import { CREATE_CITY_MUTATION, FETCH_CITIES_QUERY } from "../../graphql/queries";
 import { useMutation } from "@apollo/client";
 
@@ -23,28 +22,21 @@ const DataForm = () => {
     e.preventDefault();
     if (!formData) 
       return;
-      createCity();
+    createCity({
+      variables: {city, pop}
+    })
     setFormData({ city: "", pop: "" });
     
   };
 
-  const [createCity, { error }] = useMutation(CREATE_CITY_MUTATION, {
-    variables: formData,
-    update(proxy, result) {
-      const data = proxy.readQuery({
-        query: FETCH_CITIES_QUERY
+  const [createCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
+    update(cache, { data: { createCity }}){
+      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
+      cache.writeQuery({
+        query: FETCH_CITIES_QUERY,
+        data: {getAllCities: [createCity, ...data.getAllCities]}
       });
-      
-      //data.getAllCities = [result.data.createCity, ...data.getAllCities];
-      //const newGetAllCities = [...data.getAllCities, result.data.createCity ];
-      //console.log(newGetAllCities);
-      const newCache ={...data, getAllCities: [...data.getAllCities, result.data.createCity ]};
-      console.log(newCache)
 
-      proxy.writeQuery({query: FETCH_CITIES_QUERY, data: newCache });
-    },
-    onError(err){
-      console.log(err)
     }
   });
   
@@ -91,3 +83,33 @@ const DataForm = () => {
 
 
 export default DataForm;
+
+
+
+/*
+mutate({
+      variables: {city, pop},
+      optimisticResponse: {
+        __typename: "Mutation",
+        createCity: {
+          __typename: "City",
+          city: city,
+          pop: pop,
+          createdAt: new Date().toISOString()
+        }
+      },
+      update(proxy, result) {
+        const data = proxy.readQuery({
+          query: FETCH_CITIES_QUERY,
+          optimistic: true
+        });
+    
+        proxy.writeQuery({query: FETCH_CITIES_QUERY, data: {
+          getAllCities: [...data.getAllCities, result.data.createCity]
+        }});
+      },
+      onError(err){
+        console.log(err)
+      }
+      });
+*/

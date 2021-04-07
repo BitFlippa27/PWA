@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { removeData } from "../../actions/data";
 import DataForm from "./DataForm";
 
-const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
+const DataItem = ({ cities: {id, _id, city, zip, pop }, removeData }) => {
   const [formData, setFormData] = useState({
     city: "",
     pop: "",

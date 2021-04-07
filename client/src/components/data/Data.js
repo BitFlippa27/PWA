@@ -7,22 +7,61 @@ import DataItem from "./DataItem";
 import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
-import { FETCH_CITIES_QUERY } from "../../graphql/queries";
+import {CREATE_CITY_MUTATION, FETCH_CITIES_QUERY } from "../../graphql/queries";
+import { useMutation } from "@apollo/client";
+
 //TODO: Button für loadServerData
 
 const Data = () => {
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const { loading, data} = useQuery(FETCH_CITIES_QUERY);
-  if(data) {
-    console.log(data)
-    var { getAllCities } = data;
-  }
+  const [formData, setFormData] = useState({
+    city: "",
+    pop: "",
+  });
+  const { city,  pop } = formData;
+
+  const cities = useQuery(FETCH_CITIES_QUERY);
+  const { getAllCities } = data;
+
+  const [createCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
+    update(cache, { data: { createCity }}){
+      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
+      cache.writeQuery({
+        query: FETCH_CITIES_QUERY,
+        data: {getAllCities: [createCity, ...data.getAllCities]}
+      });
+
+    }
+  });
 
   
+  console.log(getAllCities);
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    console.log(formData)
+  }
+    
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData) 
+      return;
+    createCity({
+      variables: {city, pop}
+    })
+    setFormData({ city: "", pop: "" });
+  };
+
+
   if(!isAuthenticated)
     return <Redirect to="/login"/>;
+  
+  if(cities.loading)
+  return  <Loader/>;
 
-  return loading ? <Loader/> : (
+  if(cities.error || newCity.error)
+    console.log(error);
+
+  return (
     <Fragment>
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>
@@ -32,10 +71,44 @@ const Data = () => {
       <h5 className="text-primary">Neuer Datensatz</h5>
       <div className="data-input">
         <tbody>
-          <DataForm />
+        <Fragment>
+      <tr>
+        <th className="data-input2">
+          <form className="form ">
+            <input
+              className="form-control"
+              type="text"
+              name="city"
+              placeholder="Stadt"
+              value={city}
+              onChange={(e) => onChange(e)}
+              required
+            ></input>
+          </form>
+        </th>
+        <th className="data-input2">
+          <form className="form ">
+            <input
+              className="form-control"
+              type="number"
+              name="pop"
+              placeholder="Bevölkerung"
+              value={pop}
+              onChange={(e) => onChange(e)}
+              required
+            ></input>
+              </form>
+        </th>
+
+        <th>
+          <form className="form " onSubmit={(e) => onSubmit(e)}>
+            <input type="submit" className="btn btn-primary" value="Submit" />
+          </form>
+        </th>
+       </tr>
+    </Fragment>
         </tbody>
       </div>
-
       <div className="table-responsive">
           <table className="table table-striped table-dark">
             <thead>
@@ -53,7 +126,7 @@ const Data = () => {
             </thead>
             <tbody>
               {getAllCities.slice(getAllCities.length - 10, getAllCities.length).map( (row) => (
-                <DataItem key={row.id}  data={row} />
+                <DataItem key={row.id}  cities={row} />
               ))}
             </tbody>
           </table>
