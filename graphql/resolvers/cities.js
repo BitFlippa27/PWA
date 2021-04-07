@@ -28,7 +28,7 @@ module.exports =  {
   
 },
   Mutation: {
-    async createCity(_, { city, pop }, context){
+    async createCity(_,  { city, pop }, context){
       const user = checkAuth(context);
       console.log("createCity resolver");
 
@@ -45,9 +45,7 @@ module.exports =  {
       });
        const newcity = await newCity.save();
 
-       context.pubsub.publish("NEW_CITY", {
-         newCity: newcity
-       });
+       context.pubsub.publish("NEW_CITY", {newCity: newcity});
 
       return newcity;
     },
