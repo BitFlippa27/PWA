@@ -1,10 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
-import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
 import {CREATE_CITY_MUTATION, FETCH_CITIES_QUERY } from "../../graphql/queries";
