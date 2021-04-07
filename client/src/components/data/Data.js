@@ -125,7 +125,7 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {getAllCities.slice(getAllCities.length - 10, getAllCities.length).map( (row) => (
+              {cities.slice(cities.length - 10, getAllCities.length).map( (row) => (
                 <DataItem key={row.id}  cities={row} />
               ))}
             </tbody>
