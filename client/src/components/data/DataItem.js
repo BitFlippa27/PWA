@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { removeData } from "../../actions/data";
 import DataForm from "./DataForm";
 
-const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
+const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
   const [formData, setFormData] = useState({
     city: "",
     pop: "",
@@ -84,7 +84,7 @@ const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
             <i className="fas fa-pencil-alt" />{" "}
           </button>
           <button className="actions" type="button"  >
-            <i>{console.log(id)}</i>
+            {/*<i>{console.log(id)}</i>*/}
             <i className="fas fa-minus-circle"/>{" "}
           </button>
         </th>

@@ -157,7 +157,7 @@ export const loadUser = () =>  async dispatch => {
     dispatch({type: USER_LOADED, payload: token});
   }
     else
-      dispatch({type: USER_LOADED_FAILED, payload: token});
+      dispatch({type: USER_LOADED_FAILED});
 
  
 

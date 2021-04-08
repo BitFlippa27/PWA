@@ -1,28 +1,71 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+import React, { Fragment, useState } from "react";
+import { Redirect } from "react-router-dom";
+import { useQuery, useMutation } from "@apollo/client";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
-import DataForm from "./DataForm";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
-import { FETCH_CITIES_QUERY } from "../../graphql/queries";
+import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries";
 //TODO: Button für loadServerData
 
 const Data = () => {
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const { loading, data} = useQuery(FETCH_CITIES_QUERY);
-  if(data) {
-    console.log(data)
-    var { getAllCities } = data;
-  }
+  const [formData, setFormData] = useState({
+    city: "",
+    pop: "",
+  });
 
+  const { city,  pop } = formData;
+
+  const cities = useQuery(FETCH_CITIES_QUERY);
+
+  const [createCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
+    
+    update(cache, {data: { createCity }}){
+      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
+
+      cache.writeQuery({
+        query: FETCH_CITIES_QUERY,
+        data: { getAllCities: [...data.getAllCities, createCity  ] }
+      });
+
+      console.log("local",newCity)
+    },
+    onError(error){
+      console.log(error)
+    }
+  })
   
+  console.log("global",newCity)
+
   if(!isAuthenticated)
     return <Redirect to="/login"/>;
+  
+  if(cities.error)
+    console.log(cities.error)
+  
+  if(newCity.error)
+    console.log(newCity.error)
+  
+  if(cities.loading)
+    return <Loader/>
 
-  return loading ? <Loader/> : (
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });    
+  }
+      
+  
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if(formData.city === "" || formData.pop === "") 
+      return;
+    createCity({
+      variables: newCity.data = formData
+    });
+    setFormData({ city: "", pop: "" });
+  };
+  
+  return (
     <Fragment>
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>
@@ -31,9 +74,44 @@ const Data = () => {
       </p>
       <h5 className="text-primary">Neuer Datensatz</h5>
       <div className="data-input">
-        <tbody>
-          <DataForm />
-        </tbody>
+      
+        <Fragment>
+      
+        <div className="data-input2">
+          <form className="form ">
+            <input
+              className="form-control"
+              type="text"
+              name="city"
+              placeholder="Stadt"
+              value={city}
+              onChange={(e) => onChange(e)}
+              required
+            ></input>
+          </form>
+          </div>
+          <div className="data-input2">
+          <form className="form ">
+            <input
+              className="form-control"
+              type="number"
+              name="pop"
+              placeholder="Bevölkerung"
+              value={pop}
+              onChange={(e) => onChange(e)}
+              required
+            ></input>
+              </form>
+        </div>
+
+          <div>
+          <form className="form " onSubmit={(e) => onSubmit(e)}>
+            <input type="submit" className="btn btn-primary" value="Submit" />
+          </form>
+        </div>
+     
+      
+    </Fragment>
       </div>
 
       <div className="table-responsive">
@@ -52,8 +130,8 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {getAllCities.slice(getAllCities.length - 10, getAllCities.length).map( (row) => (
-                <DataItem key={row.id}  data={row} />
+              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
+                <DataItem key={row.id}  row={row} />
               ))}
             </tbody>
           </table>
@@ -65,3 +143,27 @@ const Data = () => {
 
 
 export default Data;
+
+
+/*
+const [createCity, { error }] = useMutation(CREATE_CITY_MUTATION, {
+    variables: formData,
+    update(proxy, result) {
+      const data = proxy.readQuery({
+        query: FETCH_CITIES_QUERY
+      });
+      
+      //data.getAllCities = [result.data.createCity, ...data.getAllCities];
+      //const newGetAllCities = [...data.getAllCities, result.data.createCity ];
+      //console.log(newGetAllCities);
+      const newCache ={...data, getAllCities: [...data.getAllCities, result.data.createCity ]};
+      console.log(newCache)
+
+      proxy.writeQuery({query: FETCH_CITIES_QUERY, data: newCache });
+    },
+    onError(err){
+      console.log(err)
+    }
+  });
+  
+*/

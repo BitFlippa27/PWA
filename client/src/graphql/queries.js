@@ -38,7 +38,7 @@ export const REGISTER_USER = gql`
 `;
 
 export const FETCH_CITIES_QUERY = gql`
-  {
+query GetAllCities {
     getAllCities {
      city 
      pop
@@ -49,10 +49,11 @@ export const FETCH_CITIES_QUERY = gql`
 
 
 export const CREATE_CITY_MUTATION = gql`
-  mutation createCity($city: String!, $pop: String!){
+  mutation CreateCity($city: String!, $pop: String!){
     createCity(city: $city, pop: $pop){
       city
       pop
+      id
       createdAt
     }
   }
