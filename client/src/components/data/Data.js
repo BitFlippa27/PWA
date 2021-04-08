@@ -1,13 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import React, { Fragment, useState } from "react";
+import { Redirect } from "react-router-dom";
+import { useQuery, useMutation } from "@apollo/client";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
-import {CREATE_CITY_MUTATION, FETCH_CITIES_QUERY } from "../../graphql/queries";
-import { useMutation } from "@apollo/client";
-
+import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries";
 //TODO: Button für loadServerData
 
 const Data = () => {
@@ -16,49 +14,57 @@ const Data = () => {
     city: "",
     pop: "",
   });
+
   const { city,  pop } = formData;
 
   const cities = useQuery(FETCH_CITIES_QUERY);
-  const { getAllCities } = data;
 
   const [createCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
-    update(cache, { data: { createCity }}){
+    
+    update(cache, {data: { createCity }}){
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
+
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
-        data: {getAllCities: [createCity, ...data.getAllCities]}
+        data: { getAllCities: [...data.getAllCities, createCity  ] }
       });
 
+      console.log("local",newCity)
+    },
+    onError(error){
+      console.log(error)
     }
-  });
-
+  })
   
-  console.log(getAllCities);
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log(formData)
-  }
-    
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData) 
-      return;
-    createCity({
-      variables: {city, pop}
-    })
-    setFormData({ city: "", pop: "" });
-  };
-
+  console.log("global",newCity)
 
   if(!isAuthenticated)
     return <Redirect to="/login"/>;
   
+  if(cities.error)
+    console.log(cities.error)
+  
+  if(newCity.error)
+    console.log(newCity.error)
+  
   if(cities.loading)
-  return  <Loader/>;
+    return <Loader/>
 
-  if(cities.error || newCity.error)
-    console.log(error);
-
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });    
+  }
+      
+  
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if(formData.city === "" || formData.pop === "") 
+      return;
+    createCity({
+      variables: newCity.data = formData
+    });
+    setFormData({ city: "", pop: "" });
+  };
+  
   return (
     <Fragment>
       <section className="container-data">
@@ -68,10 +74,10 @@ const Data = () => {
       </p>
       <h5 className="text-primary">Neuer Datensatz</h5>
       <div className="data-input">
-        <tbody>
+      
         <Fragment>
-      <tr>
-        <th className="data-input2">
+      
+        <div className="data-input2">
           <form className="form ">
             <input
               className="form-control"
@@ -83,8 +89,8 @@ const Data = () => {
               required
             ></input>
           </form>
-        </th>
-        <th className="data-input2">
+          </div>
+          <div className="data-input2">
           <form className="form ">
             <input
               className="form-control"
@@ -96,17 +102,18 @@ const Data = () => {
               required
             ></input>
               </form>
-        </th>
+        </div>
 
-        <th>
+          <div>
           <form className="form " onSubmit={(e) => onSubmit(e)}>
             <input type="submit" className="btn btn-primary" value="Submit" />
           </form>
-        </th>
-       </tr>
+        </div>
+     
+      
     </Fragment>
-        </tbody>
       </div>
+
       <div className="table-responsive">
           <table className="table table-striped table-dark">
             <thead>
@@ -123,8 +130,8 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {cities.slice(cities.length - 10, getAllCities.length).map( (row) => (
-                <DataItem key={row.id}  cities={row} />
+              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
+                <DataItem key={row.id}  row={row} />
               ))}
             </tbody>
           </table>
@@ -136,3 +143,27 @@ const Data = () => {
 
 
 export default Data;
+
+
+/*
+const [createCity, { error }] = useMutation(CREATE_CITY_MUTATION, {
+    variables: formData,
+    update(proxy, result) {
+      const data = proxy.readQuery({
+        query: FETCH_CITIES_QUERY
+      });
+      
+      //data.getAllCities = [result.data.createCity, ...data.getAllCities];
+      //const newGetAllCities = [...data.getAllCities, result.data.createCity ];
+      //console.log(newGetAllCities);
+      const newCache ={...data, getAllCities: [...data.getAllCities, result.data.createCity ]};
+      console.log(newCache)
+
+      proxy.writeQuery({query: FETCH_CITIES_QUERY, data: newCache });
+    },
+    onError(err){
+      console.log(err)
+    }
+  });
+  
+*/
