@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { removeData } from "../../actions/data";
 import DataForm from "./DataForm";
 
+
 const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
   const [formData, setFormData] = useState({
     city: "",
@@ -36,8 +37,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
     })
   }
 
-  
-  return edit.id ? (
+  const updateInput = (
     <tr>
       <th className="data-input2">
         <form className="form ">
@@ -72,7 +72,10 @@ const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
       </form>
     </th>
    </tr>
-  ) : (
+  )
+  
+    
+    return edit.id ? updateInput : (
     <Fragment>
       <tr >
         <th  scope="col">

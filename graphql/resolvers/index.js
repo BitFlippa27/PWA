@@ -12,5 +12,5 @@ module.exports = {
     Subscription: {
         ...cityResolvers.Subscription
     }
-
+    
 };
