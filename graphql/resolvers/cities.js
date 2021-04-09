@@ -28,11 +28,11 @@ module.exports =  {
   
 },
   Mutation: {
-    async createCity(_, { city, pop }, context){
+    async createCity(_,  { city, pop }, context){
       const user = checkAuth(context);
       console.log("createCity resolver");
 
-      if (city.trim() === "" || !pop){
+      if (city === "" || pop === ""){
         throw new Error("Fields must not be empty");
       }
 
@@ -45,9 +45,7 @@ module.exports =  {
       });
        const newcity = await newCity.save();
 
-       context.pubsub.publish("NEW_CITY", {
-         newCity: newcity
-       });
+       context.pubsub.publish("NEW_CITY", {newCity: newcity});
 
       return newcity;
     },
@@ -63,15 +61,15 @@ module.exports =  {
         throw new Error(err);
       }
     },
-    async updateCity(_, { id, input }, context ){
+    async updateCity(_, { id, updatedCity, updatedPop }, context ){
       const user = checkAuth(context);
-      
-      if (!input){
+      console.log("updateCity Resolver")
+      if (updatedCity === "" || updatedPop === ""){
         throw new Error("Fields must not be empty");
       }
 
       try {
-        let city = await City.findByIdAndUpdate(id, input);
+        let city = await City.findByIdAndUpdate(id, { updatedCity, updatedPop });
 
         context.pubsub.publish("CITY_UPDATE", {
           cityUpdate: city

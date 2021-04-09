@@ -7,6 +7,7 @@ export const LOGIN_USER = gql`
       id
       email
       token
+      name
     }
   }
 `;
@@ -55,6 +56,16 @@ export const CREATE_CITY_MUTATION = gql`
       pop
       id
       createdAt
+    }
+  }
+`;
+
+export const UPDATE_CITY_MUTATION = gql`
+  mutation UpdateCity($id: ID!, $updatedCity: String!, $updatedPop: String!){
+    updateCity(id: $id, updatedCity: $updatedCity, updatedPop: $updatedPop){
+      id
+      city
+      pop
     }
   }
 `;

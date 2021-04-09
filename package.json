@@ -17,20 +17,14 @@
     "bcryptjs": "^2.4.3",
     "config": "^3.3.1",
     "cors": "^2.8.5",
-    "dexie": "^3.0.2",
     "express": "^4.17.1",
     "express-validator": "^6.5.0",
     "graphql": "^15.5.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.1",
-    "lodash": "^4.17.20",
-    "lodash.isequal": "^4.5.0",
     "mongoose": "^5.9.21",
-    "redux": "^4.0.5",
     "request": "^2.88.2",
-    "uuid": "^8.3.1",
-    "workbox-build": "^5.1.4",
-    "workbox-precaching": "^5.1.4"
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",

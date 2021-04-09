@@ -41,10 +41,11 @@ module.exports = {
       }
 
       const token = generateToken(user);
-
+      console.log(user.name)
       return {
         ...user._doc,
         id: user._id,
+        name: user.name,
         token
       };
     },

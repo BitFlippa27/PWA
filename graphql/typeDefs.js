@@ -40,7 +40,7 @@ module.exports = gql`
     login(email: String!, password: String!): User!
     createCity(city: String!, pop: String!): City!
     deleteCity(id: ID!): String
-    updateCity(id: ID!, input: CityInput!): City!
+    updateCity(id: ID!, updatedCity: String!, updatedPop: String!): City!
   }
 
   type Subscription {

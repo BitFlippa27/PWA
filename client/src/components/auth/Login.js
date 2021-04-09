@@ -8,6 +8,7 @@ import { setAlert } from "../../actions/alert";
 import { result } from "lodash";
 import Data from "../data/Data";
 import  store  from "../../store";
+import { LOGIN_USER } from "../../graphql/queries";
 
 
 
@@ -95,17 +96,6 @@ const Login = ({ setAlert }) => {
     </Fragment>
   );
 };
-
-
-const LOGIN_USER = gql`
-  mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      id
-      email
-      token
-    }
-  }
-`;
 
 
 export default Login;
