@@ -30,9 +30,8 @@ module.exports =  {
   Mutation: {
     async createCity(_,  { city, pop }, context){
       const user = checkAuth(context);
-      console.log("createCity resolver");
 
-      if (city.trim() === "" || !pop){
+      if (city === "" || pop === ""){
         throw new Error("Fields must not be empty");
       }
 
@@ -44,38 +43,44 @@ module.exports =  {
 
       });
        const newcity = await newCity.save();
+      console.log("createCityResolver", newcity)
 
        context.pubsub.publish("NEW_CITY", {newCity: newcity});
 
       return newcity;
     },
     async deleteCity(_, { id }, context){
+      console.log(id)
       const user = checkAuth(context);
       try {
         const city = await City.findById(id);
+        console.log(city)
         await city.remove();
-        
-        return "City removed";
+        console.log(city)
+        return city;
       } 
       catch (err) {
+        console.error("deleteCity resolver error")
         throw new Error(err);
       }
     },
-    async updateCity(_, { id, input }, context ){
+    async updateCity(_, { id, city, pop }, context ){
       const user = checkAuth(context);
-      
-      if (!input){
+      console.log("updateCity Resolver")
+      if (city === "" || pop === ""){
         throw new Error("Fields must not be empty");
       }
 
       try {
-        let city = await City.findByIdAndUpdate(id, input);
+        let updatedCity = await City.findByIdAndUpdate(id, { city, pop }, { new:true });
 
         context.pubsub.publish("CITY_UPDATE", {
-          cityUpdate: city
+          cityUpdate: updatedCity
         });
 
-        return city; //fix: return new city not old
+        console.log(updatedCity)
+
+        return updatedCity; //fix: return new city not old
       } 
       catch (err) {
         throw new Error(err);

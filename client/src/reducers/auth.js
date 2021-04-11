@@ -20,11 +20,12 @@ export default function(state = initialState, action) {
 
     switch(type) {
         case USER_LOADED:
+            const user = localStorage.getItem("name");
             return {
                 ...state,
                 isAuthenticated: true,
-                token: payload
-                
+                token: payload,
+                user: user
             }
         case ALL_USER_LOADED_SUCCESS:
             return {

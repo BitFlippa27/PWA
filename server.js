@@ -5,6 +5,8 @@ const connectDB = require("./config/mongoDB");
 
 //const pubsub = new PubSub();
 
+const PORT = process.env.port || 5555;
+
 const startServer = async () => {
   try {
 
@@ -16,7 +18,7 @@ const startServer = async () => {
 
     await connectDB();
 
-    server.listen({ port: 5555 }).then(res => {
+    server.listen({ port: PORT }).then(res => {
       console.log(`🚀 Server ready at ${res.url}`);
     });
   } 

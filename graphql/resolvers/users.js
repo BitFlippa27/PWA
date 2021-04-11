@@ -14,7 +14,7 @@ function generateToken(user) {
       name: user.name
     },
     jwtSecret,
-    { expiresIn: '1h' }
+    { expiresIn: '8h' }
   );
 }
 
@@ -41,10 +41,11 @@ module.exports = {
       }
 
       const token = generateToken(user);
-
+      console.log(user.name)
       return {
         ...user._doc,
         id: user._id,
+        name: user.name,
         token
       };
     },

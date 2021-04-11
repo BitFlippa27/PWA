@@ -10,6 +10,7 @@ import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries"
 
 const Data = () => {
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  var username = useSelector((state) => state.auth.user);
   const [formData, setFormData] = useState({
     city: "",
     pop: "",
@@ -19,7 +20,7 @@ const Data = () => {
 
   const cities = useQuery(FETCH_CITIES_QUERY);
 
-  const [createCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
+  const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
     
     update(cache, {data: { createCity }}){
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
@@ -59,7 +60,7 @@ const Data = () => {
     e.preventDefault();
     if(formData.city === "" || formData.pop === "") 
       return;
-    createCity({
+    addCity({
       variables: newCity.data = formData
     });
     setFormData({ city: "", pop: "" });
@@ -69,9 +70,10 @@ const Data = () => {
     <Fragment>
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>
-      <p className="lead">
-        <i className="fas fa-user"></i> Willkommen 
+      <p className="lead"> 
+        <i className="fas fa-user"></i> Willkommen
       </p>
+      
       <h5 className="text-primary">Neuer Datensatz</h5>
       <div className="data-input">
       
@@ -130,7 +132,7 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
+              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row, index) => (
                 <DataItem key={row.id}  row={row} />
               ))}
             </tbody>

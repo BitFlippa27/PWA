@@ -1,20 +1,62 @@
 import React, { Fragment, useState } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { removeData } from "../../actions/data";
-import DataForm from "./DataForm";
+import { UPDATE_CITY_MUTATION, FETCH_CITIES_QUERY, DELETE_CITY_MUTATION } from "../../graphql/queries";
+import { useMutation } from "@apollo/client";
 
 
-const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
+
+const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   const [formData, setFormData] = useState({
-    city: "",
-    pop: "",
+    updatedCity: "",
+    updatedPop: "",
   });
 
-  const [edit, setEdit] = useState({
-    id: null
+  const { updatedCity, updatedPop } = formData; 
+
+  const [ID, setID] = useState("");
+
+  const [editCity, newCity] = useMutation(UPDATE_CITY_MUTATION, {
+    update(cache, {data: { updateCity }}){
+      console.log("updateCity server response",updateCity)
+      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
+      console.log("data = readQuery response",data)
+      
+
+      
+    
+      cache.writeQuery({
+        query: FETCH_CITIES_QUERY,
+        data: { getAllCities:  data.getAllCities.map(element => element.id === updateCity.id ? {...element, updateCity} : element)}
+      });
+      console.log(data)
+      
+      
+    
+    },
+    onError(error){
+      console.log(error)
+      
+    }
+  
+  });
+  console.log("newCity", newCity);
+  
+
+  const [removeCity, removedCity] = useMutation(DELETE_CITY_MUTATION, {
+    update(cache, {data: { deleteCity }}){
+      const data = cache.readQuery({ query: FETCH_CITIES_QUERY });
+
+      cache.writeQuery({
+        query: FETCH_CITIES_QUERY,
+        data: { getAllCities: data.getAllCities.filter(element => element.id !== deleteCity.id)}
+      });
+    },
+    onError(error){
+      console.log(error)
+      
+    }
   });
 
+  console.log("removedCity", removedCity);
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,27 +68,40 @@ const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
     e.preventDefault();
     if (!formData) 
       return;
-    setFormData({ city: "", pop: "" });
-    setEdit({id: null});
-    //await insertData(formData);
+    const { updatedCity, updatedPop } = formData;
+    console.log(updatedCity)
+    console.log(updatedPop)
+
+    editCity({
+      variables: { id, city: updatedCity, pop: updatedPop }
+    });
+    setID("");
   };
 
-  const editCity = (id) => {
-    setEdit({
-      id: id
-    })
+
+  const clickEdit = (id) => {
+    console.log(updatedCity)
+    setID(id);
   }
 
-  const updateInput = (
+  
+  const clickRemove = (id) => {
+    console.log(id)
+    removeCity({
+      variables:  {id}
+    });
+  }
+  
+  return ID !== "" ? (
     <tr>
       <th className="data-input2">
         <form className="form ">
           <input
             className="form-control"
             type="text"
-            name="city"
-            placeholder="Stadt"
-            value={city}
+            name="updatedCity"
+            placeholder={city}
+            value={updatedCity}
             onChange={(e) => onChange(e)}
             required
           ></input>
@@ -57,9 +112,9 @@ const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
           <input
             className="form-control"
             type="number"
-            name="pop"
-            placeholder="Bevölkerung"
-            value={pop}
+            name="updatedPop"
+            placeholder={pop}
+            value={updatedPop}
             onChange={(e) => onChange(e)}
             required
           ></input>
@@ -83,10 +138,10 @@ const DataItem = ({ row: {id, _id, city, zip, pop }, removeData }) => {
         </th>
         <th  scope="col">{pop}</th>
         <th scope="col">
-          <button className="actions" onClick={ () => editCity(id)}  >
+          <button className="actions" onClick={ () => clickEdit(id)}  >
             <i className="fas fa-pencil-alt" />{" "}
           </button>
-          <button className="actions" type="button"  >
+          <button className="actions" onClick={() => clickRemove(id)} >
             {/*<i>{console.log(id)}</i>*/}
             <i className="fas fa-minus-circle"/>{" "}
           </button>
