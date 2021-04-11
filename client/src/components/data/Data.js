@@ -20,7 +20,7 @@ const Data = () => {
 
   const cities = useQuery(FETCH_CITIES_QUERY);
 
-  const [createCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
+  const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
     
     update(cache, {data: { createCity }}){
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
@@ -60,7 +60,7 @@ const Data = () => {
     e.preventDefault();
     if(formData.city === "" || formData.pop === "") 
       return;
-    createCity({
+    addCity({
       variables: newCity.data = formData
     });
     setFormData({ city: "", pop: "" });

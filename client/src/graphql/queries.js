@@ -61,11 +61,19 @@ export const CREATE_CITY_MUTATION = gql`
 `;
 
 export const UPDATE_CITY_MUTATION = gql`
-  mutation UpdateCity($id: ID!, $updatedCity: String!, $updatedPop: String!){
-    updateCity(id: $id, updatedCity: $updatedCity, updatedPop: $updatedPop){
+  mutation UpdateCity($id: ID!, $city: String!, $pop: String!){
+    updateCity(id: $id, city: $city, pop: $pop){
       id
       city
       pop
+    }
+  }
+`;
+
+export const DELETE_CITY_MUTATION = gql`
+  mutation DeleteCity($id: ID!){
+    deleteCity(id: $id){
+      id
     }
   }
 `;

@@ -14,7 +14,7 @@ function generateToken(user) {
       name: user.name
     },
     jwtSecret,
-    { expiresIn: '1h' }
+    { expiresIn: '8h' }
   );
 }
 
