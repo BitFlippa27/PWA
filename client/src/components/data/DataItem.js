@@ -3,6 +3,7 @@ import { UPDATE_CITY_MUTATION, FETCH_CITIES_QUERY, DELETE_CITY_MUTATION } from "
 import { useMutation } from "@apollo/client";
 
 
+
 const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   const [formData, setFormData] = useState({
     updatedCity: "",
@@ -92,7 +93,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     setID(id);
   }
 
-
+  
   const clickRemove = (id) => {
     console.log(id)
     removeCity({
@@ -135,7 +136,10 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       </form>
     </th>
    </tr>
-  ) : (
+  )
+  
+    
+    return edit.id ? updateInput : (
     <Fragment>
       <tr >
         <th  scope="col">

@@ -2,7 +2,6 @@ import React, { Fragment, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { loginUserAction } from "../../actions/auth";
-import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import { setAlert } from "../../actions/alert";
 import { result } from "lodash";
@@ -13,7 +12,7 @@ import { LOGIN_USER } from "../../graphql/queries";
 
 
 
-const Login = ({ setAlert }) => {
+const Login = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -27,6 +26,21 @@ const Login = ({ setAlert }) => {
 
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const onSubmit = async e => {
+    try {
+      e.preventDefault();
+      if(!formData)
+        return;
+      else{
+        await loginUser();
+        store.dispatch(setAlert("Erfolgreich angemeldet !", "success"));
+      }
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, { data: { login: userData}}){
@@ -42,21 +56,6 @@ const Login = ({ setAlert }) => {
     variables: formData
   });
 
-  const onSubmit = async e => {
-    try {
-      e.preventDefault();
-      if(!formData)
-        return;
-      else{
-        await loginUser();
-      }
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
-
-  
 
   return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>

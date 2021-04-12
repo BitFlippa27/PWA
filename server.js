@@ -1,10 +1,9 @@
-const express = require('express');
 const { ApolloServer, PubSub } = require('apollo-server');
 const resolvers = require("./graphql/resolvers");
 const typeDefs = require("./graphql/typeDefs");
 const connectDB = require("./config/mongoDB");
 
-const pubsub = new PubSub();
+//const pubsub = new PubSub();
 
 const PORT = process.env.port || 5555;
 
