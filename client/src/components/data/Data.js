@@ -9,6 +9,7 @@ import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries"
 //TODO: Button für loadServerData
 
 const Data = () => {
+
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   var username = useSelector((state) => state.auth.user);
   const [formData, setFormData] = useState({
@@ -38,6 +39,7 @@ const Data = () => {
   })
   
   console.log("global",newCity)
+
 
   if(!isAuthenticated)
     return <Redirect to="/login"/>;
@@ -71,7 +73,7 @@ const Data = () => {
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>
       <p className="lead"> 
-        <i className="fas fa-user"></i> Willkommen
+        <i className="fas fa-user"></i> Willkommen 
       </p>
       
       <h5 className="text-primary">Neuer Datensatz</h5>

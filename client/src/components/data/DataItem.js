@@ -24,7 +24,16 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
-        data: { getAllCities:  data.getAllCities.map(element => element.id === updateCity.id ? {...element, updateCity} : element)}
+        data: { getAllCities:  data.getAllCities.map(element => {
+          if(element.id === updateCity.id){
+            let elementCopy =  {...element};
+            elementCopy = updateCity;
+
+            return elementCopy;
+          }
+          else
+            return element;
+        })}
       });
       console.log(data)
       
