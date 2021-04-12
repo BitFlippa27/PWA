@@ -22,23 +22,24 @@ const Data = () => {
   const cities = useQuery(FETCH_CITIES_QUERY);
 
   const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
-    
-    update(cache, {data: { createCity }}){
-      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
 
+    update(cache, {data: { createCity }}){
+      console.log("update response createCity", createCity)
+      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
+      console.log(" data after readQuery ", data)
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
         data: { getAllCities: [...data.getAllCities, createCity  ] }
       });
-
-      console.log("local",newCity)
+      console.log("data after writeQuery", data)
+      console.log("newCity after writeQuery",newCity)
     },
     onError(error){
       console.log(error)
     }
   })
   
-  console.log("global",newCity)
+  console.log("newCity global",newCity)
 
 
   if(!isAuthenticated)
@@ -62,8 +63,20 @@ const Data = () => {
     e.preventDefault();
     if(formData.city === "" || formData.pop === "") 
       return;
+    
+  
+    newCity.data = formData;
     addCity({
-      variables: newCity.data = formData
+      optimisticResponse: {
+        __typename: "Mutation",
+        createCity: {
+          __typename: "City",
+          id: "whatever",
+          city: formData.city,
+          pop: formData.pop,
+        }
+      },
+      variables: formData,
     });
     setFormData({ city: "", pop: "" });
   };

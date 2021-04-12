@@ -13,29 +13,27 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
 
   const [ID, setID] = useState("");
 
+
   const [editCity, newCity] = useMutation(UPDATE_CITY_MUTATION, {
     update(cache, {data: { updateCity }}){
       console.log("updateCity server response",updateCity)
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
-      console.log("data = readQuery response",data)
-      
-
-      
-    
+      console.log("data after readQuery",data)
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
         data: { getAllCities:  data.getAllCities.map(element => {
           if(element.id === updateCity.id){
             let elementCopy =  {...element};
             elementCopy = updateCity;
-
+            console.log(elementCopy)
+            console.log(updateCity)
             return elementCopy;
           }
           else
             return element;
         })}
       });
-      console.log(data)
+
       
       
     
@@ -46,7 +44,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     }
   
   });
-  console.log("newCity", newCity);
+  //console.log("newCity", newCity);
   
 
   const [removeCity, removedCity] = useMutation(DELETE_CITY_MUTATION, {
@@ -64,11 +62,10 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     }
   });
 
-  console.log("removedCity", removedCity);
+  //console.log("removedCity", removedCity);
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log(formData)
   }
     
 
@@ -76,31 +73,61 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     e.preventDefault();
     if (!formData) 
       return;
+    
+    
     const { updatedCity, updatedPop } = formData;
-    console.log(updatedCity)
-    console.log(updatedPop)
+    
 
     editCity({
-      variables: { id, city: updatedCity, pop: updatedPop }
+      variables: { id, city: updatedCity, pop: updatedPop },
+      optimisticResponse: {
+        __typename: "Mutation",
+        updateCity: {
+          __typename: "City",
+          id: ID,
+          city: updatedCity,
+          pop: updatedPop,
+        }
+      }
     });
     setID("");
-  };
-
-
-  const clickEdit = (id) => {
-    console.log(updatedCity)
-    setID(id);
+    
   }
 
 
+  const clickEdit = (id) => {
+    setID(id);
+  }
+
   const clickRemove = (id) => {
-    console.log(id)
     removeCity({
       variables:  {id}
     });
   }
   
-  return ID !== "" ? (
+  if(ID === ""){
+    return (
+      <Fragment>
+        <tr >
+          <th  scope="col">
+            {city}
+          </th>
+          <th  scope="col">{pop}</th>
+          <th scope="col">
+            <button className="actions" onClick={ () => clickEdit(id)}  >
+              <i className="fas fa-pencil-alt" />{" "}
+            </button>
+            <button className="actions" onClick={() => clickRemove(id)} >
+              {/*<i>{console.log(id)}</i>*/}
+              <i className="fas fa-minus-circle"/>{" "}
+            </button>
+          </th>
+        </tr>
+      </Fragment>
+    );
+  }
+
+  return (
     <tr>
       <th className="data-input2">
         <form className="form ">
@@ -135,25 +162,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       </form>
     </th>
    </tr>
-  ) : (
-    <Fragment>
-      <tr >
-        <th  scope="col">
-          {city}
-        </th>
-        <th  scope="col">{pop}</th>
-        <th scope="col">
-          <button className="actions" onClick={ () => clickEdit(id)}  >
-            <i className="fas fa-pencil-alt" />{" "}
-          </button>
-          <button className="actions" onClick={() => clickRemove(id)} >
-            {/*<i>{console.log(id)}</i>*/}
-            <i className="fas fa-minus-circle"/>{" "}
-          </button>
-        </th>
-      </tr>
-    </Fragment>
-  );
+  ) 
 }
   
 
