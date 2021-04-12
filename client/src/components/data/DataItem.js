@@ -3,7 +3,6 @@ import { UPDATE_CITY_MUTATION, FETCH_CITIES_QUERY, DELETE_CITY_MUTATION } from "
 import { useMutation } from "@apollo/client";
 
 
-
 const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   const [formData, setFormData] = useState({
     updatedCity: "",
@@ -19,13 +18,19 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       console.log("updateCity server response",updateCity)
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
       console.log("data = readQuery response",data)
-      
-
-      
     
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
-        data: { getAllCities:  data.getAllCities.map(element => element.id === updateCity.id ? {...element, updateCity} : element)}
+        data: { getAllCities:  data.getAllCities.map(element => {
+          if(element.id === updateCity.id){
+            let elementCopy =  {...element};
+            elementCopy = updateCity;
+      
+            return elementCopy;
+          }
+          else
+            return element;
+        })}
       });
       console.log(data)
       
@@ -84,7 +89,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     setID(id);
   }
 
-  
+
   const clickRemove = (id) => {
     console.log(id)
     removeCity({
@@ -127,10 +132,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       </form>
     </th>
    </tr>
-  )
-  
-    
-    return edit.id ? updateInput : (
+  ) : (
     <Fragment>
       <tr >
         <th  scope="col">
