@@ -18,15 +18,24 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     update(cache, {data: { updateCity }}){
       console.log("updateCity server response",updateCity)
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
+<<<<<<< HEAD
       console.log("data after readQuery",data)
+=======
+      console.log("data = readQuery response",data)
+    
+>>>>>>> 767cc6d88483c3fb4f7b87be5c3209e76fd155dc
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
         data: { getAllCities:  data.getAllCities.map(element => {
           if(element.id === updateCity.id){
             let elementCopy =  {...element};
             elementCopy = updateCity;
+<<<<<<< HEAD
             console.log(elementCopy)
             console.log(updateCity)
+=======
+      
+>>>>>>> 767cc6d88483c3fb4f7b87be5c3209e76fd155dc
             return elementCopy;
           }
           else
