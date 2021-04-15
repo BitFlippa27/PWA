@@ -5,10 +5,7 @@ var taskQueue = [];
 
 export const dexie = new Dexie("AllCities");
 dexie.version(1).stores({
-    cities: "++id, _id",
-    requests: "++id, _id",
-    users: "_id",
-    currentUser: "_id"
+    cities: "id, city, pop",
 });
 
 async function openDB() {

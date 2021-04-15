@@ -1,11 +1,7 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import store from "./store";
 import { setAlert } from './actions/alert';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { gql } from "@apollo/client";
 import ApolloProvider from "./ApolloProvider";
 
 
@@ -20,7 +16,7 @@ var usingSW = ("serviceWorker" in navigator);
 ReactDOM.render(ApolloProvider,document.getElementById('root'));
 
 
-/*
+
 if (usingSW) {
   initServiceWorker().catch(console.error);
 }
@@ -43,7 +39,7 @@ function isSiteOnline() {
 
 
 async function initServiceWorker() {
-  swRegistration = await navigator.serviceWorker.register("service-worker.js",{
+  swRegistration = await navigator.serviceWorker.register("./service-worker.js",{
     updateViaCache: "none" //wir wollen caching selber kontrollieren
   });
   // 3 Statuse
@@ -53,7 +49,7 @@ async function initServiceWorker() {
   navigator.serviceWorker.addEventListener("controllerchange", function onController(){
     svworker = navigator.serviceWorker.controller;   
         if (navigator.serviceWorker) {
-          navigator.serviceWorker.register('service-worker.js')
+          navigator.serviceWorker.register('./service-worker.js')
           .then( function (registration) {
           console.log('Success!', registration.scope);
           })
@@ -103,6 +99,6 @@ async function sendSWMessage(msg, target) {
     navigator.serviceWorker.controller.postMessage(msg);
   }
 }
-*/
+
 
 
