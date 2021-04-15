@@ -49,8 +49,6 @@ export const CREATE_CITY_MUTATION = gql`
       id
       city
       pop
-      id
-      createdAt
     }
   }
 `;
