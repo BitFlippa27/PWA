@@ -8,9 +8,9 @@ module.exports = gql`
   }  
 
   type City {
-    id: ID!
     city: String
-    pop: Int
+    pop: String
+    id: ID!
     createdAt: String!
     username: String
   }

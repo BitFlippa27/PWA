@@ -34,7 +34,18 @@ export const REGISTER_USER = gql`
 
 export const FETCH_CITIES_QUERY = gql`
 query GetAllCities {
-    getAllCities {
+    getAllCities  {
+     city 
+     pop
+     id
+    }
+  }
+`;
+
+
+export const FETCH_CITIES_LOCAL = gql`
+query GetAllCities {
+    getAllCities @client {
      city 
      pop
      id
@@ -49,6 +60,7 @@ export const CREATE_CITY_MUTATION = gql`
       id
       city
       pop
+      
     }
   }
 `;

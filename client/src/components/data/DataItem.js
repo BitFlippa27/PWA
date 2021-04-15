@@ -29,7 +29,6 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
             console.log(elementCopy)
             console.log(updateCity)
 
-      
             return elementCopy;
           }
           else
@@ -37,6 +36,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
         })}
       });
 
+      console.log("data after writeQuery",data)
       
       
     
@@ -82,7 +82,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     
 
     editCity({
-      variables: { id, city: updatedCity, pop: updatedPop },
+      variables:  {id, city: updatedCity, pop: updatedPop },
       optimisticResponse: {
         __typename: "Mutation",
         updateCity: {

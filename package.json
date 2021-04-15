@@ -14,6 +14,7 @@
     "apollo-link-context": "^1.0.20",
     "apollo-server": "^2.21.2",
     "apollo-server-express": "^2.21.1",
+    "apollo3-cache-persist": "^0.9.1",
     "babel-plugin-lodash": "^3.3.4",
     "bcryptjs": "^2.4.3",
     "config": "^3.3.1",
@@ -23,6 +24,7 @@
     "graphql": "^15.5.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.1",
+    "localforage": "^1.9.0",
     "mongoose": "^5.9.21",
     "request": "^2.88.2",
     "uuid": "^8.3.1"

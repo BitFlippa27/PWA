@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import Loader from "../Loader";
@@ -9,7 +9,10 @@ import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries"
 //TODO: Button für loadServerData
 
 const Data = () => {
-
+  const cities = useQuery(FETCH_CITIES_QUERY, {
+    fetchPolicy: "cache-and-network"
+  });
+  
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   var username = useSelector((state) => state.auth.user);
   const [formData, setFormData] = useState({
@@ -19,7 +22,7 @@ const Data = () => {
 
   const { city,  pop } = formData;
 
-  const cities = useQuery(FETCH_CITIES_QUERY);
+  
 
   const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
 
@@ -27,10 +30,17 @@ const Data = () => {
       console.log("update response createCity", createCity)
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
       console.log(" data after readQuery ", data)
+
+      const updatedArray = [...data.getAllCities, createCity];
+      console.log("updatedArray",updatedArray)
+      const newData = {...data, getAllCities: updatedArray};
+      console.log("newData", newData)
+
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
-        data: { getAllCities: [...data.getAllCities, createCity  ] }
+        data: newData
       });
+      newCity.data = createCity;
       console.log("data after writeQuery", data)
       console.log("newCity after writeQuery",newCity)
     },
@@ -64,19 +74,19 @@ const Data = () => {
     if(formData.city === "" || formData.pop === "") 
       return;
     
-  
+    const { city, pop } = formData;
     newCity.data = formData;
     addCity({
-      optimisticResponse: {
+     optimisticResponse: {
         __typename: "Mutation",
         createCity: {
-          __typename: "City",
           id: "whatever",
-          city: formData.city,
-          pop: formData.pop,
+          __typename: "City", 
+          city: city,
+          pop: pop,
         }
       },
-      variables: formData,
+      variables: {city: city, pop: pop}
     });
     setFormData({ city: "", pop: "" });
   };
@@ -147,7 +157,7 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row, index) => (
+              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
                 <DataItem key={row.id}  row={row} />
               ))}
             </tbody>
@@ -170,7 +180,7 @@ const [createCity, { error }] = useMutation(CREATE_CITY_MUTATION, {
         query: FETCH_CITIES_QUERY
       });
       
-      //data.getAllCities = [result.data.createCity, ...data.getAllCities];
+      
       //const newGetAllCities = [...data.getAllCities, result.data.createCity ];
       //console.log(newGetAllCities);
       const newCache ={...data, getAllCities: [...data.getAllCities, result.data.createCity ]};
