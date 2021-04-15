@@ -19,6 +19,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       console.log("updateCity server response",updateCity)
       const data = cache.readQuery({query: FETCH_CITIES_QUERY});
       console.log("data after readQuery",data)
+
       cache.writeQuery({
         query: FETCH_CITIES_QUERY,
         data: { getAllCities:  data.getAllCities.map(element => {

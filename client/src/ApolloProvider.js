@@ -58,12 +58,26 @@ const authLink = setContext(() => {
 });
 
 
+
 export const client = new ApolloClient({
   cache,
   retryLink,
   link: authLink.concat(httpLink),
   assumeImmutableResults: true
-});
+
+const delay = setContext(
+  request =>
+    new Promise((success, fail) => {
+      setTimeout(() => {
+        success()
+      }, 10000)
+    })
+)
+
+const delayLink = ApolloLink.from([
+  delay
+])
+
 
 
 export default (
