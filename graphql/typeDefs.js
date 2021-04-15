@@ -16,8 +16,8 @@ module.exports = gql`
   }
 
   input CityInput {
-    city: String
-    pop: Int
+    city: String!
+    pop: Int!
   }
 
   type User {

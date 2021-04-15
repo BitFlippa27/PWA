@@ -16,6 +16,7 @@ const authLink = setContext(() => {
   };
 });
 
+
 const delay = setContext(
   request =>
     new Promise((success, fail) => {
@@ -29,12 +30,13 @@ const delayLink = ApolloLink.from([
   delay
 ])
 
+
 const client = new ApolloClient({
   delayLink,
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-  assumeImmutableResults: true
+  cache: new InMemoryCache()
 });
+
 
 export default (
   <ApolloProvider client={client}>

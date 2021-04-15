@@ -9,7 +9,6 @@ import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import Pictures from "./components/Pictures";
 import Offline from "./components/auth/Offline";
-import AuthCheck from "./components/auth/AutCheck";
 import { loadUser, loadUserOffline } from "./actions/auth";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
