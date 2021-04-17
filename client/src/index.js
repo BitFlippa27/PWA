@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import store from "./store";
 import { setAlert } from './actions/alert';
-import ApolloProvider from "./ApolloProvider";
+import AppContainer from "./AppContainer";
 
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
@@ -13,7 +13,7 @@ var usingSW = ("serviceWorker" in navigator);
 
 
 
-ReactDOM.render(ApolloProvider,document.getElementById('root'));
+ReactDOM.render(<AppContainer/>,document.getElementById('root'));
 
 
 

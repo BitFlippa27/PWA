@@ -12,7 +12,7 @@ import Offline from "./components/auth/Offline";
 import { loadUser } from "./actions/auth";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
-import  { useQuery } from "@apollo/client";
+import  { ApolloProvider, useQuery } from "@apollo/client/react";
 import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
 import Loader from "./components/Loader";
 
@@ -21,31 +21,37 @@ const token = localStorage.getItem("token");
 if(token)
   store.dispatch(loadUser());
 
-const App = () => {
+const App = ({client, loading}) => {
+  if(client === null)
+    return <Loader/>;
+  console.log("App")
+  /*
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(false);
   });
-  
-  return loading ?  <Loader/> : (
-    <Provider store={store}>
-      <Router>
-        <Fragment>
-          <Route exact path="/" component={Homepage} />
-          <Navbar />
-          <section className="container">
-          <Alert />
-            <Switch>
-              <Route exact path="/pictures" component={Pictures} />
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/offline" component={Offline} />
-              <Route exact path="/data" component={Data} />
-            </Switch>
-            </section>
-        </Fragment>
-      </Router>
-    </Provider>
+  */
+  return (
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <Router>
+          <Fragment>
+            <Route exact path="/" component={Homepage} />
+            <Navbar />
+            <section className="container">
+            <Alert />
+              <Switch>
+                <Route exact path="/pictures" component={Pictures} />
+                <Route exact path="/register" component={Register} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/offline" component={Offline} />
+                <Route exact path="/data" component={Data} />
+              </Switch>
+              </section>
+          </Fragment>
+        </Router>
+      </Provider>
+    </ApolloProvider>
   );
 };
 
