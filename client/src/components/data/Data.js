@@ -9,8 +9,9 @@ import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries"
 //TODO: Button für loadServerData
 
 const Data = () => {
+  console.log("Data")
   const cities = useQuery(FETCH_CITIES_QUERY, {
-    fetchPolicy: "cache-and-network"
+    fetchPolicy: "cache-first"
   });
   
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
