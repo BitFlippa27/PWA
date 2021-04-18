@@ -15,22 +15,46 @@ import store from "./store";
 import  { ApolloProvider, useQuery } from "@apollo/client/react";
 import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
 import Loader from "./components/Loader";
+import { InMemoryCache, ApolloClient } from "@apollo/client";
+import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
+import { httpLink, authLink } from "./ApolloProvider";
+import localForage from "localforage";
+
 
 const token = localStorage.getItem("token");
 
 if(token)
   store.dispatch(loadUser());
 
-const App = ({client, loading}) => {
-  if(client === null)
-    return <Loader/>;
-  console.log("App")
-  /*
-  const [loading, setLoading] = useState(true);
+const App = () => {
+  const [client, setClient] = useState();
+  const [persistor, setPersistor] = useState();
+
   useEffect(() => {
-    setLoading(false);
-  });
-  */
+    async function init(){
+      const cache = new InMemoryCache();
+      let newPersistor = new CachePersistor({
+        cache, 
+        storage: new LocalForageWrapper(localForage),
+        trigger: "write",
+        maxSize: false,
+        debug: true
+      });
+      await newPersistor.restore();
+      setPersistor(newPersistor);
+      setClient(
+        new ApolloClient({
+          link: authLink.concat(httpLink),
+          cache
+        })
+      );
+    }
+    init().catch(console.error);
+  }, []);
+
+  if(!client)
+    return <Loader/>;
+
   return (
     <ApolloProvider client={client}>
       <Provider store={store}>
@@ -52,6 +76,7 @@ const App = ({client, loading}) => {
         </Router>
       </Provider>
     </ApolloProvider>
+   
   );
 };
 

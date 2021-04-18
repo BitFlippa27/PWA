@@ -62,8 +62,11 @@ const Data = () => {
   if(newCity.error)
     console.log(newCity.error)
   
-  if(cities.loading)
+  if(cities.loading){
+    console.log("DATA loading")
     return <Loader/>
+  }
+    
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });    
