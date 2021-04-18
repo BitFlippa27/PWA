@@ -2,10 +2,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import store from "./store";
 import { setAlert } from './actions/alert';
-import AppContainer from "./AppContainer";
-import { ApolloProvider } from '@apollo/client';
 import App from "./App";
-import getApolloClient from "./ApolloProvider";
 
 
 var isOnline = ("onLine" in navigator) ? navigator.onLine : true;

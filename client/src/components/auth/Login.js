@@ -34,7 +34,7 @@ const Login = () => {
         return;
       else{
         await loginUser();
-        store.dispatch(setAlert("Erfolgreich angemeldet !", "success"));
+        
       }
     }
     catch (err) {
@@ -45,8 +45,11 @@ const Login = () => {
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, { data: { login: userData}}){
       console.log(userData)
-     if (userData)
+     if (userData){
       store.dispatch(loginUserAction(userData))
+      store.dispatch(setAlert("Erfolgreich angemeldet !", "success"));
+     }
+      
     },
     onError(err){
       console.log(err);

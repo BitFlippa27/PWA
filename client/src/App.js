@@ -17,7 +17,7 @@ import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
 import Loader from "./components/Loader";
 import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { httpLink, authLink } from "./ApolloProvider";
+import { httpLink, authLink, retryLink } from "./ApolloLinks";
 import localForage from "localforage";
 
 
@@ -44,8 +44,9 @@ const App = () => {
       setPersistor(newPersistor);
       setClient(
         new ApolloClient({
+          cache,
+          retryLink,
           link: authLink.concat(httpLink),
-          cache
         })
       );
     }
