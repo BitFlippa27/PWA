@@ -4,9 +4,10 @@ import { RetryLink } from "@apollo/client/link/retry";
 import { setContext } from 'apollo-link-context';
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
 import localForage from "localforage";
+import AppContainer from "./AppContainer";
 
 
-export const getApolloClient = async () => {
+
   const cache = new InMemoryCache();
 
     const cachePersistor = new CachePersistor({
@@ -17,18 +18,11 @@ export const getApolloClient = async () => {
     debug: true
   });
 
- 
-  async function persistCache(){
-    try {
-      await cachePersistor.restore();  
-    } 
-    catch (err) {
-      console.error(err); 
-    }
-  }
-  persistCache();
+  console.log("AppolloProvider cacheRestore")
+   cachePersistor.restore();  
+    
 
-  const httpLink = createHttpLink({
+  export const httpLink = createHttpLink({
     uri: "http://localhost:5555"
   });
 
@@ -44,7 +38,7 @@ export const getApolloClient = async () => {
     }
   })
 
-  const authLink = setContext(() => {
+  export const authLink = setContext(() => {
     const token = localStorage.getItem('token');
     return {
       headers: {
@@ -53,12 +47,7 @@ export const getApolloClient = async () => {
     };
   });
 
-  const client = new ApolloClient({
-  cache,
-  //retryLink,
-  link: authLink.concat(httpLink),
-  assumeImmutableResults: true
-});
+  
 
   const delay = setContext(
     request =>
@@ -73,8 +62,14 @@ export const getApolloClient = async () => {
     delay
   ])
 
-  return client;
-}
+  const client = new ApolloClient({
+    cache,
+    //retryLink,
+    link: authLink.concat(httpLink),
+    assumeImmutableResults: true
+  });
 
 
 
+
+export default ApolloProvider;
