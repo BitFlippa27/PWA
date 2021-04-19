@@ -43,17 +43,6 @@ query GetAllCities {
 `;
 
 
-export const FETCH_CITIES_LOCAL = gql`
-query GetAllCities {
-    getAllCities @client {
-     city 
-     pop
-     id
-    }
-  }
-`;
-
-
 export const CREATE_CITY_MUTATION = gql`
   mutation CreateCity($city: String!, $pop: String!){
     createCity(city: $city, pop: $pop){

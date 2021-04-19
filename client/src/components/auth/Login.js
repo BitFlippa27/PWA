@@ -8,6 +8,7 @@ import { result } from "lodash";
 import Data from "../data/Data";
 import  store  from "../../store";
 import { LOGIN_USER } from "../../graphql/queries";
+import * as updateFunctions from "../../graphql/updateFunctions";
 
 
 
@@ -33,8 +34,11 @@ const Login = () => {
       if(!formData)
         return;
       else{
-        await loginUser();
-        store.dispatch(setAlert("Erfolgreich angemeldet !", "success"));
+        loginUser({
+          variables: formData,
+          update: updateFunctions.login
+        });
+        
       }
     }
     catch (err) {
@@ -42,19 +46,7 @@ const Login = () => {
     }
   }
 
-  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    update(_, { data: { login: userData}}){
-      console.log(userData)
-     if (userData)
-      store.dispatch(loginUserAction(userData))
-    },
-    onError(err){
-      console.log(err);
-      //setErrors(err.graphQLErrors[0].extensions.exception.errors);
-      
-    },
-    variables: formData
-  });
+  const [loginUser, { loading }] = useMutation(LOGIN_USER); 
 
 
   return isAuthenticated ? <Redirect to="/data"/> : (

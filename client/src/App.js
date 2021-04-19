@@ -17,8 +17,10 @@ import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
 import Loader from "./components/Loader";
 import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { httpLink, authLink } from "./ApolloProvider";
+import { links } from "./ApolloLinks";
 import localForage from "localforage";
+import * as updateFunctions from "./graphql/updateFunctions";
+
 
 
 const token = localStorage.getItem("token");
@@ -44,7 +46,7 @@ const App = () => {
       setPersistor(newPersistor);
       setClient(
         new ApolloClient({
-          link: authLink.concat(httpLink),
+          links,
           cache
         })
       );
@@ -52,6 +54,34 @@ const App = () => {
     init().catch(console.error);
   }, []);
 
+  
+  useEffect(() => {
+    if (!client) 
+      return
+
+    const execute = async () => {
+      const trackedQueries = JSON.parse(window.localStorage.getItem('trackedQueries') || null) || []
+
+      const promises = trackedQueries.map(({ variables, query, context, operationName }) => client.mutate({
+        variables,
+        mutation: query,
+        update: updateFunctions[operationName],
+        optimisticResponse: context.optimisticResponsecontext,
+      }))
+
+      try {
+        await Promise.all(promises)
+      } catch (err) {
+        // A good place to show notification
+        console.error(err);
+      }
+
+      window.localStorage.setItem('trackedQueries', [])
+    }
+
+    execute()
+  }, [client]);
+  
   if(!client)
     return <Loader/>;
 

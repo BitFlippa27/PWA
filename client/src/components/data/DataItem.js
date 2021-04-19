@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from "react";
 import { UPDATE_CITY_MUTATION, FETCH_CITIES_QUERY, DELETE_CITY_MUTATION } from "../../graphql/queries";
 import { useMutation } from "@apollo/client";
+import * as updateFunctions from "../../graphql/updateFunctions";
+
 
 
 const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
@@ -12,58 +14,11 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   const { updatedCity, updatedPop } = formData; 
 
   const [ID, setID] = useState("");
+  const isSynced = ID !== "whatever";
 
 
-  const [editCity, newCity] = useMutation(UPDATE_CITY_MUTATION, {
-    update(cache, {data: { updateCity }}){
-      console.log("updateCity server response",updateCity)
-      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
-      console.log("data after readQuery",data)
-
-      cache.writeQuery({
-        query: FETCH_CITIES_QUERY,
-        data: { getAllCities:  data.getAllCities.map(element => {
-          if(element.id === updateCity.id){
-            let elementCopy =  {...element};
-            elementCopy = updateCity;
-            console.log(elementCopy)
-            console.log(updateCity)
-
-            return elementCopy;
-          }
-          else
-            return element;
-        })}
-      });
-
-      console.log("data after writeQuery",data)
-      
-      
-    
-    },
-    onError(error){
-      console.log(error)
-      
-    }
-  
-  });
-  //console.log("newCity", newCity);
-  
-
-  const [removeCity, removedCity] = useMutation(DELETE_CITY_MUTATION, {
-    update(cache, {data: { deleteCity }}){
-      const data = cache.readQuery({ query: FETCH_CITIES_QUERY });
-
-      cache.writeQuery({
-        query: FETCH_CITIES_QUERY,
-        data: { getAllCities: data.getAllCities.filter(element => element.id !== deleteCity.id)}
-      });
-    },
-    onError(error){
-      console.log(error)
-      
-    }
-  });
+  const [editCity, newCity] = useMutation(UPDATE_CITY_MUTATION);
+  const [removeCity, removedCity] = useMutation(DELETE_CITY_MUTATION);
 
   //console.log("removedCity", removedCity);
 
@@ -83,6 +38,11 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
 
     editCity({
       variables:  {id, city: updatedCity, pop: updatedPop },
+      update: updateFunctions.updateCity,
+      context: {
+        tracked: true,
+        serializationKey: "UPDATE_CITY"
+      },
       optimisticResponse: {
         __typename: "Mutation",
         updateCity: {
@@ -104,7 +64,12 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
 
   const clickRemove = (id) => {
     removeCity({
-      variables:  {id}
+      variables:  {id},
+      update: updateFunctions.deleteCity,
+      context: {
+        tracked: isSynced,
+        serializationKey: 'DELETE_CITY'
+      }
     });
   }
   
