@@ -6,6 +6,8 @@ import { Link, Redirect } from "react-router-dom";
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
 import { REGISTER_USER } from "../../graphql/queries";
+import * as updateFunctions from "../../graphql/updateFunctions";
+
 
 const Register = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -31,7 +33,7 @@ const Register = () => {
     onError(err){
       console.log(err);
     },
-    variables: formData
+    
   });
 
   const onSubmit = async e => {
@@ -44,7 +46,10 @@ const Register = () => {
       if(!formData)
         return;
       else{
-        await addUser();
+        addUser({
+          variables: formData,
+          update: updateFunctions.register
+        });
   
       }
     }

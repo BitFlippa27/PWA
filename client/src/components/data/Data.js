@@ -6,6 +6,7 @@ import DataItem from "./DataItem";
 import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
 import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries";
+import * as updateFunctions from "../../graphql/updateFunctions";
 //TODO: Button für loadServerData
 
 const Data = () => {
@@ -23,44 +24,13 @@ const Data = () => {
 
   const { city,  pop } = formData;
 
+  const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION);
   
-
-  const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION, {
-
-    update(cache, {data: { createCity }}){
-      console.log("update response createCity", createCity)
-      const data = cache.readQuery({query: FETCH_CITIES_QUERY});
-      console.log(" data after readQuery ", data)
-
-      const updatedArray = [...data.getAllCities, createCity];
-      console.log("updatedArray",updatedArray)
-      const newData = {...data, getAllCities: updatedArray};
-      console.log("newData", newData)
-
-      cache.writeQuery({
-        query: FETCH_CITIES_QUERY,
-        data: newData
-      });
-      newCity.data = createCity;
-      console.log("data after writeQuery", data)
-      console.log("newCity after writeQuery",newCity)
-    },
-    onError(error){
-      console.log(error)
-    }
-  })
-  
-  console.log("newCity global",newCity)
-
-
   if(!isAuthenticated)
     return <Redirect to="/login"/>;
   
   if(cities.error)
     console.log(cities.error)
-  
-  if(newCity.error)
-    console.log(newCity.error)
   
   if(cities.loading){
     console.log("DATA loading")
@@ -79,9 +49,15 @@ const Data = () => {
       return;
     
     const { city, pop } = formData;
-    newCity.data = formData;
+
     addCity({
-     optimisticResponse: {
+      variables: {city: city, pop: pop},
+      update: updateFunctions.createCity,
+      context: {
+        tracked: true,
+        serializationKey: "CREATE_CITY"
+      },
+      optimisticResponse: {
         __typename: "Mutation",
         createCity: {
           id: "whatever",
@@ -90,7 +66,7 @@ const Data = () => {
           pop: pop,
         }
       },
-      variables: {city: city, pop: pop}
+      
     });
     setFormData({ city: "", pop: "" });
   };
