@@ -26,6 +26,9 @@ const Data = () => {
 
   const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION);
   
+  if(newCity.error)
+    console.log(newCity);
+
   if(!isAuthenticated)
     return <Redirect to="/login"/>;
   

@@ -17,9 +17,15 @@ import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
 import Loader from "./components/Loader";
 import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { links } from "./ApolloLinks";
+import {cache, authLink, httpLink, links, trackerLink, serializingLink, queueLink, errorLink, retryLink } from "./ApolloLinks";
 import localForage from "localforage";
 import * as updateFunctions from "./graphql/updateFunctions";
+import { HttpLink, createHttpLink, ApolloLink } from "@apollo/client";
+import { RetryLink } from "@apollo/client/link/retry";
+import { setContext } from 'apollo-link-context';
+import { onError } from 'apollo-link-error';
+import QueueLink from 'apollo-link-queue';
+import SerializingLink from 'apollo-link-serialize';
 
 
 
@@ -34,7 +40,6 @@ const App = () => {
 
   useEffect(() => {
     async function init(){
-      const cache = new InMemoryCache();
       let newPersistor = new CachePersistor({
         cache, 
         storage: new LocalForageWrapper(localForage),
@@ -46,7 +51,12 @@ const App = () => {
       setPersistor(newPersistor);
       setClient(
         new ApolloClient({
-          links,
+          trackerLink,
+          queueLink,
+          serializingLink,
+          retryLink,
+          errorLink,
+          link: authLink.concat(httpLink), 
           cache
         })
       );
@@ -66,7 +76,7 @@ const App = () => {
         variables,
         mutation: query,
         update: updateFunctions[operationName],
-        optimisticResponse: context.optimisticResponsecontext,
+        optimisticResponse: context.optimisticResponse,
       }))
 
       try {

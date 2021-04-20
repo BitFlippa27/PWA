@@ -34,20 +34,25 @@ module.exports =  {
       if (city === "" || pop === ""){
         throw new Error("Fields must not be empty");
       }
-
-      const newCity = new City({
-        city,
-        pop,
-        user: user.id,
-        createdAt: new Date().toISOString()
-
-      });
-       const newcity = await newCity.save();
-      console.log("createCityResolver", newcity)
-
-       context.pubsub.publish("NEW_CITY", {newCity: newcity});
-
-      return newcity;
+      try {
+        const newCity = new City({
+          city,
+          pop,
+          user: user.id,
+          createdAt: new Date().toISOString()
+  
+        });
+        const newcity = await newCity.save();
+        console.log("createCityResolver", newcity)
+  
+         //context.pubsub.publish("NEW_CITY", {newCity: newcity});
+  
+        return newcity;
+      } 
+      catch (err) {
+        throw new Error(err);
+      }
+      
     },
     async deleteCity(_, { id }, context){
       console.log(id)
@@ -74,9 +79,7 @@ module.exports =  {
       try {
         let updatedCity = await City.findByIdAndUpdate(id, { city, pop }, { new:true });
 
-        context.pubsub.publish("CITY_UPDATE", {
-          cityUpdate: updatedCity
-        });
+        //context.pubsub.publish("CITY_UPDATE", { cityUpdate: updatedCity });
 
         console.log(updatedCity)
 
@@ -87,6 +90,7 @@ module.exports =  {
       }
     }
   },
+  /*
   Subscription: {
     newCity: {
       subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("NEW_CITY")
@@ -95,5 +99,6 @@ module.exports =  {
       subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("CITY_UPDATE")
     },
   }
+  */
 };
 

@@ -9,8 +9,10 @@ module.exports = {
         ...cityResolvers.Mutation,
         ...userResolvers.Mutation
     },
+    /*
     Subscription: {
         ...cityResolvers.Subscription
     }
+    */
     
 };

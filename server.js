@@ -13,7 +13,7 @@ const startServer = async () => {
     const server = new ApolloServer({
       typeDefs,
       resolvers,
-      context: ({ req }) => ({ req, pubsub })
+      context: ({ req }) => ({ req })
     });
 
     await connectDB();
