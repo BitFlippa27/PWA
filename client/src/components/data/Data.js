@@ -58,12 +58,11 @@ const Data = () => {
       update: updateFunctions.createCity,
       context: {
         tracked: true,
-        serializationKey: "CREATE_CITY"
+        serializationKey: "MUTATION"
       },
       optimisticResponse: {
         __typename: "Mutation",
         createCity: {
-          id: "whatever",
           __typename: "City", 
           city: city,
           pop: pop,
