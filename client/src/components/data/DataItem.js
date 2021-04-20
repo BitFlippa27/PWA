@@ -14,7 +14,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   const { updatedCity, updatedPop } = formData; 
 
   const [ID, setID] = useState("");
-  const isSynced = ID !== "whatever";
+  
 
 
   const [editCity, newCity] = useMutation(UPDATE_CITY_MUTATION);
@@ -29,7 +29,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!formData) 
+    if (formData.updatedCity === "" || formData.updatedPop === "") 
       return;
     
     
@@ -37,17 +37,17 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     
 
     editCity({
-      variables:  {id, city: updatedCity, pop: updatedPop },
+      variables:  {id: ID, city: updatedCity, pop: updatedPop },
       update: updateFunctions.updateCity,
       context: {
         tracked: true,
-        serializationKey: "UPDATE_CITY"
+        serializationKey: "MUTATION"
       },
       optimisticResponse: {
         __typename: "Mutation",
         updateCity: {
-          __typename: "City",
           id: ID,
+          __typename: "City",
           city: updatedCity,
           pop: updatedPop,
         }
@@ -62,21 +62,24 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
     setID(id);
   }
 
+  
+
   const clickRemove = (id) => {
     removeCity({
-      variables:  {id},
+      variables:  {id: id},
       update: updateFunctions.deleteCity,
       context: {
-        tracked: isSynced,
-        serializationKey: 'DELETE_CITY'
-      }
+        tracked: true,
+        serializationKey: 'MUTATION'
+      },
+      
     });
   }
   
   if(ID === ""){
     return (
       <Fragment>
-        <tr >
+        <tr key={id} >
           <th  scope="col">
             {city}
           </th>
@@ -96,7 +99,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   }
 
   return (
-    <tr>
+    <tr key={id}>
       <th className="data-input2">
         <form className="form ">
           <input
