@@ -89,7 +89,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
               <i className="fas fa-pencil-alt" />{" "}
             </button>
             <button className="actions" onClick={() => clickRemove(id)} >
-              {/*<i>{console.log(id)}</i>*/}
+              {console.log(id)}
               <i className="fas fa-minus-circle"/>{" "}
             </button>
           </th>

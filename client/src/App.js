@@ -17,8 +17,7 @@ import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
 import Loader from "./components/Loader";
 import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import {cache, authLink, httpLink, links, trackerLink, serializingLink, queueLink, errorLink, retryLink } from "./ApolloLinks";
-import localForage from "localforage";
+import {localForageStore, cache, authLink, httpLink, links, trackerLink, serializingLink, queueLink, errorLink, retryLink } from "./ApolloLinks";
 import * as updateFunctions from "./graphql/updateFunctions";
 import { HttpLink, createHttpLink, ApolloLink } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
@@ -26,6 +25,7 @@ import { setContext } from 'apollo-link-context';
 import { onError } from 'apollo-link-error';
 import QueueLink from 'apollo-link-queue';
 import SerializingLink from 'apollo-link-serialize';
+import localForage from "localforage";
 
 
 
@@ -51,12 +51,8 @@ const App = () => {
       setPersistor(newPersistor);
       setClient(
         new ApolloClient({
-          trackerLink,
-          queueLink,
-          serializingLink,
-          retryLink,
-          errorLink,
-          link: authLink.concat(httpLink), 
+          links,
+          link: authLink.concat(httpLink),
           cache
         })
       );
@@ -70,23 +66,22 @@ const App = () => {
       return
 
     const execute = async () => {
-      const trackedQueries = JSON.parse(window.localStorage.getItem('trackedQueries') || null) || []
-
-      const promises = trackedQueries.map(({ variables, query, context, operationName }) => client.mutate({
-        variables,
-        mutation: query,
-        update: updateFunctions[operationName],
-        optimisticResponse: context.optimisticResponse,
-      }))
-
-      try {
-        await Promise.all(promises)
-      } catch (err) {
-        // A good place to show notification
-        console.error(err);
+      const trackedQueries = await localForageStore.getItem('trackedQueries');
+      if (trackedQueries){
+        const promises = trackedQueries.map(({ variables, query, context, operationName }) => client.mutate({
+          variables,
+          mutation: query,
+          update: updateFunctions[operationName],
+          optimisticResponse: context.optimisticResponse,
+        }))
+  
+        try {
+          await Promise.all(promises)
+        } catch (err) {
+          // A good place to show notification
+          console.error(err);
+        }
       }
-
-      window.localStorage.setItem('trackedQueries', [])
     }
 
     execute()
