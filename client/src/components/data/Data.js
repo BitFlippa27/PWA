@@ -11,9 +11,7 @@ import * as updateFunctions from "../../graphql/updateFunctions";
 
 const Data = () => {
   console.log("Data")
-  const cities = useQuery(FETCH_CITIES_QUERY, {
-    fetchPolicy: "cache-first"
-  });
+  const cities = useQuery(FETCH_CITIES_QUERY);
   
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   var username = useSelector((state) => state.auth.user);
@@ -64,6 +62,7 @@ const Data = () => {
         __typename: "Mutation",
         createCity: {
           __typename: "City", 
+          id: "whatever",
           city: city,
           pop: pop,
         }
@@ -139,7 +138,7 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
+              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 15, cities.data.getAllCities.length).map( (row) => (
                 <DataItem key={row.id}  row={row} />
               ))}
             </tbody>
