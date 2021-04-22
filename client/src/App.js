@@ -12,12 +12,12 @@ import Offline from "./components/auth/Offline";
 import { loadUser } from "./actions/auth";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
-import  { ApolloProvider, useQuery } from "@apollo/client/react";
+import  { ApolloProvider, getApolloContext, useQuery } from "@apollo/client/react";
 import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
 import Loader from "./components/Loader";
-import { InMemoryCache, ApolloClient } from "@apollo/client";
+import { InMemoryCache, ApolloClient, from } from "@apollo/client";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import {localForageStore, cache, authLink, httpLink, links, trackerLink, serializingLink, queueLink, errorLink, retryLink } from "./ApolloLinks";
+import getApolloClient, {localForageStore, cache, authLink, httpLink, links, trackerLink, serializingLink, queueLink, errorLink, retryLink } from "./ApolloLinks";
 import * as updateFunctions from "./graphql/updateFunctions";
 import { HttpLink, createHttpLink, ApolloLink } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
@@ -36,28 +36,11 @@ if(token)
 
 const App = () => {
   const [client, setClient] = useState();
-  const [persistor, setPersistor] = useState();
 
   useEffect(() => {
-    async function init(){
-      let newPersistor = new CachePersistor({
-        cache, 
-        storage: new LocalForageWrapper(localForage),
-        trigger: "write",
-        maxSize: false,
-        debug: true
-      });
-      await newPersistor.restore();
-      setPersistor(newPersistor);
-      setClient(
-        new ApolloClient({
-          links,
-          link: authLink.concat(httpLink),
-          cache
-        })
-      );
-    }
-    init().catch(console.error);
+    getApolloClient().then((client) => {
+      setClient(client);
+    })
   }, []);
 
   
@@ -66,8 +49,8 @@ const App = () => {
       return
 
     const execute = async () => {
-      const trackedQueries = await localForageStore.getItem('trackedQueries');
-      if (trackedQueries){
+      const trackedQueries = JSON.parse(window.localStorage.getItem('trackedQueries') || null) || [];
+      if (trackedQueries.length !== 0){
         const promises = trackedQueries.map(({ variables, query, context, operationName }) => client.mutate({
           variables,
           mutation: query,
@@ -82,6 +65,7 @@ const App = () => {
           console.error(err);
         }
       }
+      window.localStorage.setItem('trackedQueries', [])
     }
 
     execute()
