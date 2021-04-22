@@ -7,113 +7,124 @@ import SerializingLink from 'apollo-link-serialize';
 import { InMemoryCache, ApolloClient } from "@apollo/client";
 import auth from "./reducers/auth";
 import localforage from "localforage";
+import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
+
 
 
 export const localForageStore = localforage.createInstance({name: "queue"});
-async function testLocalForage(){
-  const array1 = [1,2,3];
-  await localForageStore.setItem("trackedQueries",array1);
-  await localForageStore.setItem("trackedQueries", [...array1, 27]);
-  const result = await localForageStore.getItem("trackedQueries");
-  console.log(result);
+/*
+async function initLocalForage(){
+  await localForageStore.setItem("trackedQueries",[]);
+  //await localForageStore.setItem("trackedQueries", [...array1, 27]);
+  //const result = await localForageStore.getItem("trackedQueries");
+  //console.log(result);
 }
 
-testLocalForage();
+initLocalForage();
+*/
 
+async function getApolloClient(){
+  const cache = new InMemoryCache();
 
+  const newPersistor = new CachePersistor({
+    cache, 
+    storage: new LocalForageWrapper(localforage),
+    trigger: "write",
+    maxSize: false,
+    debug: true
+  });
 
+  await newPersistor.restore();
 
-export const cache = new InMemoryCache()
-
-
-export const httpLink = new HttpLink({
-uri: "http://localhost:5555"
-});
-
-
-export const retryLink = new RetryLink({
-attempts: {
-  max: Infinity
-}
-})
-
-export const authLink = setContext(() => {
-const token = localStorage.getItem('token');
-return {
-  headers: {
-    Authorization: token ? `Bearer ${token}` : ''
-  }
-};
-});
-
-
-
-const delay = setContext(
-request =>
-  new Promise((success, fail) => {
-    setTimeout(() => {
-      success()
-    }, 10000)
-  })
-)
-
-export const errorLink = onError(({graphQLErrors, networkError, operation, forward }) => {
-  if (networkError && networkError.statusCode === 401) {
-    console.log(`NetworkError: ${networkError}`)
-    localStorage.removeItem("token");
-    window.location.replace('/login')
+  const httpLink = new HttpLink({
+    uri: "http://localhost:5555"
+    });
     
-  }
-  if (graphQLErrors){
-    graphQLErrors.forEach(({message, locations, path})=>
-    console.log(`Message:${message} Location: ${locations} Path: ${path}` ) 
-    );
-  }
-
-
-});
-
-export const queueLink = new QueueLink();
-
-window.addEventListener('offline', () => queueLink.close())
-window.addEventListener('online', () => queueLink.open())
-
-export const serializingLink = new SerializingLink();
-
-export const trackerLink = new ApolloLink((operation, forward) => {
-  if (forward === undefined) return null
-
-  const context = operation.getContext()
-  const trackedQueries = localForageStore.getItem('trackedQueries') || null || []
-
-  if (context.tracked) {
-    const { operationName, query, variables } = operation
-    console.log("OperatioName",operationName)
-
-    const newTrackedQuery = {
-      query,
-      context,
-      variables,
-      operationName,
+  const retryLink = new RetryLink({
+    attempts: {
+      max: Infinity
     }
+    })
 
-    localForageStore.setItem('trackedQueries', JSON.stringify([...trackedQueries, newTrackedQuery]))
-  }
+  const authLink = setContext(() => {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : ''
+      }
+    };
+    });
 
-  return forward(operation).map((data) => {
+  const errorLink = onError(({graphQLErrors, networkError, operation, forward}) => {
+    if (graphQLErrors){
+      graphQLErrors.map(({ message, locations, path }) =>
+      console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`));
+    }
+    
+    if (networkError)
+      console.log(`[Network error]: ${networkError}`);
+
+    return forward(operation);
+  });
+  
+  const queueLink = new QueueLink();
+  
+  window.addEventListener('offline', () => queueLink.close())
+  window.addEventListener('online', () => queueLink.open())
+  
+  const serializingLink = new SerializingLink();
+  
+  const trackerLink = new ApolloLink((operation, forward) => {
+    if (forward === undefined) return null
+    console.log("trackerLink")
+    const context = operation.getContext()
+    var trackedQueries = window.localStorage.getItem('trackedQueries') || null || [];
+    console.log("getItem",trackedQueries)
     if (context.tracked) {
-      localForageStore.setItem('trackedQueries', JSON.stringify(trackedQueries))
+      const { operationName, query, variables } = operation
+      console.log("OperatioName",operationName)
+  
+      var newTrackedQuery = {
+        query,
+        context,
+        variables,
+        operationName,
+      }
+      window.localStorage.setItem('trackedQueries', [...trackedQueries, newTrackedQuery]);
+      console.log("trackedQueries", window.localStorage.getItem('trackedQueries'))
+
     }
+  
+    return forward(operation).map((data) => {
+      if (context.tracked) {
+        window.localStorage.setItem('trackedQueries', trackedQueries);
+        console.log("trackedQueries", window.localStorage.getItem('trackedQueries'))
+      }
+  
+      return data;
+      });
+    });
+  
+  const links = from([
+    trackerLink,
+    queueLink,
+    serializingLink,
+    retryLink,
+    errorLink,
+    authLink,
+    httpLink
+    
+  ]);
 
-    return data;
-  });
+  const client = new ApolloClient({
+    link: links,
+    cache
   });
 
-export const links = from([
-  trackerLink,
-  queueLink,
-  serializingLink,
-  retryLink,
-  errorLink
-]);
+  return client;
+
+}
+
+export default getApolloClient;
+
 
