@@ -33,10 +33,7 @@ const Data = () => {
   if(cities.error)
     console.log(cities.error)
   
-  if(cities.loading){
-    console.log("DATA loading")
-    return <Loader/>
-  }
+  
     
 
   const onChange = (e) => {

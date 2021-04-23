@@ -46,8 +46,10 @@ const Login = () => {
     }
   }
 
-  const [loginUser, { loading }] = useMutation(LOGIN_USER); 
+  const [loginUser, login] = useMutation(LOGIN_USER); 
 
+  if(login.error)
+    console.log(login.error)
 
   return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
