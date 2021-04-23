@@ -8,20 +8,8 @@ import { InMemoryCache, ApolloClient } from "@apollo/client";
 import auth from "./reducers/auth";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
+import { getQueries, addQuery, clearQueries } from "./localForage";
 
-
-
-export const localForageStore = localforage.createInstance({name: "queue"});
-/*
-async function initLocalForage(){
-  await localForageStore.setItem("trackedQueries",[]);
-  //await localForageStore.setItem("trackedQueries", [...array1, 27]);
-  //const result = await localForageStore.getItem("trackedQueries");
-  //console.log(result);
-}
-
-initLocalForage();
-*/
 
 async function getApolloClient(){
   const cache = new InMemoryCache();
@@ -77,32 +65,22 @@ async function getApolloClient(){
   const trackerLink = new ApolloLink((operation, forward) => {
     if (forward === undefined) return null
     console.log("trackerLink")
-    const context = operation.getContext()
-    var trackedQueries = window.localStorage.getItem('trackedQueries') || null || [];
-    console.log("getItem",trackedQueries)
+    const context = operation.getContext();
     if (context.tracked) {
       const { operationName, query, variables } = operation
-      console.log("OperatioName",operationName)
-  
-      var newTrackedQuery = {
+      console.log("queryname",query)
+      
+      const newTrackedQuery = {
         query,
         context,
         variables,
         operationName,
       }
-      window.localStorage.setItem('trackedQueries', [...trackedQueries, newTrackedQuery]);
-      console.log("trackedQueries", window.localStorage.getItem('trackedQueries'))
-
+      addQuery(newTrackedQuery);
     }
+
   
-    return forward(operation).map((data) => {
-      if (context.tracked) {
-        window.localStorage.setItem('trackedQueries', trackedQueries);
-        console.log("trackedQueries", window.localStorage.getItem('trackedQueries'))
-      }
-  
-      return data;
-      });
+    return forward(operation).map((data) => data);
     });
   
   const links = from([

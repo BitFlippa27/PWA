@@ -26,6 +26,7 @@ import { onError } from 'apollo-link-error';
 import QueueLink from 'apollo-link-queue';
 import SerializingLink from 'apollo-link-serialize';
 import localForage from "localforage";
+import { getQueries, clearQueries } from "./localForage";
 
 
 
@@ -49,8 +50,10 @@ const App = () => {
       return
 
     const execute = async () => {
-      const trackedQueries = JSON.parse(window.localStorage.getItem('trackedQueries') || null) || [];
-      if (trackedQueries.length !== 0){
+      
+      const trackedQueries = await getQueries() || null || [];
+      console.log(trackedQueries)
+      if (trackedQueries){
         const promises = trackedQueries.map(({ variables, query, context, operationName }) => client.mutate({
           variables,
           mutation: query,
@@ -64,11 +67,12 @@ const App = () => {
           // A good place to show notification
           console.error(err);
         }
+        await clearQueries();
       }
-      window.localStorage.setItem('trackedQueries', [])
+      
     }
 
-    execute()
+    execute();
   }, [client]);
   
   if(!client)
