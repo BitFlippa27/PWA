@@ -8,7 +8,7 @@ import { InMemoryCache, ApolloClient } from "@apollo/client";
 import auth from "./reducers/auth";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { getQueries, addQuery, clearQueries } from "./localForage";
+import { getQueries, addQuery, clearQueries, localForageStore } from "./localForage";
 
 
 async function getApolloClient(){
@@ -49,8 +49,10 @@ async function getApolloClient(){
       console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`));
     }
     
-    if (networkError)
+    if (networkError){
       console.log(`[Network error]: ${networkError}`);
+    }
+      
 
     return forward(operation);
   });
@@ -66,21 +68,28 @@ async function getApolloClient(){
     if (forward === undefined) return null
     console.log("trackerLink")
     const context = operation.getContext();
+    const trackedQueries = JSON.parse(window.localStorage.getItem('trackedQueries') || null) || []
     if (context.tracked) {
-      const { operationName, query, variables } = operation
-      console.log("queryname",query)
+      var { operationName, query, variables } = operation
       
-      const newTrackedQuery = {
+      
+      var newTrackedQuery = {
         query,
         context,
         variables,
         operationName,
       }
-      addQuery(newTrackedQuery);
+      const trackedQueriesCopy = [...trackedQueries, newTrackedQuery];
+      window.localStorage.setItem('trackedQueries', JSON.stringify(trackedQueriesCopy));
     }
 
   
-    return forward(operation).map((data) => data);
+    return forward(operation).map((data) => {
+      if (context.tracked) {
+        window.localStorage.setItem('trackedQueries', JSON.stringify(trackedQueries))
+      }
+      return data;
+    });
     });
   
   const links = from([
