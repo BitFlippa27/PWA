@@ -5,11 +5,10 @@ import { onError } from 'apollo-link-error';
 import QueueLink from 'apollo-link-queue';
 import SerializingLink from 'apollo-link-serialize';
 import { InMemoryCache, ApolloClient } from "@apollo/client";
-import auth from "./reducers/auth";
+import { asyncMap } from "@apollo/client/utilities";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { getQueries, addQuery, clearQueries, localForageStore } from "./localForage";
-
+import { addQuery, localForageStore } from "./localForage";
 
 async function getApolloClient(){
   const cache = new InMemoryCache();
@@ -66,31 +65,35 @@ async function getApolloClient(){
   
   const trackerLink = new ApolloLink((operation, forward) => {
     if (forward === undefined) return null
-    console.log("trackerLink")
+    console.log("operation", operation)
     const context = operation.getContext();
-    const trackedQueries = JSON.parse(window.localStorage.getItem('trackedQueries') || null) || []
+    console.log("context", context)
+    const { optimisticResponse } = context;
+    console.log("optimisticResponse", optimisticResponse)
+   
     if (context.tracked) {
       var { operationName, query, variables } = operation
       
-      
       var newTrackedQuery = {
         query,
-        context,
         variables,
+        optimisticResponse,
         operationName,
       }
-      const trackedQueriesCopy = [...trackedQueries, newTrackedQuery];
-      window.localStorage.setItem('trackedQueries', JSON.stringify(trackedQueriesCopy));
+      console.log(newTrackedQuery)
+      addQuery(newTrackedQuery);
     }
 
-  
-    return forward(operation).map((data) => {
-      if (context.tracked) {
-        window.localStorage.setItem('trackedQueries', JSON.stringify(trackedQueries))
+    return asyncMap(forward(operation),async (response) => {
+      if(context.tracked){
+        
+        await addQuery(newTrackedQuery);
+        //localForageStore.setItem("hansi",);
       }
-      return data;
+      
+      return response;
     });
-    });
+  });
   
   const links = from([
     trackerLink,
