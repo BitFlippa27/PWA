@@ -2,7 +2,6 @@ import localforage from "localforage";
 const objinob = {name:"franz"};
 const obj = {objinob};
 export var localForageStore = localforage.createInstance({name:"queries"});
-localForageStore.setItem("test",obj)
 
 export async function initLocalForage(){
   try {
@@ -34,10 +33,15 @@ export async function getQueries(){
   
 }
 
-export  function addQuery(value){
+export  async function addQuery(value){
   let id = 1;
- 
-  localForageStore.setItem(JSON.stringify(id++), value);
+  try {
+    await localForageStore.setItem(JSON.stringify(id++), value);
+  } 
+  catch (err) {
+    console.error(err);
+  }
+  
   
 }
 

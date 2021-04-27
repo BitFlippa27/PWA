@@ -50,25 +50,25 @@ const App = () => {
       return
 
     const execute = async () => {
-      const trackedQueries = JSON.parse(window.localStorage.getItem('trackedQueries') || null) || []
-      console.log(trackedQueries)
-     
-      const promises = trackedQueries.map(({ variables, query, context, operationName }) => client.mutate({
-        variables,
-        mutation: query,
-        update: updateFunctions[operationName],
-        optimisticResponse: context.optimisticResponse,
-      }))
-
       try {
-        await Promise.all(promises)
-      } catch (err) {
-        // A good place to show notification
-        console.error(err);
-      }
-      window.localStorage.setItem('trackedQueries', []);
-      
-      
+        const trackedQueries = await getQueries();
+        if(trackedQueries.length !== 0){
+          trackedQueries.map(async({ variables, query, optimisticResponse, operationName }) => {
+            await client.mutate({
+                variables,
+                mutation: query,
+                update: updateFunctions[operationName],
+                optimisticResponse: optimisticResponse,
+              });
+            });
+            
+        }
+        } catch (err) {
+          // A good place to show notification
+          console.error(err);
+        }
+        
+        
     }
 
     execute();

@@ -1,5 +1,7 @@
 const City = require("../../models/City");
 const checkAuth = require("../../utils/check-auth");
+const { ApolloError } = require('apollo-server');
+
 
 module.exports =  {
   Query: {
@@ -19,10 +21,10 @@ module.exports =  {
       if(city) 
         return city;
       else
-        throw new Error("Datensatz nicht gefunden");
+        throw new ApolloError("Datensatz nicht gefunden");
     } 
     catch (err) {
-      throw new Error(err);
+      throw new ApolloError(err);
     }
   },
   
@@ -32,7 +34,7 @@ module.exports =  {
       const user = checkAuth(context);
 
       if (city === "" || pop === ""){
-        throw new Error("Fields must not be empty");
+        throw new ApolloError("Fields must not be empty");
       }
       try {
         const newCity = new City({
@@ -50,7 +52,7 @@ module.exports =  {
         return newcity;
       } 
       catch (err) {
-        throw new Error(err);
+        throw new ApolloError(err);
       }
       
     },
@@ -73,7 +75,7 @@ module.exports =  {
       const user = checkAuth(context);
       console.log("updateCity Resolver")
       if (city === "" || pop === ""){
-        throw new Error("Fields must not be empty");
+        throw new ApolloError("Fields must not be empty");
       }
 
       try {
