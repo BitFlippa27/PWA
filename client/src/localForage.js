@@ -1,25 +1,30 @@
 import localforage from "localforage";
-const objinob = {name:"franz"};
-const obj = {objinob};
+const _ = require('lodash')
+var id = 1;
 export var localForageStore = localforage.createInstance({name:"queries"});
 
-export async function initLocalForage(){
-  try {
-    await localForageStore.setItem("trackedQueries", []);
-  } 
-  catch (err) {
-    console.error(err)
-  }
-}
 
-//initLocalForage();
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
 
 
 export async function getQueries(){
   try {
     const queries = [];
     await localForageStore.iterate((value, key, iterationNumber) => {
-    queries.push(value);
+    
+    queries.push(JSON.parse(value));
     });
     
     console.log(queries);
@@ -34,9 +39,11 @@ export async function getQueries(){
 }
 
 export  async function addQuery(value){
-  let id = 1;
+  
   try {
-    await localForageStore.setItem(JSON.stringify(id++), value);
+    //const valueClone = _.cloneDeep(value);
+    const deepClone = JSON.stringify(value, getCircularReplacer());
+    await localForageStore.setItem(JSON.stringify(id++), deepClone);
   } 
   catch (err) {
     console.error(err);
@@ -49,6 +56,7 @@ export  async function addQuery(value){
 export async function clearQueries(){
   try {
   await localForageStore.clear();
+  id = 1;
   } 
   catch (err) {
     console.error(err)
