@@ -77,7 +77,7 @@ async function getApolloClient(){
       var newTrackedQuery = {
         query,
         variables,
-        optimisticResponse,
+        context,
         operationName,
       }
       console.log(newTrackedQuery)
@@ -85,12 +85,7 @@ async function getApolloClient(){
     }
 
     return asyncMap(forward(operation),async (response) => {
-      if(context.tracked){
-        
-        await addQuery(newTrackedQuery);
-        //localForageStore.setItem("hansi",);
-      }
-      
+     
       return response;
     });
   });

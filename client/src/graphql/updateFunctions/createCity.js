@@ -8,7 +8,8 @@ const createCity = (cache, { data: { createCity }}) => {
       query: FETCH_CITIES_QUERY,
       data: newData
     });
-   
+   console.log("createCity")
+   console.log(newData)
     
   }
 

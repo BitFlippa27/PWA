@@ -11,6 +11,7 @@ import * as updateFunctions from "../../graphql/updateFunctions";
 
 const Data = () => {
   console.log("Data")
+  
   const cities = useQuery(FETCH_CITIES_QUERY);
   
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
