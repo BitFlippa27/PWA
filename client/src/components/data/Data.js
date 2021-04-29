@@ -7,6 +7,9 @@ import { VariableSizeList as List } from 'react-window';
 import { useSelector } from "react-redux";
 import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries";
 import * as updateFunctions from "../../graphql/updateFunctions";
+var uniqid = require('uniqid');
+
+
 //TODO: Button für loadServerData
 
 const Data = () => {
@@ -55,13 +58,14 @@ const Data = () => {
       update: updateFunctions.createCity,
       context: {
         tracked: true,
+        id: Math.round(Math.random() * -1000000) + '',
         serializationKey: "MUTATION"
       },
       optimisticResponse: {
         __typename: "Mutation",
         createCity: {
           __typename: "City", 
-          id: "whatever",
+          id:  Math.round(Math.random() * -1000000) + '',
           city: city,
           pop: pop,
         }

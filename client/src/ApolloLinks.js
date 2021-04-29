@@ -8,7 +8,7 @@ import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { asyncMap } from "@apollo/client/utilities";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { addQuery, localForageStore } from "./localForage";
+import { addQuery, removeQuery, localForageStore } from "./localForage";
 
 async function getApolloClient(){
   const cache = new InMemoryCache();
@@ -42,7 +42,8 @@ async function getApolloClient(){
     };
     });
 
-  const errorLink = onError(({graphQLErrors, networkError, operation, forward}) => {
+  const errorLink = onError(({graphQLErrors, networkError, response }) => {
+    console.log("ErrorLink down")
     if (graphQLErrors){
       graphQLErrors.map(({ message, locations, path }) =>
       console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`));
@@ -51,9 +52,7 @@ async function getApolloClient(){
     if (networkError){
       console.log(`[Network error]: ${networkError}`);
     }
-      
 
-    return forward(operation);
   });
   
   const queueLink = new QueueLink();
@@ -65,11 +64,11 @@ async function getApolloClient(){
   
   const trackerLink = new ApolloLink((operation, forward) => {
     if (forward === undefined) return null
-    console.log("operation", operation)
+    console.log("trackerLink down")
     const context = operation.getContext();
-    console.log("context", context)
+    console.log(context)
     const { optimisticResponse } = context;
-    console.log("optimisticResponse", optimisticResponse)
+    console.log(optimisticResponse)
    
     if (context.tracked) {
       var { operationName, query, variables } = operation
@@ -77,15 +76,17 @@ async function getApolloClient(){
       var newTrackedQuery = {
         query,
         variables,
-        context,
+        optimisticResponse,
         operationName,
       }
-      console.log(newTrackedQuery)
-      addQuery(newTrackedQuery);
+      
+      addQuery(context.id, newTrackedQuery);
     }
 
     return asyncMap(forward(operation),async (response) => {
-     
+      if(context.tracked)
+        await removeQuery(context.id)
+        
       return response;
     });
   });

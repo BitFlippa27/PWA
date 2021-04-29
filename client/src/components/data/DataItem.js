@@ -41,6 +41,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       update: updateFunctions.updateCity,
       context: {
         tracked: true,
+        id: Math.round(Math.random() * -1000000) + '',
         serializationKey: "MUTATION"
       },
       optimisticResponse: {
@@ -70,6 +71,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       update: updateFunctions.deleteCity,
       context: {
         tracked: true,
+        id: Math.round(Math.random() * -1000000) + '',
         serializationKey: 'MUTATION'
       },
       

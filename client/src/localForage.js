@@ -38,12 +38,25 @@ export async function getQueries(){
   
 }
 
-export  async function addQuery(value){
+export  async function addQuery(id, value){
   
   try {
     //const valueClone = _.cloneDeep(value);
     const deepClone = JSON.stringify(value, getCircularReplacer());
-    await localForageStore.setItem(JSON.stringify(id++), deepClone);
+    await localForageStore.setItem(id, deepClone);
+
+    return id;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+  
+  
+}
+
+export  async function removeQuery(id){
+  try {
+    await localForageStore.removeItem(id);
   } 
   catch (err) {
     console.error(err);
