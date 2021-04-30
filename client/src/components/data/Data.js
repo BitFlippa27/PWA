@@ -13,6 +13,9 @@ var uniqid = require('uniqid');
 //TODO: Button für loadServerData
 
 const Data = () => {
+  useEffect(() => {
+    
+  })
   console.log("Data")
   
   const cities = useQuery(FETCH_CITIES_QUERY);
@@ -37,8 +40,7 @@ const Data = () => {
   if(cities.error)
     console.log(cities.error)
   
-  if(cities.loading)
-    return <Loader/>
+ 
     
 
   const onChange = (e) => {
@@ -58,14 +60,14 @@ const Data = () => {
       update: updateFunctions.createCity,
       context: {
         tracked: true,
-        id: Math.round(Math.random() * -1000000) + '',
+        id: Math.round(Math.random() * 1000000) + '',
         serializationKey: "MUTATION"
       },
       optimisticResponse: {
         __typename: "Mutation",
         createCity: {
           __typename: "City", 
-          id:  Math.round(Math.random() * -1000000) + '',
+          id:  Math.round(Math.random() * 1000000) + '',
           city: city,
           pop: pop,
         }
@@ -141,7 +143,7 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 15, cities.data.getAllCities.length).map( (row) => (
+              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
                 <DataItem key={row.id}  row={row} />
               ))}
             </tbody>

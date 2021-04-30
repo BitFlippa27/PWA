@@ -51,6 +51,7 @@ async function getApolloClient(){
     
     if (networkError){
       console.log(`[Network error]: ${networkError}`);
+      queueLink.close();
     }
 
   });
@@ -84,9 +85,9 @@ async function getApolloClient(){
     }
 
     return asyncMap(forward(operation),async (response) => {
-      if(context.tracked)
-        await removeQuery(context.id)
-        
+      console.log("response")
+      await removeQuery(context.id)
+          
       return response;
     });
   });
