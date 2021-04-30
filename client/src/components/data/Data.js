@@ -18,7 +18,7 @@ const Data = () => {
   })
   console.log("Data")
   
-  const cities = useQuery(FETCH_CITIES_QUERY, {fetchPolicy: "cache-and-network"});
+  const cities = useQuery(FETCH_CITIES_QUERY);
   
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   var username = useSelector((state) => state.auth.user);
@@ -60,14 +60,14 @@ const Data = () => {
       update: updateFunctions.createCity,
       context: {
         tracked: true,
-        id: Math.round(Math.random() * -1000000) + '',
+        id: Math.round(Math.random() * 1000000) + '',
         serializationKey: "MUTATION"
       },
       optimisticResponse: {
         __typename: "Mutation",
         createCity: {
           __typename: "City", 
-          id:  Math.round(Math.random() * -1000000) + '',
+          id:  Math.round(Math.random() * 1000000) + '',
           city: city,
           pop: pop,
         }
@@ -143,7 +143,7 @@ const Data = () => {
               </tr>
             </thead>
             <tbody>
-              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 15, cities.data.getAllCities.length).map( (row) => (
+              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
                 <DataItem key={row.id}  row={row} />
               ))}
             </tbody>
