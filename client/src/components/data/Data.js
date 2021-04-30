@@ -13,9 +13,12 @@ var uniqid = require('uniqid');
 //TODO: Button für loadServerData
 
 const Data = () => {
+  useEffect(() => {
+    
+  })
   console.log("Data")
   
-  const cities = useQuery(FETCH_CITIES_QUERY);
+  const cities = useQuery(FETCH_CITIES_QUERY, {fetchPolicy: "cache-and-network"});
   
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   var username = useSelector((state) => state.auth.user);
@@ -37,8 +40,7 @@ const Data = () => {
   if(cities.error)
     console.log(cities.error)
   
-  if(cities.loading)
-    return <Loader/>
+ 
     
 
   const onChange = (e) => {

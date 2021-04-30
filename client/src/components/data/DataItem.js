@@ -66,6 +66,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   
 
   const clickRemove = (id) => {
+   
     removeCity({
       variables:  {id: id},
       update: updateFunctions.deleteCity,
@@ -74,6 +75,14 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
         id: Math.round(Math.random() * -1000000) + '',
         serializationKey: 'MUTATION'
       },
+      optimisticResponse: {
+        __typename: "Mutation",
+        deleteCity: {
+          id: id ,
+          __typename: "City",
+        
+        }
+      }
       
     });
   }
@@ -92,6 +101,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
             </button>
             <button className="actions" onClick={() => clickRemove(id)} >
               <i className="fas fa-minus-circle"/>{" "}
+              {console.log(id)}
             </button>
           </th>
         </tr>
