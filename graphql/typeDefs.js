@@ -11,6 +11,7 @@ module.exports = gql`
     city: String
     pop: String
     id: ID!
+    optimisticID: String!
     createdAt: String!
     username: String
   }
@@ -38,7 +39,7 @@ module.exports = gql`
   type Mutation {
     register(registerInput: RegisterInput): User!
     login(email: String!, password: String!): User!
-    createCity(city: String!, pop: String!): City!
+    createCity(city: String!, pop: String!, optimisticID: String!): City!
     deleteCity(id: ID!): City!
     updateCity(id: ID!, city: String!, pop: String!): City!
   }

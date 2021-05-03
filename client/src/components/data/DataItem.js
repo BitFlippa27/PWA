@@ -72,7 +72,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       update: updateFunctions.deleteCity,
       context: {
         tracked: true,
-        id: Math.round(Math.random() * -1000000) + '',
+        id: id,
         serializationKey: 'MUTATION'
       },
       optimisticResponse: {

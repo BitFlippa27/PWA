@@ -6,6 +6,7 @@ const CitySchema = new Schema({
   pop: Number,
   createdAt: String,
   username: String,
+  optimisticID: String,
   user: {
     type: Schema.Types.ObjectId,
     ref: "users"
