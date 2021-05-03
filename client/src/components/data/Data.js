@@ -55,19 +55,21 @@ const Data = () => {
     
     const { city, pop } = formData;
 
+    const optId = Math.round(Math.random() * 1000000) + '';
     addCity({
-      variables: {city: city, pop: pop},
+      variables: {city: city, pop: pop, optimisticID: optId},
       update: updateFunctions.createCity,
       context: {
         tracked: true,
-        id: Math.round(Math.random() * 1000000) + '',
+        id: optId,
         serializationKey: "MUTATION"
       },
       optimisticResponse: {
         __typename: "Mutation",
         createCity: {
           __typename: "City", 
-          id:  Math.round(Math.random() * 1000000) + '',
+          id: optId,
+          optimisticID: optId,
           city: city,
           pop: pop,
         }
@@ -77,7 +79,7 @@ const Data = () => {
     setFormData({ city: "", pop: "" });
   };
   
-  return (
+  return cities.data.getAllCities.length < 100 ? <Loader/> : (
     <Fragment>
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>

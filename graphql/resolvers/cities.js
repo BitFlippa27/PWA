@@ -30,8 +30,9 @@ module.exports =  {
   
 },
   Mutation: {
-    async createCity(_,  { city, pop }, context){
+    async createCity(_,  { city, pop, optimisticID }, context){
       const user = checkAuth(context);
+      console.log(optimisticID)
 
       if (city === "" || pop === ""){
         throw new ApolloError("Fields must not be empty");
@@ -40,6 +41,7 @@ module.exports =  {
         const newCity = new City({
           city,
           pop,
+          optimisticID,
           user: user.id,
           createdAt: new Date().toISOString()
   

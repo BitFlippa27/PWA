@@ -8,7 +8,8 @@ import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { asyncMap } from "@apollo/client/utilities";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { addQuery, removeQuery, localForageStore } from "./localForage";
+import { addQuery, removeQuery, localForageStore, clearQueries } from "./localForage";
+import data from "./reducers/data";
 
 async function getApolloClient(){
   const cache = new InMemoryCache();
@@ -85,8 +86,18 @@ async function getApolloClient(){
     }
 
     return asyncMap(forward(operation),async (response) => {
-      console.log("response")
-      await removeQuery(context.id)
+      console.log("response", response)
+
+      if(response.data.createCity){
+        await removeQuery(response.data.createCity.optimisticID);
+      }
+      if(response.data.updateCity){
+        await removeQuery(response.data.createCity.id);
+      }
+      if(response.data.deleteCity){
+        await removeQuery(response.data.createCity.id);
+      }
+      
           
       return response;
     });

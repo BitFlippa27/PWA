@@ -44,9 +44,10 @@ query GetAllCities {
 
 
 export const CREATE_CITY_MUTATION = gql`
-  mutation CreateCity($city: String!, $pop: String!) {
-    createCity(city: $city, pop: $pop){
+  mutation CreateCity($city: String!, $pop: String!, $optimisticID: String!) {
+    createCity(city: $city, pop: $pop, optimisticID: $optimisticID){
       id
+      optimisticID
       city
       pop
       
