@@ -69,6 +69,7 @@ export const DELETE_CITY_MUTATION = gql`
   mutation DeleteCity($id: ID!){
     deleteCity(id: $id){
       id
+      city
     }
   }
 `;

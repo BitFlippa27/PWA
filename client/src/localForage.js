@@ -41,7 +41,6 @@ export async function getQueries(){
 export  async function addQuery(id, value){
   
   try {
-    //const valueClone = _.cloneDeep(value);
     const deepClone = JSON.stringify(value, getCircularReplacer());
     await localForageStore.setItem(id, deepClone);
 
