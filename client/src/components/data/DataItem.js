@@ -41,7 +41,7 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
       update: updateFunctions.updateCity,
       context: {
         tracked: true,
-        id: Math.round(Math.random() * -1000000) + '',
+        id: ID,
         serializationKey: "MUTATION"
       },
       optimisticResponse: {
@@ -66,20 +66,22 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
   
 
   const clickRemove = (id) => {
+    const idToRemove = id;
    
     removeCity({
-      variables:  {id: id},
+      variables:  {id: idToRemove},
       update: updateFunctions.deleteCity,
       context: {
         tracked: true,
-        id: id,
+        id: idToRemove,
         serializationKey: 'MUTATION'
       },
       optimisticResponse: {
         __typename: "Mutation",
         deleteCity: {
-          id: id ,
+          id: idToRemove ,
           __typename: "City",
+          city: city
         
         }
       }
@@ -96,13 +98,14 @@ const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
           </th>
           <th  scope="col">{pop}</th>
           <th scope="col">
-            <button className="actions" onClick={ () => clickEdit(id)}  >
+            <a onClick={ () => clickEdit(id)}>
               <i className="fas fa-pencil-alt" />{" "}
-            </button>
-            <button className="actions" onClick={() => clickRemove(id)} >
+            </a>
+            <a onClick={() => clickRemove(id)}>
               <i className="fas fa-minus-circle"/>{" "}
+            </a>
               {console.log(id)}
-            </button>
+         
           </th>
         </tr>
       </Fragment>

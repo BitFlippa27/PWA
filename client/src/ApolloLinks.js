@@ -52,7 +52,7 @@ async function getApolloClient(){
     
     if (networkError){
       console.log(`[Network error]: ${networkError}`);
-      queueLink.close();
+      
     }
 
   });
@@ -87,18 +87,14 @@ async function getApolloClient(){
 
     return asyncMap(forward(operation),async (response) => {
       console.log("response", response)
-
-      if(response.data.createCity){
-        await removeQuery(response.data.createCity.optimisticID);
-      }
-      if(response.data.updateCity){
-        await removeQuery(response.data.createCity.id);
-      }
-      if(response.data.deleteCity){
-        await removeQuery(response.data.createCity.id);
-      }
-      
-          
+      if(response){
+        if(operation.operationName === "CreateCity")
+          await removeQuery(response.data.createCity.optimisticID)
+        if(operation.operationName === "UpdateCity")
+          await removeQuery(response.data.updateCity.id)
+        if(operation.operationName === "DeleteCity")
+          await removeQuery(response.data.deleteCity.id)
+      }     
       return response;
     });
   });

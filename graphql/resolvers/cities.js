@@ -59,7 +59,7 @@ module.exports =  {
       
     },
     async deleteCity(_, { id }, context){
-      console.log(id)
+      console.error("deleteCity resolver ")
       const user = checkAuth(context);
       try {
         const city = await City.findById(id);
