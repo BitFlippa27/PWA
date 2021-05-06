@@ -1,7 +1,21 @@
 import localforage from "localforage";
+import { VariableSizeGrid } from "react-window";
 const _ = require('lodash')
 var id = 1;
-export var localForageStore = localforage.createInstance({name:"queries"});
+var dbName = "queries";
+
+var deleteTable = localforage.createInstance({
+  name: dbName,
+  storeName: "delete"
+});
+var createTable = localforage.createInstance({
+  name: dbName,
+  storeName: "create"
+});
+var updateTable = localforage.createInstance({
+  name: dbName,
+  storeName: "update"
+});
 
 
 const getCircularReplacer = () => {
@@ -22,29 +36,54 @@ const getCircularReplacer = () => {
 export async function getQueries(){
   try {
     const queries = [];
-    await localForageStore.iterate((value, key, iterationNumber) => {
-    
-    queries.push(JSON.parse(value));
+    await createTable.iterate((value) => {
+      queries.push(JSON.parse(value));
+    });
+    await deleteTable.iterate((value) => {
+      queries.push(JSON.parse(value));
+    });
+    await deleteTable.iterate((value) => {
+      queries.push(JSON.parse(value));
     });
     
-    console.log(queries);
 
     return queries;
   } 
   catch (err){
     console.error(err)
   }
-
-  
 }
 
-export  async function addQuery(id, value){
-  
+export async function checkOfflineDelete(optimisticID, mongoID){
+  console.log("opt", optimisticID)
+  console.log("mongo", mongoID)
+  try {
+    await deleteTable.iterate((value, key) => {
+      console.log("key", key)
+      console.log("value", value)
+      if(optimisticID === key){
+        deleteTable.removeItem(key);
+        console.log("value", value)
+        deleteTable.setItem(mongoID, value);
+      }
+    });
+   
+  }
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function addQuery(id, value, operationName){
   try {
     const deepClone = JSON.stringify(value, getCircularReplacer());
-    await localForageStore.setItem(id, deepClone);
 
-    return id;
+    if(operationName === "CreateCity")
+      await createTable.setItem(id, deepClone);
+    else if(operationName === "DeleteCity")
+      await deleteTable.setItem(id, deepClone);
+    else if(operationName === "UpdateCity")
+      await updateTable.setItem(id, deepClone);
   } 
   catch (err) {
     console.error(err);
@@ -53,26 +92,16 @@ export  async function addQuery(id, value){
   
 }
 
-export  async function removeQuery(id){
+export  async function removeQuery(id, operationName){
   try {
-    await localForageStore.removeItem(id);
+    if(operationName === "CreateCity")
+      await createTable.removeItem(id);
+    if(operationName === "DeleteCity")
+      await deleteTable.removeItem(id);
+    if( operationName === "UpdateCity")
+      await updateTable.removeItem(id);
   } 
   catch (err) {
     console.error(err);
   }
-  
-  
 }
-
-
-export async function clearQueries(){
-  try {
-  await localForageStore.clear();
-  id = 1;
-  } 
-  catch (err) {
-    console.error(err)
-  }
-  
-}
-

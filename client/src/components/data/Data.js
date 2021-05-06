@@ -18,7 +18,7 @@ const Data = () => {
   })
   console.log("Data")
   
-  const cities = useQuery(FETCH_CITIES_QUERY,{fetchPolicy: "cache-and-network"});
+  const cities = useQuery(FETCH_CITIES_QUERY);
   
   var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   var username = useSelector((state) => state.auth.user);

@@ -8,8 +8,9 @@ import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { asyncMap } from "@apollo/client/utilities";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { addQuery, removeQuery, localForageStore, clearQueries } from "./localForage";
-import data from "./reducers/data";
+import { addQuery, removeQuery, checkOfflineDelete } from "./localForage";
+import * as updateFunctions from "./graphql/updateFunctions";
+
 
 async function getApolloClient(){
   const cache = new InMemoryCache();
@@ -52,7 +53,7 @@ async function getApolloClient(){
     
     if (networkError){
       console.log(`[Network error]: ${networkError}`);
-      
+      console.log(response)
     }
 
   });
@@ -70,7 +71,7 @@ async function getApolloClient(){
     const context = operation.getContext();
     console.log(context)
     const { optimisticResponse } = context;
-    console.log(optimisticResponse)
+   
    
     if (context.tracked) {
       var { operationName, query, variables } = operation
@@ -81,20 +82,28 @@ async function getApolloClient(){
         optimisticResponse,
         operationName,
       }
-      
-      addQuery(context.id, newTrackedQuery);
+      console.log(query);
+
+      addQuery(context.id, newTrackedQuery, operationName);
     }
 
     return asyncMap(forward(operation),async (response) => {
       console.log("response", response)
-      if(response){
-        if(operation.operationName === "CreateCity")
-          await removeQuery(response.data.createCity.optimisticID)
-        if(operation.operationName === "UpdateCity")
-          await removeQuery(response.data.updateCity.id)
-        if(operation.operationName === "DeleteCity")
-          await removeQuery(response.data.deleteCity.id)
-      }     
+
+      if(response && operationName === "CreateCity"){
+        await removeQuery(response.data.createCity.optimisticID, operationName);
+        await checkOfflineDelete(response.data.createCity.optimisticID, response.data.createCity.id);
+      }
+      
+      if(response && operationName === "UpdateCity")
+        await removeQuery(response.data.updateCity.id, operationName)
+      
+      if(response && operationName === "DeleteCity"){
+        await removeQuery(response.data.deleteCity.id, operationName);
+        console.log("deleteCity remove")
+      }
+      
+      
       return response;
     });
   });
