@@ -5,7 +5,7 @@ import * as updateFunctions from "../../graphql/updateFunctions";
 
 
 
-const DataItem = ({ row: {id, _id, city, zip, pop } }) => {
+const DataItem = ({ row: {id, optimisticID, city, zip, pop } }) => {
   const [formData, setFormData] = useState({
     updatedCity: "",
     updatedPop: "",
