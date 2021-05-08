@@ -1,4 +1,5 @@
-import localforage from "localforage";
+import { getDefaultValues } from "@apollo/client/utilities";
+import localforage, { iterate } from "localforage";
 import { VariableSizeGrid } from "react-window";
 const _ = require('lodash')
 var id = 1;
@@ -16,7 +17,9 @@ var updateTable = localforage.createInstance({
   name: dbName,
   storeName: "update"
 });
-
+var lookupTable = localforage.createInstance({  //lookupTable
+  name: "trackedQueries",
+});
 
 const getCircularReplacer = () => {
   const seen = new WeakSet();
@@ -33,7 +36,7 @@ const getCircularReplacer = () => {
 
 
 
-export async function getQueries(){
+export async function getAllQueries(){
   try {
     const queries = [];
     await createTable.iterate((value) => {
@@ -54,42 +57,114 @@ export async function getQueries(){
   }
 }
 
-export async function checkOfflineDelete(optimisticID, mongoID){
-  console.log("opt", optimisticID)
-  console.log("mongo", mongoID)
+export async function getLookUpTable(){
+  const trackedQueries = [];
   try {
-    await deleteTable.iterate((value, key) => {
-      console.log("key", key)
-      console.log("value", value)
-      if(optimisticID === key){
-        deleteTable.removeItem(key);
-        console.log("value", value)
-        deleteTable.setItem(mongoID, value);
-      }
-    });
-   
-  }
+    await lookupTable.iterate((value, key) => {
+      trackedQueries.push(key, "") 
+    })
+
+    return trackedQueries;
+    
+  } 
   catch (err) {
     console.error(err);
   }
 }
 
-export async function addQuery(id, value, operationName){
+export async function getUpdateQueries(){
+  const keys = [];
   try {
-    const deepClone = JSON.stringify(value, getCircularReplacer());
+    await updateTable.iterate((value, key) => {
+      keys.push(key);
+    });
 
-    if(operationName === "CreateCity")
-      await createTable.setItem(id, deepClone);
-    else if(operationName === "DeleteCity")
-      await deleteTable.setItem(id, deepClone);
-    else if(operationName === "UpdateCity")
-      await updateTable.setItem(id, deepClone);
+    return keys;
   } 
   catch (err) {
     console.error(err);
   }
+}
+
+export async function getDeleteQueries(){
+  const keys = [];
+  try {
+    await deleteTable.iterate((value, key) => {
+      keys.push(key);
+    });
+
+    return keys;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
+export async function getCreateQueries(){
+  const keys = [];
+  try {
+    await createTable.iterate((value, key) => {
+      keys.push(key);
+    });
+
+    return keys;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function updateId(result, serverID){
+  try {
+    for(let i=0; i<result.length; i++){
+      deleteTable.iterate((value, key)=> {
+        if(result[i] === key)
+          console.log("optimisticID zu ServerId", serverID)
+      })
+    }
+     
+    
   
-  
+  } 
+  catch (err) {
+    console.error(err)
+  }
+}
+
+
+
+export async function addQuery(id, value, operationName){
+
+  try {
+    const deepClone = JSON.stringify(value, getCircularReplacer());
+    
+    if(operationName === "CreateCity"){
+      await createTable.setItem(id, deepClone);
+      await lookupTable.setItem(id);
+    }
+      
+    else if(operationName === "DeleteCity"){
+      await deleteTable.setItem(id, deepClone);
+      await lookupTable.setItem(id);
+    }
+     
+    else if(operationName === "UpdateCity"){
+      await updateTable.setItem(id, deepClone);
+      await lookupTable.setItem(id);
+    }
+    
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function checkOfflineRemove(optimisticID){
+  const trackedQueries = await getLookUpTable();
+  const result = _.filter(trackedQueries, (val, i, iterate) => _.includes(iterate, val, i+1));
+  if(result.length !== 0);
+    await updateId(result, optimisticID );
 }
 
 export  async function removeQuery(id, operationName){
@@ -100,6 +175,21 @@ export  async function removeQuery(id, operationName){
       await deleteTable.removeItem(id);
     if( operationName === "UpdateCity")
       await updateTable.removeItem(id);
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function clearTable(){
+  try {
+    const createQueries = await getCreateQueries();
+    const deleteQueries = await getDeleteQueries();
+    const updateQueries = await getUpdateQueries();
+
+    if(createQueries && deleteQueries && updateQueries){
+      await lookupTable.setItem("trackedQueries", []);
+    }
   } 
   catch (err) {
     console.error(err);

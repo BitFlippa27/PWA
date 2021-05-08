@@ -26,7 +26,7 @@ import { onError } from 'apollo-link-error';
 import QueueLink from 'apollo-link-queue';
 import SerializingLink from 'apollo-link-serialize';
 import localForage from "localforage";
-import { getQueries, clearQueries, localForageStore } from "./localForage";
+import { getAllQueries, clearQueries, localForageStore } from "./localForage";
 
 
 
@@ -51,7 +51,7 @@ const App = () => {
 
     const execute = async () => {
       try {
-        const trackedQueries = await getQueries();
+        const trackedQueries = await getAllQueries();
         console.log(trackedQueries)
         if(trackedQueries.length !== 0){
           trackedQueries.map(async({ variables, query, optimisticResponse, operationName }) => {

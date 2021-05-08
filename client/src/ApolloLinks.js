@@ -8,7 +8,7 @@ import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { asyncMap } from "@apollo/client/utilities";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { addQuery, removeQuery, checkOfflineDelete } from "./localForage";
+import { addQuery, removeQuery, checkOfflineRemove } from "./localForage";
 import * as updateFunctions from "./graphql/updateFunctions";
 
 
@@ -91,8 +91,8 @@ async function getApolloClient(){
       console.log("response", response)
 
       if(response && operationName === "CreateCity"){
+        await checkOfflineRemove(response.data.createCity.id);
         await removeQuery(response.data.createCity.optimisticID, operationName);
-        await checkOfflineDelete(response.data.createCity.optimisticID, response.data.createCity.id);
       }
       
       if(response && operationName === "UpdateCity")
