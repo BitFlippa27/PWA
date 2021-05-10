@@ -83,15 +83,16 @@ async function getApolloClient(){
         operationName,
       }
       console.log(query);
-
+      
       addQuery(context.id, newTrackedQuery, operationName);
     }
 
     return asyncMap(forward(operation),async (response) => {
       console.log("response", response)
 
+      await checkOfflineRemove(operationName);
+
       if(response && operationName === "CreateCity"){
-        await checkOfflineRemove(response.data.createCity.id);
         await removeQuery(response.data.createCity.optimisticID, operationName);
       }
       
