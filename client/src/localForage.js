@@ -1,6 +1,7 @@
 import { getDefaultValues } from "@apollo/client/utilities";
 import localforage, { iterate } from "localforage";
 import { VariableSizeGrid } from "react-window";
+import x from "uniqid";
 const _ = require('lodash')
 var id = 1;
 var dbName = "queries";
@@ -115,24 +116,6 @@ export async function getCreateQueries(){
   }
 }
 
-export async function updateId(result, serverID){
-  try {
-    for(let i=0; i<result.length; i++){
-      deleteTable.iterate((value, key)=> {
-        if(result[i] === key)
-          console.log("optimisticID zu ServerId", serverID)
-      })
-    }
-     
-    
-  
-  } 
-  catch (err) {
-    console.error(err)
-  }
-}
-
-
 
 export async function addQuery(id, value, operationName){
 
@@ -141,17 +124,17 @@ export async function addQuery(id, value, operationName){
     
     if(operationName === "CreateCity"){
       await createTable.setItem(id, deepClone);
-      await lookupTable.setItem(id);
+      
     }
       
     else if(operationName === "DeleteCity"){
       await deleteTable.setItem(id, deepClone);
-      await lookupTable.setItem(id);
+      
     }
      
     else if(operationName === "UpdateCity"){
       await updateTable.setItem(id, deepClone);
-      await lookupTable.setItem(id);
+      
     }
     
   } 
@@ -160,12 +143,45 @@ export async function addQuery(id, value, operationName){
   }
 }
 
-export async function checkOfflineRemove(optimisticID){
-  const trackedQueries = await getLookUpTable();
-  const result = _.filter(trackedQueries, (val, i, iterate) => _.includes(iterate, val, i+1));
-  if(result.length !== 0);
-    await updateId(result, optimisticID );
+export async function checkOfflineRemove(operationName, response){
+  //const result = _.filter(trackedQueries, (val, i, iterate) => _.includes(iterate, val, i+1)); //lodash function for finding duplicate
+  const createQueries = await getCreateQueries();
+  const deleteQueries = await getDeleteQueries();
+
+  const duplicates = createQueries.filter(duplicate => deleteQueries.includes(duplicate));
+  
+  console.log(duplicates)
+  console.log(duplicates[0])
+
+
+
+
+  if(duplicates.length !== 0);
+    await removeDuplicates(duplicates, operationName);
 }
+
+
+export async function removeDuplicates(duplicates, operationName){
+  console.log("updateID")
+  try {
+    for(let i=0;i<duplicates.length;i++){
+      await removeQuery(duplicates[i], operationName)
+    }
+
+    /*
+    for(let i=0; i<duplicates.length; i++){
+      const queryToUpdate = await deleteTable.getItem(duplicates[i]);
+      const query = JSON.parse(queryToUpdate);
+      query.variables.id = serverID;
+      await deleteTable.setItem(duplicates[i], JSON.stringify(query))
+    }
+    */
+  } 
+  catch (err) {
+    console.error(err)
+  }
+}
+
 
 export  async function removeQuery(id, operationName){
   try {
@@ -180,6 +196,9 @@ export  async function removeQuery(id, operationName){
     console.error(err);
   }
 }
+
+
+
 
 export async function clearTable(){
   try {
