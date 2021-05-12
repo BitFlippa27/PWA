@@ -79,6 +79,9 @@ const Data = () => {
     setFormData({ city: "", pop: "" });
   };
   
+  if(cities.loading){
+    return <Loader/>;
+  }
   return cities.data.getAllCities.length < 100 ? <Loader/> : (
     <Fragment>
       <section className="container-data">

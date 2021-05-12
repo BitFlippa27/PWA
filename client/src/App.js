@@ -26,7 +26,7 @@ import { onError } from 'apollo-link-error';
 import QueueLink from 'apollo-link-queue';
 import SerializingLink from 'apollo-link-serialize';
 import localForage from "localforage";
-import { getAllQueries, clearQueries, localForageStore } from "./localForage";
+import { getAllQueries, checkOfflineRemove, localForageStore } from "./localForage";
 
 
 
@@ -41,6 +41,7 @@ const App = () => {
   useEffect(() => {
     getApolloClient().then((client) => {
       setClient(client);
+      console.log("getApolloClient")
     })
   }, []);
 
@@ -51,8 +52,10 @@ const App = () => {
 
     const execute = async () => {
       try {
+        
         const trackedQueries = await getAllQueries();
-        console.log(trackedQueries)
+        
+       
         if(trackedQueries.length !== 0){
           trackedQueries.map(async({ variables, query, optimisticResponse, operationName }) => {
             await client.mutate({

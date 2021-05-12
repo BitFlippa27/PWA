@@ -18,7 +18,7 @@ var updateTable = localforage.createInstance({
   name: dbName,
   storeName: "update"
 });
-var lookupTable = localforage.createInstance({  //lookupTable
+export var lookupTable = localforage.createInstance({  //lookupTable
   name: "trackedQueries",
 });
 
@@ -118,32 +118,34 @@ export async function getCreateQueries(){
 
 
 export async function addQuery(id, value, operationName){
-
+  
   try {
     const deepClone = JSON.stringify(value, getCircularReplacer());
     
     if(operationName === "CreateCity"){
       await createTable.setItem(id, deepClone);
+      await lookupTable.setItem(id, id);
       
     }
       
     else if(operationName === "DeleteCity"){
       await deleteTable.setItem(id, deepClone);
+      await lookupTable.setItem(id, id);
       
     }
      
     else if(operationName === "UpdateCity"){
       await updateTable.setItem(id, deepClone);
-      
+      await lookupTable.setItem(id, id);
     }
-    
+    //await checkOfflineRemove(operationName);
   } 
   catch (err) {
     console.error(err);
   }
 }
 
-export async function checkOfflineRemove(operationName, response){
+export async function checkOfflineRemove(serverID){
   //const result = _.filter(trackedQueries, (val, i, iterate) => _.includes(iterate, val, i+1)); //lodash function for finding duplicate
   const createQueries = await getCreateQueries();
   const deleteQueries = await getDeleteQueries();
@@ -153,32 +155,51 @@ export async function checkOfflineRemove(operationName, response){
   console.log(duplicates)
   console.log(duplicates[0])
 
+  if(duplicates.length !== 0){
+    await updateIds(duplicates, serverID);
 
-
-
-  if(duplicates.length !== 0);
-    await removeDuplicates(duplicates, operationName);
+    return duplicates;
+  }
+    
 }
 
-
-export async function removeDuplicates(duplicates, operationName){
+export async function updateID(optimisticID,serverID){
+  try {
+    await lookupTable.setItem(optimisticID, serverID);
+  } 
+  catch (err) {
+    
+  }
+}
+export async function updateIds(duplicates, serverID){
   console.log("updateID")
   try {
-    for(let i=0;i<duplicates.length;i++){
-      await removeQuery(duplicates[i], operationName)
+    /*for(let i=0;i<duplicates.length;i++){
+      await rmOfflineDeleteQuery(duplicates[i], operationName)
     }
-
-    /*
+    */
     for(let i=0; i<duplicates.length; i++){
       const queryToUpdate = await deleteTable.getItem(duplicates[i]);
       const query = JSON.parse(queryToUpdate);
       query.variables.id = serverID;
       await deleteTable.setItem(duplicates[i], JSON.stringify(query))
+      
     }
-    */
+    
   } 
   catch (err) {
     console.error(err)
+  }
+}
+
+export  async function rmOfflineDeleteQuery(duplicate){
+  try {
+      await createTable.removeItem(duplicate);
+      await deleteTable.removeItem(duplicate);
+    
+  } 
+  catch (err) {
+    console.error(err);
   }
 }
 
