@@ -8,9 +8,11 @@ import { InMemoryCache, ApolloClient } from "@apollo/client";
 import { asyncMap } from "@apollo/client/utilities";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import { addQuery, removeQuery, checkOfflineRemove } from "./localForage";
+import { addQuery, removeQuery, checkOfflineRemove, rmOfflineDeleteQuery, lookupTable, updateID } from "./localForage";
 import * as updateFunctions from "./graphql/updateFunctions";
+import { check } from "express-validator";
 
+var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 
 async function getApolloClient(){
   const cache = new InMemoryCache();
@@ -58,14 +60,27 @@ async function getApolloClient(){
 
   });
   
-  const queueLink = new QueueLink();
-  
+  //const queueLink = new QueueLink();
+  const queueLink = new ApolloLink(async(operation, forward) => {
+    if(forward === undefined) return null;
+
+    const queue = [];
+
+    if(isOnline)
+      return forward(operation);
+    if(!isOnline)
+      queue.push(operation);
+
+
+  })
+
+
   window.addEventListener('offline', () => queueLink.close())
   window.addEventListener('online', () => queueLink.open())
   
   const serializingLink = new SerializingLink();
   
-  const trackerLink = new ApolloLink((operation, forward) => {
+  const trackerLink = new ApolloLink(async(operation, forward) => {
     if (forward === undefined) return null
     console.log("trackerLink down")
     const context = operation.getContext();
@@ -83,14 +98,14 @@ async function getApolloClient(){
         operationName,
       }
       console.log(query);
-      
-      addQuery(context.id, newTrackedQuery, operationName);
+      await addQuery(context.id, newTrackedQuery, operationName);
+      if(operationName === "DeleteCity")
+        return null;
     }
 
+    
     return asyncMap(forward(operation),async (response) => {
       console.log("response", response)
-
-      await checkOfflineRemove(operationName);
 
       if(response && operationName === "CreateCity"){
         await removeQuery(response.data.createCity.optimisticID, operationName);
@@ -107,6 +122,8 @@ async function getApolloClient(){
       
       return response;
     });
+    
+    
   });
   
   const links = from([
