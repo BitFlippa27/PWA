@@ -27,7 +27,8 @@
     "localforage": "^1.9.0",
     "mongoose": "^5.9.21",
     "request": "^2.88.2",
-    "uuid": "^8.3.1"
+    "uuid": "^8.3.1",
+    "zen-observable": "^0.8.15"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",

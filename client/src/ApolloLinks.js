@@ -1,18 +1,26 @@
-import { from, HttpLink, createHttpLink, ApolloLink } from "@apollo/client";
+import {
+    from,
+    HttpLink,
+    createHttpLink, 
+    ApolloLink,
+    InMemoryCache,
+    ApolloClient,
+  } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
 import { setContext } from 'apollo-link-context';
 import { onError } from 'apollo-link-error';
 import QueueLink from 'apollo-link-queue';
 import SerializingLink from 'apollo-link-serialize';
-import { InMemoryCache, ApolloClient } from "@apollo/client";
+import { } from "@apollo/client";
 import { asyncMap } from "@apollo/client/utilities";
 import localforage from "localforage";
 import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
 import { addQuery, removeQuery, checkOfflineRemove, rmOfflineDeleteQuery, lookupTable, updateID } from "./localForage";
 import * as updateFunctions from "./graphql/updateFunctions";
-import { check } from "express-validator";
+import { check } from "express-validator"
+import Observable from 'zen-observable';
+//import QueueLink from "./QueueLink.ts";
 
-var isOnline = ("onLine" in navigator) ? navigator.onLine : true;
 
 async function getApolloClient(){
   const cache = new InMemoryCache();
@@ -60,23 +68,16 @@ async function getApolloClient(){
 
   });
   
-  //const queueLink = new QueueLink();
-  const queueLink = new ApolloLink(async(operation, forward) => {
-    if(forward === undefined) return null;
-
-    const queue = [];
-
-    if(isOnline)
-      return forward(operation);
-    if(!isOnline)
-      queue.push(operation);
-
-
-  })
-
-
+  const queueLink = new QueueLink();
+  
   window.addEventListener('offline', () => queueLink.close())
   window.addEventListener('online', () => queueLink.open())
+  
+
+  
+
+
+  
   
   const serializingLink = new SerializingLink();
   
@@ -99,8 +100,6 @@ async function getApolloClient(){
       }
       console.log(query);
       await addQuery(context.id, newTrackedQuery, operationName);
-      if(operationName === "DeleteCity")
-        return null;
     }
 
     
