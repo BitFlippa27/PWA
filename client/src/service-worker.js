@@ -19,7 +19,7 @@ var count = 0;
 self.addEventListener("install", onInstall);
 self.addEventListener("activate", onActivate);
 self.addEventListener("message", onMessage);
-
+self.addEventListener("sync", onSync);
 
 main();
 
@@ -33,7 +33,187 @@ setCacheNameDetails({
 precacheAndRoute(self.__WB_MANIFEST);
 
 
+registerRoute(
+  /.*(?:googleapis|bootstrapcdn|fontawesome)\.com.*$/,
+  new StaleWhileRevalidate({cacheName: "goodSync-3rdParty"})
+  );
 
+ registerRoute(
+   "http://localhost:5555/api/auth",
+   loginHandler, "POST"
+ );
+
+ registerRoute(
+  /http:\/\/localhost:5555\/api\/zips\/.*/, 
+  dataRemoveHandler, "DELETE"
+);
+
+registerRoute(
+  "http://localhost:5555/api/zips", 
+  dataUploadHandler, "POST"
+);
+
+
+
+
+async function loginHandler({ request }) {
+  try {
+    let res = await fetch(request);  
+    if(res && res.ok) {
+      return res;
+    }
+    else {
+      let res = await matchPrecache("/offline");
+
+      return res;
+    }
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
+async function dataUploadHandler({ request }) {
+  try {
+    var req = request.clone();
+    if(isOnline) {
+      let res = await fetch(request);
+      if(res && res.ok) {
+        return res;
+      }
+      //hierdurch fangen wir ab wenn Server Down aber CLient Online
+      else {
+        await sendMessage({ upload: false});
+        await pushRequest(req, "upload");
+        let res = await checkData();
+        console.log("dataUploadHandler", res); 
+
+        return res;
+      }
+    }
+    else {
+      await sendMessage({ upload: false});
+      await pushRequest(req, "upload");
+      let res = await replayFetch();
+      console.log("dataUploadHandler", res);
+
+      return res;
+    }
+  }
+  catch(err) {
+    console.error(err);
+  } 
+}
+
+
+async function dataRemoveHandler({ request }) {
+  try {
+    var req = request.clone();
+    if(isOnline) {
+      const res = await fetch(request);  
+      if(res && res.ok) {
+        return res;
+      }
+      //hierdurch fangen wir ab wenn Server Down aber CLient Online
+      else {
+        await sendMessage({ upload: false});
+        await pushRequest(req, "remove");
+        let res = await replayFetch();
+        console.log("dataRemoveHandler", res); 
+
+        return res;
+      }
+    }
+    else {
+        await sendMessage({ upload: false});
+        await pushRequest(req, "remove");
+        let res = await replayFetch();
+        console.log("dataRemoveHandler", res);
+
+        return res;
+    }
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+/*
+async function dataFetchHandler({ request }) {
+  fetchAllData();
+}
+*/
+
+async function checkData() {
+  let allRequestObjects =  await getAllRequestObjects();
+  for (let requestObject of allRequestObjects) {
+      console.log("sw id",requestObject.id);
+      //check time check prio check expiry check dirty
+      queue.unshift(requestObject);
+    }
+    let res = await replayFetch();
+    console.log("checkData",res);
+
+    return res;
+}
+
+
+async function replayFetch() {
+  var requestObject;
+  while(requestObject = await getRequest()){
+    console.log("while");
+    let request = new Request(requestObject.request.url, requestObject.request);
+    var req = request.clone();
+    try { 
+        await delay(5000);
+        
+        if(requestObject.operation === "upload") {
+          var res = await fetch(req);
+          console.log("upload", res);
+          let clonedRes = res.clone();
+
+          if (res && res.ok) {
+            await sendMessage({ upload: true});
+            await removeRequestObject(requestObject.id);         
+            let data = await clonedRes.json();    
+            console.log("res ok");
+            let mongoID = data._id;
+            let keyPath = data.id;
+            console.log(data._id);
+            await addMongoID(mongoID, keyPath);
+        }
+        else {
+          console.log("unshift")
+          queue.unshift(requestObject);
+          //register push or sync event
+        }
+         }
+        if(requestObject.operation === "remove") {
+          const mongoID = await getMongoID();
+          //hier eigene Funktion "safeRequest"
+          var res = await fetch(req);
+          console.log(" remove", res);
+          if(res && res.ok) {
+            await sendMessage({ upload: true});
+            await removeRequestObject(requestObject.id); 
+          }
+          else {
+            console.log("unshift")
+            queue.unshift(requestObject);
+            await addIdToRemove(mongoID);
+            //register push or sync event
+          }
+        }
+    }
+      catch (err) {
+        console.error(err);
+      }
+    }
+    return res;
+      
+  }
+        
+  
 async function main() 
 {
   try {
@@ -66,6 +246,15 @@ function onMessage({ data }) {
 	}
 }
 
+
+function onSync(evt) {
+  console.log("onSync")
+  console.log(evt)
+  if(evt.tag === "toSend") {
+    console.log("tag")
+    evt.waitUntil(uploadData());
+  }
+}
 
 async function onInstall(evt) {
 	console.log(`Service Worker (${version}) installed... `);

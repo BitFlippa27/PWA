@@ -14,7 +14,13 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
+
+import { fromPairs } from "lodash";
+
+//var isEqual = require("lodash.isequal");
+=======
 import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects, dexie } from "../dexie";
+
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadAllServerData = () => async (dispatch) => {
@@ -173,6 +179,10 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
     });
 
     dispatch({ type: SERVERDATA_REMOVED_SUCCESS });
+    }
+    else {
+      const toRemove = await getRequest();
+      await removeRequestObject(toRemove.id);
     }
   }
   catch(err) {

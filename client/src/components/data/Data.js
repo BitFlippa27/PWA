@@ -1,187 +1,71 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
-import { useQuery, useMutation } from "@apollo/client";
+import React, { Fragment, useEffect } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import Loader from "../Loader";
 import DataItem from "./DataItem";
-import { VariableSizeList as List } from 'react-window';
-import { useSelector } from "react-redux";
-import { FETCH_CITIES_QUERY, CREATE_CITY_MUTATION } from "../../graphql/queries";
-import * as updateFunctions from "../../graphql/updateFunctions";
-var uniqid = require('uniqid');
-
+import DataForm from "./DataForm";
+import { loadAllLocalData, loadAllServerData } from "../../actions/data";
 
 //TODO: Button für loadServerData
 
-const Data = () => {
+const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
   useEffect(() => {
-    
-  })
-  console.log("Data")
-  
-  const cities = useQuery(FETCH_CITIES_QUERY);
-  
-  var isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  var username = useSelector((state) => state.auth.user);
-  const [formData, setFormData] = useState({
-    city: "",
-    pop: "",
-  });
+    loadAllLocalData();
+    }
+  ,[loadAllLocalData]);
 
-  const { city,  pop } = formData;
+  const rows = allData;
+  console.log(rows);
 
-  const [addCity, newCity] = useMutation(CREATE_CITY_MUTATION);
   
-  if(newCity.error)
-    console.log(newCity);
 
-  if(!isAuthenticated)
-    return <Redirect to="/login"/>;
-  
-  if(cities.error)
-    console.log(cities.error)
-  
- 
-    
-
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });    
-  }
-      
-  
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    if(formData.city === "" || formData.pop === "") 
-      return;
-    
-    const { city, pop } = formData;
-
-    const optId = Math.round(Math.random() * 1000000) + '';
-    addCity({
-      variables: {city: city, pop: pop, optimisticID: optId},
-      update: updateFunctions.createCity,
-      context: {
-        tracked: true,
-        id: optId,
-        serializationKey: "MUTATION"
-      },
-      optimisticResponse: {
-        __typename: "Mutation",
-        createCity: {
-          __typename: "City", 
-          id: optId,
-          optimisticID: optId,
-          city: city,
-          pop: pop,
-        }
-      },
-      
-    });
-    setFormData({ city: "", pop: "" });
-  };
-  
-  if(cities.loading){
-    return <Loader/>;
-  }
-  return cities.data.getAllCities.length < 100 ? <Loader/> : (
+  return user === null || loading || allData.length < 27000 ? (
+    <Loader />
+  ) : (
     <Fragment>
       <section className="container-data">
       <h1 className="large text-info"> Alle Daten </h1>
-      <p className="lead"> 
-        <i className="fas fa-user"></i> Willkommen 
+      <p className="lead">
+        <i className="fas fa-user"></i> Willkommen {user && user.name}
       </p>
-      
-      <h5 className="text-primary">Neuer Datensatz</h5>
-      <div className="data-input">
-      
-        <Fragment>
-      
-        <div className="data-input2">
-          <form className="form ">
-            <input
-              className="form-control"
-              type="text"
-              name="city"
-              placeholder="Stadt"
-              value={city}
-              onChange={(e) => onChange(e)}
-              required
-            ></input>
-          </form>
-          </div>
-          <div className="data-input2">
-          <form className="form ">
-            <input
-              className="form-control"
-              type="number"
-              name="pop"
-              placeholder="Bevölkerung"
-              value={pop}
-              onChange={(e) => onChange(e)}
-              required
-            ></input>
-              </form>
-        </div>
-
-          <div>
-          <form className="form " onSubmit={(e) => onSubmit(e)}>
-            <input type="submit" className="btn btn-primary" value="Submit" />
-          </form>
-        </div>
-     
-      
-    </Fragment>
-      </div>
 
       <div className="table-responsive">
-          <table className="table table-striped table-dark">
+          <table className="table table-bordered">
             <thead>
               <tr>
-                <th  scope="col">
-                  <strong>Stadt</strong>
+                <th key={rows.title} scope="col">
+                  Marke
                 </th>
-                <th scope="col">
-                  <strong>Bevölkerung</strong>
+                <th key={rows.description} scope="col">
+                  Modell
                 </th>
-                <th scope="col">
-                  <strong>Aktion</strong> 
-                </th>
+                <th scope="col">Aktion </th>
               </tr>
             </thead>
             <tbody>
-              {cities.data.getAllCities.slice(cities.data.getAllCities.length - 10, cities.data.getAllCities.length).map( (row) => (
-                <DataItem key={row.id}  row={row} />
+              {rows.slice(rows.length - 5, rows.length).map( (row) => (
+                <DataItem key={row.id}  data={row} />
               ))}
+
+              <DataForm />
             </tbody>
           </table>
-        </div>
+      </div>
       </section>
     </Fragment>
   );
 };
 
+Data.propTypes = {
+  auth: PropTypes.object.isRequired,
+  loadAllLocalData: PropTypes.func.isRequired,
+  loadServerData: PropTypes.func.isRequired,
+  allData: PropTypes.array.isRequired,
+};
 
-export default Data;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  allData: state.data.allData,
+});
 
-
-/*
-const [createCity, { error }] = useMutation(CREATE_CITY_MUTATION, {
-    variables: formData,
-    update(proxy, result) {
-      const data = proxy.readQuery({
-        query: FETCH_CITIES_QUERY
-      });
-      
-      
-      //const newGetAllCities = [...data.getAllCities, result.data.createCity ];
-      //console.log(newGetAllCities);
-      const newCache ={...data, getAllCities: [...data.getAllCities, result.data.createCity ]};
-      console.log(newCache)
-
-      proxy.writeQuery({query: FETCH_CITIES_QUERY, data: newCache });
-    },
-    onError(err){
-      console.log(err)
-    }
-  });
-  
-*/
+export default connect(mapStateToProps, { loadAllLocalData, loadAllServerData })(Data);
