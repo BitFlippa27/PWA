@@ -24,7 +24,7 @@ export const loadAllServerData = () => async (dispatch) => {
   const token = localStorage.getItem("token");
   
   try {
-    const res = await fetch("http://localhost:5555/api/zips", {
+    const res = await fetch("http://localhost:5555/api/zip2", {
       method: "GET",
       mode: "cors",
       cache: "no-cache",
@@ -113,7 +113,7 @@ export const insertData = (formData) => async (dispatch) => {
 
   try {
     const postData = JSON.stringify(data); 
-    let res = await fetch("http://localhost:5555/api/zips", {
+    let res = await fetch("http://localhost:5555/api/zip2", {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -164,7 +164,7 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
     if(mongoID) { //bedeutet Datensatz wurde Offline hinzugefügt und Offline gelöscht (keine MongoID vorhanden)
       await addIdToRemove(mongoID);
 
-      await fetch(`http://localhost:5555/api/zips/${mongoID}`, {
+      await fetch(`http://localhost:5555/api/zip2/${mongoID}`, {
       method: "DELETE",
       mode: "cors",
       cache: "no-cache",

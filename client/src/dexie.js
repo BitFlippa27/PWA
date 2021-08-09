@@ -23,13 +23,12 @@ openDB();
 
 
 export async function addData(formData) {
-  const { city, zip, pop } = formData;
+  const { title, description } = formData;
 
   try {
     let id = await dexie.cities.add({
-      city: city,
-      zip: zip,
-      pop: pop
+      title: title,
+      description: description,
     });
     
     return id;
@@ -79,7 +78,7 @@ export async function getMongoID() {
 
 export async function getRequest() {
   try {
-    const request = await dexie.requests.orderBy("id").first();
+    const request = await dexie.requests.orderBy("id").first();//oder Timestamp
     console.log(request);
   
     return request;

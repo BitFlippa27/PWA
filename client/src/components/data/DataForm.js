@@ -5,11 +5,10 @@ import { insertData, removeData } from "../../actions/data";
 
 const DataForm = ({ insertData }) => {
   const [formData, setFormData] = useState({
-    city: "",
-    zip: "",
-    pop: "",
+    title: "",
+    description: "",
   });
-  const { city, zip, pop } = formData;
+  const { title, description } = formData;
 
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,7 +17,7 @@ const DataForm = ({ insertData }) => {
     e.preventDefault();
     if (!formData) 
       return;
-    setFormData({ city: "", zip: "", pop: "" });
+    setFormData({ title: "", description: "" });
     await insertData(formData);
   };
 
@@ -32,7 +31,7 @@ const DataForm = ({ insertData }) => {
               type="text"
               name="city"
               placeholder="Stadt"
-              value={city}
+              value={title}
               onChange={(e) => onChange(e)}
               required
             ></input>
@@ -45,26 +44,12 @@ const DataForm = ({ insertData }) => {
               type="number"
               name="zip"
               placeholder="PLZ"
-              value={zip}
+              value={description}
               onChange={(e) => onChange(e)}
               required
             ></input>
           </form>
         </th>
-        <th>
-          <form className="form ">
-            <input
-              className="form-control"
-              type="number"
-              name="pop"
-              placeholder="Bevölkerung"
-              value={pop}
-              onChange={(e) => onChange(e)}
-              required
-            ></input>
-          </form>
-        </th>
-
         <th>
           <form className="form " onSubmit={(e) => onSubmit(e)}>
             <input type="submit" className="btn btn-primary" value="Submit" />

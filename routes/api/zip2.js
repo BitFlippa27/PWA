@@ -25,9 +25,8 @@ router.post("/",auth, async (req, res) => {  //auth nicht vergessen
     try {
         //const user = await User.findById(req.user.id).select("-password");
         const newDataSet = new Zips({
-            city: req.body.city,
-            zip: req.body.zip,
-            pop: req.body.pop,
+            title: req.body.title,
+            description: req.body.description,
             id: req.body.id
         });
 

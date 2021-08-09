@@ -3,13 +3,12 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { removeData } from "../../actions/data";
 
-const DataItem = ({ data: {id, _id, city, zip, pop }, removeData }) => {
+const DataItem = ({ data: {id, _id, title, description }, removeData }) => {
   return (
     <Fragment>
       <tr key={id}>
-        <th scope="col">{city}</th>
-        <th scope="col">{zip}</th>
-        <th scope="col">{pop}</th>
+        <th scope="col">{title}</th>
+        <th scope="col">{description}</th>
         <th scope="col">
           <button className="actions"  >
             <i className="fas fa-pencil-alt" />{" "}
