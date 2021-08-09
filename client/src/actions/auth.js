@@ -11,49 +11,16 @@ import {
     LOGOUT,
     CHECK_OUT
 } from "./types";
+import { useSelector } from "react-redux";
+import jwtDecode from "jwt-decode";
 
 
-//Load User
-export const loadUser = () =>  async dispatch => {
-  if("token" in localStorage) {
-    const token = localStorage.getItem("token");
-      try {
-        //const res = await axios.get("/api/auth");
-        const res = await fetch("http://localhost:5555/api/auth", {
-          method: "GET",
-          mode: "cors",
-          cache: "no-cache",
-          headers:  {
-            "Content-Type" : "application/json",
-            "X-Auth-Token" :  `${token}` 
-          },
-          credentials: "omit"
-        });
 
-        const user = await res.json();
-        dispatch({
-          type: USER_LOADED,
-          payload: user
-        });
-      }
-      catch(err) {
-        console.error(err);
-      }     
-    }
-    else {
-      dispatch({
-        type: USER_LOADED_FAILED
-      });
-      dispatch({ type: LOGOUT });
-    }
-}
 
 export const loadUserOffline = () =>  async dispatch => {
   if("token" in localStorage) {
     try {
-      dispatch({
-        type: USER_LOADED
-      });
+     
     }
     catch(err) {
       console.error(err);
@@ -62,7 +29,6 @@ export const loadUserOffline = () =>  async dispatch => {
   else {
     alert("Authentizierungsfehler, Melden Sie sich an sobald Sie Online sind.");
     dispatch({ type: USER_LOADED_FAILED });
-    dispatch({ type: LOGOUT });
   }
 }
     
@@ -160,8 +126,44 @@ export const logout = () => async (dispatch) => {
   dispatch({ type: LOGOUT});
 };
 
+export const loginUserAction = (userData) => ({type: "LOGIN_SUCCESS",
+  payload: userData})
+  
+//Load User
+export const loadUser = () =>  async dispatch => {
+  const token = localStorage.getItem("token");
+  if(!navigator.onLine){
+    if(token){
+      const decodedToken = jwtDecode(token);
+      if(decodedToken.exp * 1000 < Date.now()){
+        localStorage.removeItem("token");
+        dispatch({type: USER_LOADED_FAILED});
+      }
+      else
+        dispatch({type: USER_LOADED, payload: token});
+      
+      dispatch({type: USER_LOADED, payload: token});
+    }
+    else
+      dispatch({type: USER_LOADED_FAILED});
+  }
+  else 
+    if(token){
+      const decodedToken = jwtDecode(token);
+      if(decodedToken.exp * 1000 < Date.now()){
+        localStorage.removeItem("token");
+        dispatch({type: USER_LOADED_FAILED});
+    }
+    dispatch({type: USER_LOADED, payload: token});
+  }
+    else
+      dispatch({type: USER_LOADED_FAILED});
 
+ 
 
+}
+    
+ 
   
 /*
 export const loadAllUsers = () => async dispatch => {

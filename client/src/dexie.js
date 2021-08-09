@@ -3,12 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 var taskQueue = [];
 
-export const dexie = new Dexie("AllCities");
+export const dexie = new Dexie("Queries");
 dexie.version(1).stores({
-    cities: "++id, _id",
-    requests: "++id, _id",
-    users: "_id",
-    currentUser: "_id"
+    queue: "id++"
 });
 
 async function openDB() {
@@ -23,12 +20,11 @@ openDB();
 
 
 export async function addData(formData) {
-  const { city, zip, pop } = formData;
+  const { city, pop } = formData;
 
   try {
     let id = await dexie.cities.add({
       city: city,
-      zip: zip,
       pop: pop
     });
     
@@ -38,6 +34,50 @@ export async function addData(formData) {
     console.error(err);
   }
 }
+
+export async function addQuery(query) {
+
+  try {
+   await dexie.queue.add(query);
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+
+export async function getQueries() {
+  try {
+    const allQueries = await dexie.queue.toArray();
+    const clone = [...allQueries];
+
+    return clone;
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+export async function addQueries(queries) {
+  try {
+    await dexie.queue.bulkAdd(queries);
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
+export async function clearTable() {
+  try {
+    await dexie.queue.clear();
+    
+  } 
+  catch (err) {
+    console.error(err);
+  }
+}
+
+
 
 
 export async function addRequest(entry) {

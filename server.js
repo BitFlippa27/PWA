@@ -1,19 +1,32 @@
-const express = require("express");
-const cors = require("cors");
-const app = express();
-const connectDB = require("./config/db");
+const { ApolloServer, PubSub } = require('apollo-server');
+const resolvers = require("./graphql/resolvers");
+const typeDefs = require("./graphql/typeDefs");
+const connectDB = require("./config/mongoDB");
+
+const pubsub = new PubSub();
+
+const PORT = process.env.port || 5555;
+
+const startServer = async () => {
+  try {
+
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: ({ req }) => ({ req })
+    });
+
+    await connectDB();
+
+    server.listen({ port: PORT }).then(res => {
+      console.log(`🚀 Server ready at ${res.url}`);
+    });
+  } 
+  catch (err) {
+    console.error(err);
+  }
+};
+
+startServer();
 
 
-app.get("/", (req, res) => res.send("Server läuft!"));
-app.use(cors());
-connectDB();
-
-const PORT = process.env.PORT || 5555;
-app.listen(PORT, () => console.log(`Server gestartet auf Port ${PORT}`));
-
-//BodyParser Middleware um auf req.body zuzugreifen
-app.use(express.json({ extended : false}));
-
-app.use("/api/users", require("./routes/api/users"));
-app.use("/api/auth", require("./routes/api/auth"));
-app.use("/api/zips", require("./routes/api/zips"));

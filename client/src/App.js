@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./index.css";
 import Homepage from "./components/Homepage";
@@ -8,43 +8,101 @@ import Navbar from "./components/Navbar";
 import Alert from "./components/Alert";
 import Data from "./components/data/Data";
 import Pictures from "./components/Pictures";
-import PrivateRoute from "./components/routes/PrivateRoute";
 import Offline from "./components/auth/Offline";
-import { loadUser, loadUserOffline } from "./actions/auth";
+import { loadUser } from "./actions/auth";
 import { Provider } from "react-redux"; //connects React to Redux
 import store from "./store";
+import  { ApolloProvider, getApolloContext, useQuery } from "@apollo/client/react";
+import { IS_LOGGED_IN, FETCH_CITIES_QUERY } from "./graphql/queries";
+import Loader from "./components/Loader";
+import { InMemoryCache, ApolloClient, from } from "@apollo/client";
+import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
+import getApolloClient, { cache, authLink, httpLink, links, trackerLink, serializingLink, queueLink, errorLink, retryLink } from "./ApolloLinks";
+import * as updateFunctions from "./graphql/updateFunctions";
+import { HttpLink, createHttpLink, ApolloLink } from "@apollo/client";
+import { RetryLink } from "@apollo/client/link/retry";
+import { setContext } from 'apollo-link-context';
+import { onError } from 'apollo-link-error';
+import QueueLink from 'apollo-link-queue';
+import SerializingLink from 'apollo-link-serialize';
+import localForage from "localforage";
+import { getAllQueries, checkOfflineRemove, localForageStore } from "./localForage";
 
 
 
-if(navigator.onLine === true) {
+const token = localStorage.getItem("token");
+
+if(token)
   store.dispatch(loadUser());
-}
-if(navigator.onLine === false) {
-  store.dispatch(loadUserOffline());
-}
-
 
 const App = () => {
-  return (
-    <Provider store={store}>
-      <Router>
-        <Fragment>
-          <Route exact path="/" component={Homepage} />
-          <Navbar />
-          <section className="container">
-          <Alert />
-            <Switch>
-              <Route exact path="/pictures" component={Pictures} />
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/offline" component={Offline} />
-              <PrivateRoute exact path="/data" component={Data} />
-            </Switch>
-            </section>
-        </Fragment>
-      </Router>
-    </Provider>
+  const [client, setClient] = useState();
+
+  useEffect(() => {
+    getApolloClient().then((client) => {
+      setClient(client);
+      console.log("getApolloClient")
+    })
+  }, []);
+
   
+  useEffect(() => {
+    if (!client) 
+      return
+
+    const execute = async () => {
+      try {
+        
+        const trackedQueries = await getAllQueries();
+        
+       
+        if(trackedQueries.length !== 0){
+          trackedQueries.map(async({ variables, query, optimisticResponse, operationName }) => {
+            await client.mutate({
+                variables,
+                mutation: query,
+                update: updateFunctions[operationName],
+                optimisticResponse: optimisticResponse,
+              });
+            });
+
+        }
+          
+        } catch (err) {
+          // A good place to show notification
+          console.error(err);
+        }
+        
+        
+    }
+
+    execute();
+  }, [client]);
+  
+  if(!client)
+    return <Loader/>;
+
+  return (
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <Router>
+          <Fragment>
+            <Route exact path="/" component={Homepage} />
+            <Navbar />
+            <section className="container">
+            <Alert />
+              <Switch>
+                <Route exact path="/pictures" component={Pictures} />
+                <Route exact path="/register" component={Register} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/offline" component={Offline} />
+                <Route exact path="/data" component={Data}  />
+              </Switch>
+              </section>
+          </Fragment>
+        </Router>
+      </Provider>
+    </ApolloProvider>
    
   );
 };

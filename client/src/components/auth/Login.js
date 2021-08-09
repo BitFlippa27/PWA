@@ -1,35 +1,57 @@
 import React, { Fragment, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { login } from "../../actions/auth";
-import { checkIn } from "../../actions/attendance";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { loginUserAction } from "../../actions/auth";
+import { useMutation } from "@apollo/client";
+import { setAlert } from "../../actions/alert";
+import { result } from "lodash";
+import Data from "../data/Data";
+import  store  from "../../store";
+import { LOGIN_USER } from "../../graphql/queries";
+import * as updateFunctions from "../../graphql/updateFunctions";
 
 
-const Login = ({ login, isAuthenticated, checkIn }) => {
+
+
+const Login = () => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
+  
+  
+  
   const { email, password } = formData;
 
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData) 
-      return;
-    await login(email, password);
-    checkIn();
-  };
-
-  if (isAuthenticated) {
-    return <Redirect to="/data" />;
+  const onSubmit = async e => {
+    try {
+      e.preventDefault();
+      if(!formData)
+        return;
+      else{
+        loginUser({
+          variables: formData,
+          update: updateFunctions.login
+        });
+        
+      }
+    }
+    catch (err) {
+      console.error(err);
+    }
   }
 
-  return (
+  const [loginUser, login] = useMutation(LOGIN_USER); 
+
+  if(login.error)
+    console.log(login.error)
+
+  return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
       <section className="container-home">
         <h1 className="large text-info">Anmelden</h1>
@@ -68,14 +90,5 @@ const Login = ({ login, isAuthenticated, checkIn }) => {
   );
 };
 
-Login.propTypes = {
-  login: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool,
-  checkIn: PropTypes.func.isRequired,
-};
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-});
-
-export default connect(mapStateToProps, { login, checkIn })(Login);
+export default Login;

@@ -14,10 +14,13 @@ import {
 
 } from "./types";
 import { setAlert } from "./alert";
-import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects, dexie, getRequest, removeRequestObject } from "../dexie";
+
 import { fromPairs } from "lodash";
 
 //var isEqual = require("lodash.isequal");
+=======
+import { addData, addAllData, getAllData, addMongoID, removeEntry, addIdToRemove, getAllRequestObjects, dexie } from "../dexie";
+
 
 //Load entire Data from MongoDB and migrate to Local Database Dexie
 export const loadAllServerData = () => async (dispatch) => {
@@ -185,4 +188,8 @@ export const removeData = (keyPath, mongoID) => async dispatch => {
   catch(err) {
     console.error(err);
   }
+}
+
+export const addCityAction = (formData) => {
+  const { city, pop } = formData;
 }

@@ -33,14 +33,11 @@ const Data = ({ auth: { user, loading }, allData, loadAllLocalData }) => {
           <table className="table table-bordered">
             <thead>
               <tr>
-                <th key={rows.city} scope="col">
-                  Stadt
+                <th key={rows.title} scope="col">
+                  Marke
                 </th>
-                <th key={rows.zip} scope="col">
-                  ZIP
-                </th>
-                <th key={rows.pop} scope="col">
-                  Bevölkerung
+                <th key={rows.description} scope="col">
+                  Modell
                 </th>
                 <th scope="col">Aktion </th>
               </tr>

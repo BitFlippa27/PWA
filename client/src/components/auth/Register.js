@@ -1,44 +1,66 @@
 import React, { Fragment, useState } from 'react'
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
 import { Link, Redirect } from "react-router-dom";
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
-
-import PropTypes from 'prop-types';
-
-
+import { REGISTER_USER } from "../../graphql/queries";
+import * as updateFunctions from "../../graphql/updateFunctions";
 
 
-const Register = ({ setAlert, register, isAuthenticated }) => {
+const Register = () => {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name:"",
     email:"",
     password: "",
-    password2: ""
+    confirmPassword: ""
   });
 
-  const {name, email, password, password2} = formData;
+  const {name, email, password, confirmPassword} = formData;
 
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value});
   }
 
-  const onSubmit = async e => {
-    e.preventDefault();
-    if(password !== password2){
-      setAlert("Passwörter stimmen nicht überein", "danger");
-    }
-    if(!formData)
-      return;
-    else{
-      await register({ name, email, password});
-    }
-  }
-  if(isAuthenticated) {
-    return <Redirect to="/login" />;
-  }
+  const [addUser, { loading }] = useMutation(REGISTER_USER, {
+    update(_, result){
+  
+      //setAlert("Account erstellt", "success");
+    },
+    onError(err){
+      console.log(err);
+    },
+    
+  });
 
-  return (
+  const onSubmit = async e => {
+    try {
+      e.preventDefault();
+      if(password !== confirmPassword){
+        setAlert("Passwörter stimmen nicht überein", "danger");
+        return;
+      }
+      if(!formData)
+        return;
+      else{
+        addUser({
+          variables: formData,
+          update: updateFunctions.register
+        });
+  
+      }
+    }
+    catch (err) {
+      throw new Error(err);
+    }
+  }
+   
+
+
+  return isAuthenticated ? <Redirect to="/data"/> : (
     <Fragment>
      <section className="container-home">
 
@@ -79,8 +101,8 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
           <input 
             type="password"
             placeholder="Passwort bestätigen"
-            name="password2"
-            value={password2}
+            name="confirmPassword"
+            value={confirmPassword}
             onChange={e => onChange(e)}
 
           />
@@ -96,14 +118,9 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
   );
 }
 
-Register.propTypes = {
-  setAlert: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool
-}
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated
-})
 
-export default connect(mapStateToProps, { setAlert, register })(Register);
+
+
+
+export default Register;

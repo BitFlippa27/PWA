@@ -4,8 +4,11 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../actions/auth';
 import { checkOut } from "../actions/attendance";
+import { useSelector } from "react-redux";
+import store from '../store';
 
-const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
+const Navbar = () => {
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
   const authLinks = (
     <ul>
@@ -16,7 +19,7 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
         </Link>
       </li>
       <li>
-        <a onClick={()=>{ logout(); checkOut();}}href="/login">
+        <a onClick={()=>{ store.dispatch(logout()) }} href="/login">
           <i className="fas fa-sign-out-alt" />{' '}
           <span className="hide-sm">Ausloggen</span>  {/* responsive, just show icon on mobile devices */}
         </a>
@@ -37,7 +40,7 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
 
 
   return (
-    <nav className="navbar ">
+    <nav className="navbar">
       <h2>
         <Link to="/">
           <i className="fas fa-code" /> GoodSync
@@ -50,14 +53,4 @@ const Navbar = ({ auth: { isAuthenticated }, logout, checkOut }) => {
   );
 };
 
-Navbar.propTypes = {
-  logout: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  checkOut: PropTypes.func.isRequired
-}
-
-const mapStateToProps = state => ({
-  auth: state.auth
-});
-
-export default connect(mapStateToProps, { logout, checkOut })(Navbar);
+export default Navbar;

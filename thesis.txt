@@ -1,0 +1,357 @@
+\documentclass[11pt,singlespacing]{article}
+\setlength{\marginparwidth}{2cm}
+\usepackage{glossaries}
+\usepackage[german]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{float}
+\usepackage{tgbonum}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{xcolor}
+\definecolor{LightGray}{gray}{0.9}
+\usepackage{hyperref}
+\usepackage{dirtytalk}
+\selectlanguage{german}
+\makeglossaries
+\usepackage{listings}
+\lstset{language=Python}
+\usepackage{graphicx}
+\graphicspath{ {./Pics/} }
+\usepackage{xcolor}
+\usepackage[a4paper, total={5in, 8in}]{geometry}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\usepackage{minted}
+\usepackage{hyphenat}
+\usepackage{csquotes}
+\usepackage[style=phys,backend=bibtex]{biblatex}
+
+\usemintedstyle{emacs}
+
+
+\addbibresource{references.bib} 
+
+
+
+\begin{document}
+
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+{\huge \bfseries Ravensburg-Weingarten University of Applied Science} \\[0.7cm] % Name of your
+\begin {center}
+\includegraphics [width=2cm, height=2cm] {Pics/rwu.jpg} 
+\end {center}
+
+\textsc{\LARGE Bachelor Thesis  } \\[0.3cm] % Name of your
+\textsc{\LARGE Angewandte Informatik} \\[0.3cm] 
+\textsc{\large WS 20/21}\\[0.5cm] % Minor heading such as course title
+\textsc{\bfseries Fakultät Elektrotechnik und Informatik}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.5cm]
+{ \huge \bfseries Handling von großen Datenmengen 
+ bei begrenzter Bandbreite } \\[0.3cm] 
+ { \huge \bfseries in Single Page Progressive WebApps } \\[0.3cm] 
+ { \huge \bfseries für Cloud Computing Anwendungen } 
+
+
+\HRule \\[1.5cm]
+
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Autor:}\\
+Dennis \textsc{Erdelean} % Your name
+\emph{}\\
+\textsc{26806}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Professor:} \\
+Prof. Dr.-Ing. Thorsten \textsc{Weiss} % Supervisor's Name
+\end{flushright}
+\end{minipage}\\[2cm]
+
+
+
+{\large 09. Dezember 2020}\\[2cm] % Date, change the \today to a set date if you want to be precise
+
+
+
+
+
+
+
+
+
+ 
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+\newpage
+ 
+
+\section*{Abstract}
+Diese wissenschaftliche Arbeit soll Strategien untersuchen in wie weit es möglich ist, eine Webanwendungen Offline zu nutzen und zusätzlich Daten mit einem Server abzugleichen, mit der Bedingung keine verringerte User Experience zu schaffen. Die grössten Herausforderungen in der Entwicklung  Offline-funktionsfähiger Applikationen, bei denen eine Internetverbindung geschäftsentscheidend ist, zeigen sich vor allem in der Synchronisierung von Daten von einem Client zu einem Server und vice versa, sowie das Management zeitgleicher Änderungen der Datensätze mehrerer Nutzer. Es gilt diese Problemstellungen genauer zu beleuchten. Die Idee ist es, eine  Multi User Webapplikation als Single-Page-App zu entwicklen, bei der es unabhängig von der Internetverbindung möglich ist,  nahezu volle Funktionalität beizubehalten und keine Dateninkonsistenz zu erzeugen.
+Das Entwicklungskonzept der Progressive Web App unter Verwendung von Cloud Computing bietet sich hier als ein vielversprechender Ansatz an.
+Den gößten Teil für die Offline-Funktionalität trägt dabei die sogenannte ServiceWorker API bei, welche es Web Apps ermöglicht auch Offline zu funktionieren. Sie kann Netzwerkanfragen abfangen, speichern und Antworten liefern, sowie das Ausführen ursprünglicher Aktionen bei wiederkehrender Verbindung. Für ausgelagerte Datenpflege und somit schnellere Ladezeiten, schafft das Cloud-Computing zusätzlich eine Abhilfe.
+Es werden Lösungen präsentiert wie auch bei mangelnder oder gar fehlender Konnektivität auf die Web App zugegriffen werden kann, wie Daten im Web Browser gespeichert werden und wie man den lokalen Zustand der Progressive Web App mit einem entfernten Server synchronisiert. 
+
+
+
+
+
+
+
+\newpage
+
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+\tableofcontents
+\newpage
+
+
+\section{Einleitung} 
+    \subsection{Problemstellung} 
+    
+    Die Zahl der Internetnutzung durch mobile Geräte überstieg 2016 zum ersten Mal derer von Desktop PC's.  Im Gegensatz zu Desktop PC's, welche permanent kabelgebunden, physischen Zugriff zum Internet haben, ist die Konnektivität mobiler Geräte auch in dicht vernetzten Gebieten keine Garantie. Trotz all dem, entwickeln wir größtenteils immer noch Applikationen unter der Annahme, jeder habe eine große und immer verfügbare Breitbandverbindung. Unglücklicherweise führt das zu schlechter User Experience bishin zu erheblichen Einbußen für den Erfolg von Unternehmen.
+    In den meisten Fällen ist eine Applikation bei fehlender Verbindung nicht mehr nutzbar. Möchte man Daten zu einem Server hochladen, verändern oder löschen während man Offline ist, gibt es bei herkömmlichen Applikationen kaum Ansätze wie damit umgegangen werden soll. 
+    \subsection{Motivation und Zielsetzung}
+    \begin{itemize}
+        \item Zugriff von überall miteinbringen und paar zeilen nur über Vorteile von PWA generell mehr über grundlegegende Vorteile von PWA erwähnen
+    \end{itemize}
+    Die Motivation dieser Bachelor-Thesis enstand vor allem durch den Mangel an umgesetzen offlinefähigen Applikationen bei denen der Quelltext frei einsehbar ist. Vor allem im Hinblick auf die Datensynchronisation mangelt es an Lösungsansätzen. \par
+    Aus der Beobachtung vieler bekannter Webapplikationen auf dem weltweiten Markt, ist realtiv eindeutig zu erkennen, dass diese nicht mit dem Offline-First Gedanken entwickelt wurden, von dem eigentlich schon 2008 in einer Veröffentlichung des World Wide Web Consortium (W3C) die Rede war. In diesem Artikel \autocite{w3c1} wurden verschiedene Features von HTML5 vorgestellt, welche es ermöglichen Webapplikationen zu erstellen, die Offline arbeiten. Auch die Einführung der 2017 eingeführten Technologie unter dem Marketingnnamen, Progressive Web App, von Alex Russell \autocite{alex-russell}, scheint kein flächendeckendes Umdenken hervorgerufen zu haben. Eine scheinbar revolutionierende Technologie, der langsam aber sicher immer mehr Aufmerksamkeit geschenkt wird.
+    \par Besonders in einer weiteren Veröffentlichung des anerkannten W3C, in dem es um die Best Practices mobiler Webentwicklung geht, wird dem Entwickler empfohlen, angemessene Speichermöglichkeiten für den Client zu nutzen und dem Entwickler entsprechend vorgestellt. \par
+    Wenn Entwickler mit dem Gedanken Applikationen entwicklen würden, dass eine Internetverbindung nur eine Erweiterung wäre, anstatt einer Vorraussetzung, würden der Fokus sich besimmt in Richtung verbesserter User Experience bewegen. \par
+    Mit der Einführung von Single-Page-Applikationen populärer Frameworks wie React.js, Vue.js und Angular ist es Softwareentwicklern nun möglich dynamische Webseiten zu erstellen und somit die Logik im Client zu beherbergen. Damit  können  Teile einer Webseite geladen werden, ohne dem Projekt zusätzliche Serverlogik hinzuzufügen. \par Ein weiteres geschicktes Hilfsmittel ist das Cloud-Computing mit dem ebenso der eigene Server massiv entlastet werden kann. 
+    \par -----> Web Push Notification --->> native Applikationen ---> fokus zu viel auf mobile Webentwicklung
+    \par Nun, schaut man sich diese verfügbaren Werkzeuge an, scheint man sehr gut für die Entwicklung einer offlinefähigen Applikation gewappnet zu sein. Was uns aber zum nächsten Problem führt, der Synchronisation der Daten vom Client zum Server und umgekehrt. 
+    \par Hauptproblematik bei der Entwicklung von Offline Web Apps ist schlichtweg die korrekte Synchronisation der Daten zu einem Server und eine einheitliche Konsistenz der Daten für alle Teilnehmer. \par
+     Was passiert wenn ein Nutzer Daten zu einem Server hochladen möchte und der Server momentan nicht erreichbar ist ? Wie geht man damit um wenn mehrere Nutzer gleichzeitig einen Datensatz ändern und einer der beiden Nutzer dabei offline war ?  Wie kann man sich sicher sein, dass die Daten auch wirklich publiziert wurden und auch alle Nutzer diese Updates bekommen ?  Genau diese Fragen gilt es in dieser Arbeit zu erörtern. Im nächsten Abschnitt wird genauer auf diese Fragen eingegangen und dementsprechende Lösungsansätze präsentiert.
+    
+    
+   \subsection{Einsatzgebiete}
+   \subsection{Realtime Apps Trading !!! Bitcoin Kauf Zeitstempel}
+   \subsection*{Entfernte Unternehmensstandorte}
+   \subsection*{Routenplanung und Navigation}
+   \subsection*{Entfernte Unternehmensstandorte}
+   \subsection*{Bildungszwecke}
+   \begin{itemize}
+       \item PWA auf Chromebooks oder Tablets
+       \item von Zuhause Zugriff auf PWA
+       \item PWA ohne viel Aufwand in AppStore
+   \end{itemize}
+   https://metaduck.com/why-your-application-needs-to-be-offline-first/
+    \subsection{Methodik}
+     \autocite{w3c2} Datensync wird in dem W3C Artikel erwähnt
+    \subsection{Aufbau und Struktur}
+
+\section{Technologien}
+\subsection{Single-Page-App}
+\begin{itemize}
+    \item Was ist eine SPA
+    \item Einsatzgebiete
+    \item Vorteile
+    \item Einschränkungen
+\end{itemize}
+\subsection{Progressive Web App}
+\begin{itemize}
+    \item Als Erweiterung SPA
+    \item Einsatzgebiete,verschiedene Use Cases, worauf liegt der Fokus dieser App ? , was diese App nicht versucht oder versucht
+    \item Vorteile
+    \item Einschränkungen
+    \item Abgrenzung zur nativen App
+\end{itemize}
+
+\subsection{Cloud-Computing}
+\begin{itemize}
+    \item Was wird hier darunter verstanden
+    \item Einsatz in der Industrie
+    \item Vorteile
+    \item Einschränkungen
+    \item Architekturen (REST, Sockets, Cloudmessaging)
+\end{itemize}
+
+
+\subsection{Eingesetzte Technologien für einen Demonstrator}
+
+    \subsubsection*{JavaScript}
+   \subsubsection*{Node.js}
+   \subsubsection*{MongoDB}
+    \subsection*{ServiceWorker API}
+    \subsection*{Push API}
+    \subsection*{Notification API}
+    \subsection*{Cache API}
+    \subsubsection*{IndexedDB}
+    \subsubsection*{Frameworks}
+    \begin{itemize}
+        \item React.js
+        \item Dexie
+        \item Workbox
+    \end{itemize}
+  
+
+
+\section{Datensynchronisation und Datenhaltung} 
+\begin{itemize}
+\item Wie lange sind wir Offline ? Was sind die Anforderungen der APP
+    \item Problemstellung der Sync, offline, zeitweise offline, online Offline-Strategien
+    \item Wie werden Daten gesynced (Priorisierung über Eingabezeitpunkt oder Rollen oder beides
+    \item Technologien für den Demonsrator
+    \item IndexedDB und MongoDB
+    
+    \item ServiceWorker - Konzept - Umsetzung --> Ziel SW: Entlastung Client, Schnellere App
+\end{itemize}
+
+\subsection{Datensynchronisation}
+\subsection*{background-fetch}
+\subsection*{periodic background sync}
+\subsection*{background sync}
+
+\subsection{Datenhaltung}
+\subsection{ServiceWorker API}
+\subsection*{Herkömmliche erfolgreiche HTTP GET-Anfrage}
+\subsection*{Herkömmliche fehlgeschlagene HTTP GET-Anfrage}
+\subsection*{Erfolgreiche ServiceWorker HTTP GET-Anfrage}
+\subsection*{Fehlgeschlagene ServiceWorker HTTP GET-Anfrage}
+\subsection*{Herkömmliche erfolgreiche HTTP POST-Anfrage}
+\subsection*{Herkömmliche fehlgeschlagene HTTP POST-Anfrage}
+\subsection*{Erfolgreiche ServiceWorker HTTP POST-Anfrage}
+\subsection*{Fehlgeschlagene ServiceWorker HTTP POST-Anfrage}
+\subsection{Offline-Strategien}
+\subsection*{Network First}
+\subsection*{Network Offline First}
+\subsection*{Stale and revalidate}
+
+\section{Umsetzung und Implementierung eines Demonstrators}
+\begin{itemize}
+    \item DO NOT USE CHROME DEVTOOLS OFFLINE ️ The offline checkbox in DevTools only affects requests from the page. Service Worker requests will continue to go through.
+\end{itemize}
+\subsection{Anforderungen an die Applikation}
+Anforderungen von Progressive WebApp teilweise übernehmen und auf Applikation zuschneiden
+    Der Nutzer sollte in der Lage sein:
+    \begin{itemize}
+        \item sich die Applikation auf das mobile Gerät zu installieren
+        \item die Applikation öffnen zu können ohne zur URL des Web Browsers navigieren zu müssen
+        \item  sich bei bestehender Internetverbindung bei der Applikation anzumelden
+        \item  sich bei bestehender und fehlender Internetverbindung von der Applikation abzumelden
+        \item die Applikationsdaten Offline lesen und bearbeiten zu können
+        \item benachrichtigt zu werden, wenn Daten nicht erfolgreich zum Server hochgeladen werden können
+        \item benachrichtigt zu werden, wenn Daten zum Server erfolgreich hochgeladen wurden
+        \item benachrichtigt zu werden, wenn es neue Daten vom Server gibt
+        \item  eine Benachrichtigung zu erhalten, dass im Offline Modus vorhergehend getätigte Aktionen, noch ausgeführt werden, auch wenn sich der Nutzer danach abmeldet
+    \end{itemize}
+\subsection*{Konzept Server/Client}
+\subsection*{Umsetzung der Strategien}
+\subsection{Client}
+\subsection*{User Interface Grundgerüst}
+\subsection*{Datenoperationen}
+\subsection*{Datenhaltung im Browser}
+\subsection{ServiceWorker}
+Service Worker als eigenes Paradigma, weil es zwischen Client und Server sitzt
+\subsection*{Offline Zugriff}
+\subsection*{Synchronisation mit dem Server}
+Konkreter Ablauf in Stichworten Flußdiagramm
+Online
+\begin{itemize}
+    \item Client fügt Datensatz hinzu
+\end{itemize}
+\subsubsection{Offline Strategien}
+\begin{itemize}
+    \item Je nach Use Case andere Strategie
+    
+\end{itemize}
+\subsection{Server}
+\subsection{Cloud}
+\subsection{Sicherheit}
+    
+    
+        
+\newpage
+
+    
+\newpage
+
+
+\begin{itemize}
+    \item wenn auf Embedded Systems dann Fullscreen dann IndexedDB auch im Login/Register Bereich
+\end{itemize}
+
+\section {Evaluation}
+
+
+\section{Dikussion}
+Grenzen ? Möglichkeiten ?
+\begin{itemize}
+    \item backgorund-sync API
+    \item background-fetch API
+    \item Browsersupports beispiel Apple (Game streaming services)
+    \item Web Push Notification in Kombi mit GraphQL ?
+    \item Wie lange sind wir Offline ?
+    \item Was sind die Anforderungen der App
+\end{itemize}
+\section{Fazit}
+
+
+
+
+\clearpage
+
+\medskip
+
+\setlength{\emergencystretch}{4em}
+\printbibliography[
+heading=bibintoc,
+title={Literaturverzeichnis}
+] 
+\printbibliography[heading=subbibintoc,type=book,title={Bücher}]
+\printbibliography[heading=subbibintoc,type=inbook,title={Referenzen im Buch}]
+\printbibliography[heading=subbibintoc,type=thesis,title={Masterthesen}]
+\printbibliography[heading=subbibintoc,type=online,title={Weblinks}]
+
+
+
+
+
+
+
+\newpage
+\printglossaries
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+

@@ -12,10 +12,7 @@ import { REGISTER_SUCCESS,
 const initialState = {
     token: localStorage.getItem("token"),
     isAuthenticated: null,
-    loading: true,
     user: null,
-    allUsers: [],
-    errors: {}
 }
 
 export default function(state = initialState, action) {
@@ -23,11 +20,12 @@ export default function(state = initialState, action) {
 
     switch(type) {
         case USER_LOADED:
+            const user = localStorage.getItem("name");
             return {
                 ...state,
                 isAuthenticated: true,
-                user: payload,
-                loading: false
+                token: payload,
+                user: user
             }
         case ALL_USER_LOADED_SUCCESS:
             return {
@@ -48,8 +46,9 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 ...payload,
+                token: payload.token,
                 isAuthenticated: true,
-                loading: false
+                user: payload
             }
         case LOGOUT:
             localStorage.removeItem("token");
@@ -57,7 +56,6 @@ export default function(state = initialState, action) {
                 ...state,
                 token: null,
                 isAuthenticated: false,
-                loading: false,
                 user: null
             }
         case USER_LOADED_FAILED:
@@ -66,8 +64,7 @@ export default function(state = initialState, action) {
                 ...state,
                 token: null,
                 isAuthenticated: false,
-                loading: true,
-                errors: payload
+                loading: true
             }
         case LOGIN_FAILED:
             localStorage.removeItem("token");

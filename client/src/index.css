@@ -20,6 +20,9 @@ body {
   background-color: #121212;
   color: #333;
 }
+h5{
+  color: white
+}
 .table-bordered tbody {
   height: 600px;
   overflow-y: scroll;
@@ -319,6 +322,7 @@ img {
 /* Forms */
 .form .form-group {
   margin: 1.2rem 0;
+  
 }
 
 .form .form-text {
@@ -344,25 +348,36 @@ img {
 
 .form input[type="submit"],
 button {
-  font: inherit;
+  font: inherit; 
+}
+
+
+.data-input {
+  padding-bottom: 3rem;
+}
+
+.data-input2 {
+  padding-right: 0.5rem;
 }
 
 .table th,
 .table td {
-  padding: 1rem;
+  padding: 0.5rem;
   text-align: left;
+  font-size: 12px;
 }
 
 .table th {
-  background: var(--light-color);
-}
-.table-th {
-  border-bottom: solid;
-  border-left: solid;
-  border-right: solid;
-  border-top: solid;
+  color: white;
 }
 
+.table-responsive {
+  border-radius:10px;
+}
+
+strong {
+  font-size: 15px;
+}
 /* Navbar */
 .navbar {
   display: flex;
@@ -374,7 +389,8 @@ button {
   width: 100%;
   top: 0;
   border-bottom: solid 1px var(--primary-color);
-  opacity: 0.9;
+  
+  background-color: #121212;
 }
 
 .navbar ul {
@@ -403,7 +419,6 @@ button {
 }
 
 .homepage-inner {
-  color: #fff;
   height: 100%;
   width: 80%;
   margin: auto;
@@ -553,12 +568,35 @@ button {
   margin-bottom: 0.5rem;
 }
 
+.List {
+  border: 1px solid #d9dddd;
+}
+
+.ListItemEven,
+.ListItemOdd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ListItemEven {
+  background-color: #f8f8f0;
+}
+
 /* Mobile Styles */
-@media (max-width: 700px) {
+@media (max-width: 800px) {
   .container {
     margin-top: 8rem;
+    width: 100%;
   }
-
+  .container-data {
+  margin-top: 3rem;
+  width: 100%;
+  
+  }
+  .table {
+    width: 100%;
+  }
   .hide-sm {
     display: none;
   }
